@@ -4,11 +4,20 @@
             <Header :columns="data.columns">
             </Header>
             <tbody>
-                <tr v-for="(row, key, index) in data.rows" :key="index">
-                    <td v-for="(header, key, hindex) in data.columns" :key="hindex">
-                        {{getValueFromRow(row,header.name)}}
-                    </td>
-                </tr>
+                <Row v-for="(row, key, index) in data.rows" :key="index" :row="row" :columns="data.columns">
+                    <!-- <template slot="row" slot-scope="{row, column,value}">
+                        <template v-if="column.name == 'id'">
+                            <div>
+
+                          {{row.id + row.name}}
+                            </div>
+                        </template>
+                        <template v-else>
+
+                        {{value}}
+                        </template>
+                    </template> -->
+                </Row>
             </tbody>
         </table>
     </div>
@@ -17,6 +26,7 @@
 <script>
     import _ from 'lodash';
     import Header from "./Header.vue";
+    import Row from "./Row.vue";
 
     export default {
         name: 'VueBootstrap4Table',
@@ -91,12 +101,11 @@
             }
         },
         components: {
-            Header
+            Header,
+            Row
         },
         methods: {
-            getValueFromRow(row, name) {
-                return _.get(row, name);
-            }
+
         }
     }
 </script>
