@@ -2,11 +2,7 @@
     <thead>
         <slot name="columns" :columns="columns">
             <tr>
-                <th v-for="(column, key, index) in columns" :key="index" scope="col">
-                    <slot name="column" :column="column">
-                        {{column.label}}
-                    </slot>
-                </th>
+                <Column v-for="(column, key, index) in columns" :key="index" :column="column" :config="config" @update-sort="(payload) => $emit('update-sort',payload)"></Column>
             </tr>
         </slot>
     </thead>
@@ -14,6 +10,14 @@
 
 <script>
     import _ from 'lodash';
+
+    import { library } from '@fortawesome/fontawesome-svg-core'
+    import { fas } from '@fortawesome/free-solid-svg-icons'
+    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+    library.add(fas);
+
+
+    import Column from "./Column.vue";
 
     export default {
         name: 'Header',
@@ -23,6 +27,12 @@
                 default: function() {
                     return [];
                 }
+            },
+            config: {
+                type:Object,
+                default:function () {
+                    return {};
+                }
             }
         },
         data: function() {
@@ -31,6 +41,13 @@
             }
         },
         methods: {
+
+        },
+        components: {
+            'font-awesome-icon' : FontAwesomeIcon,
+            Column
+        },
+        computed: {
 
         }
     }

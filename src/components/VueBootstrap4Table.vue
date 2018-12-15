@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
-        <table class="table">
-            <Header :columns="data.columns">
+        <table class="table table-striped">
+            <Header :columns="data.columns" :config=data.config v-on:update-sort="updateSort">
             </Header>
             <tbody>
                 <Row v-for="(row, key, index) in data.rows" :key="index" :row="row" :columns="data.columns">
@@ -25,11 +25,13 @@
 
 <script>
     import _ from 'lodash';
+
     import Header from "./Header.vue";
     import Row from "./Row.vue";
 
     export default {
         name: 'VueBootstrap4Table',
+
         data: function() {
             return {
                 data: {
@@ -68,7 +70,7 @@
                             }
                         }
                     ],
-                    columns: [{
+                    "columns": [{
                             label: 'id',
                             name: 'id'
                         },
@@ -93,8 +95,14 @@
                             name: 'date.year'
                         }
                     ],
-                    column_config: {
+                    "column_config": {
 
+                    },
+                    "config": {
+                        "sort" : {
+                            "name": null,
+                            "order": 'asc'
+                        }
                     }
                 }
 
@@ -105,6 +113,31 @@
             Row
         },
         methods: {
+            updateSort(column) {
+
+                if (this.data.config.sort.name == column.name) {
+                    this.data.config.sort.order = (this.data.config.sort.order == 'asc') ? "desc" : "asc";
+                } else {
+                    this.data.config.sort.name = column.name;
+                    this.data.config.sort.order = "desc";
+                }
+
+                this.sort();
+
+            },
+
+            sort() {
+
+                // TODO- try multipl column sort
+
+                if (this.data.config.sort.name == null) {
+                    return;
+                }
+
+                this.data.rows =_.orderBy(this.data.rows, [this.data.config.sort.name], [this.data.config.sort.order]);
+
+
+            }
 
         }
     }
