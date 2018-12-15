@@ -1,18 +1,13 @@
 <template>
     <div class="container-fluid">
         <table class="table">
-            <thead>
-                <tr>
-                    <th v-for="(header, key, index) in data.column_config.headers" :key="index" scope="col">
-                        {{header.label}}
-                    </th>
-                </tr>
-            </thead>
+            <Header :columns="data.columns">
+            </Header>
             <tbody>
                 <tr v-for="(row, key, index) in data.rows" :key="index">
-                    <th v-for="(value, key, hindex) in row" scope="row" :key="hindex">
-                        {{value}}
-                    </th>
+                    <td v-for="(header, key, hindex) in data.columns" :key="hindex">
+                        {{getValueFromRow(row,header.name)}}
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -20,6 +15,9 @@
 </template>
 
 <script>
+    import _ from 'lodash';
+    import Header from "./Header.vue";
+
     export default {
         name: 'VueBootstrap4Table',
         data: function() {
@@ -34,47 +32,70 @@
                             "name": "cerulean",
                             "year": 2000,
                             "color": "#98B2D1",
-                            "pantone_value": "15-4020"
+                            "pantone_value": "15-4020",
+                            "date": {
+                                "year": 2018
+                            }
                         },
                         {
                             "id": 2,
                             "name": "fuchsia rose",
                             "year": 2001,
                             "color": "#C74375",
-                            "pantone_value": "17-2031"
+                            "pantone_value": "17-2031",
+                            "date": {
+                                "year": 2020
+                            }
                         },
                         {
                             "id": 3,
                             "name": "true red",
                             "year": 2002,
                             "color": "#BF1932",
-                            "pantone_value": "19-1664"
+                            "pantone_value": "19-1664",
+                            "date": {
+                                "year": 2020
+                            }
+                        }
+                    ],
+                    columns: [{
+                            label: 'id',
+                            name: 'id'
+                        },
+                        {
+                            label: 'year',
+                            name: 'year'
+                        },
+                        {
+                            label: 'name',
+                            name: 'name'
+                        },
+                        {
+                            label: 'color',
+                            name: 'color'
+                        },
+                        {
+                            label: 'value',
+                            name: 'pantone_value'
+                        },
+                        {
+                            label: 'Year',
+                            name: 'date.year'
                         }
                     ],
                     column_config: {
-                        headers: [{
-                                label: 'id',
-                                name: 'id'
-                            },
-                            {
-                                label: 'name',
-                                name: 'name'
-                            },
-                            {
-                                label: 'year',
-                                name: 'year'
-                            },
-                            {
-                                label: 'color',
-                                name: 'color'
-                            },
-                            {
-                                label: 'value',
-                                name: 'pantone_value'
-                            }
-                        ]
+
                     }
                 }
+
+            }
+        },
+        components: {
+            Header
+        },
+        methods: {
+            getValueFromRow(row, name) {
+                return _.get(row, name);
             }
         }
     }

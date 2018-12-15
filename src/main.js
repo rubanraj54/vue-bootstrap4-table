@@ -4,9 +4,10 @@
 import './assets/scss/custom.scss';
 
 window.$ = window.jQuery = require('jquery');
+
 import Vue from 'vue'
 import App from './App'
-require('bootstrap') 
+require('bootstrap')
 
 Vue.config.productionTip = false
 
