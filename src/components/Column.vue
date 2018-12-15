@@ -1,35 +1,33 @@
 <template>
-    <th>
-        <div v-on:click="sort">
-            <slot name="column" :column="column">
-                {{column.label}}
+    <th v-on:click="sort">
+        <slot name="column" :column="column">
+            {{column.label}}
+        </slot>
+        <template v-if="!isSort">
+            <slot name="no-sort-icon">
+                <font-awesome-icon icon="sort" class="float-right" />
             </slot>
-            <template v-if="!isSort">
-                <slot name="no-sort-icon">
-                    <font-awesome-icon icon="sort" class="float-right" />
+        </template>
+
+        <template v-else>
+            <template v-if="config.sort.order==='asc'">
+                <slot name="sort-asc-icon">
+                    <font-awesome-icon icon="sort-up" class="float-right" />
+                </slot>
+            </template>
+
+            <template v-else-if="config.sort.order==='desc'">
+                <slot name="sort-desc-icon">
+                    <font-awesome-icon icon="sort-down" class="float-right" />
                 </slot>
             </template>
 
             <template v-else>
-                <template v-if="config.sort.order==='asc'">
-                    <slot name="sort-asc-icon">
-                        <font-awesome-icon icon="sort-up" class="float-right" />
-                    </slot>
-                </template>
-
-                <template v-else-if="config.sort.order==='desc'">
-                    <slot name="sort-desc-icon">
-                        <font-awesome-icon icon="sort-down" class="float-right" />
-                    </slot>
-                </template>
-
-                <template v-else>
-                    <slot name="no-sort-icon">
-                        <font-awesome-icon icon="sort" class="float-right" />
-                    </slot>
-                </template>
+                <slot name="no-sort-icon">
+                    <font-awesome-icon icon="sort" class="float-right" />
+                </slot>
             </template>
-        </div>
+        </template>
     </th>
 </template>
 
