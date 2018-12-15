@@ -1,8 +1,10 @@
 <template>
     <th v-on:click="sort">
+
         <slot name="column" :column="column">
             {{column.label}}
         </slot>
+
         <template v-if="!isSort">
             <slot name="no-sort-icon">
                 <font-awesome-icon icon="sort" class="float-right" />
@@ -28,6 +30,7 @@
                 </slot>
             </template>
         </template>
+
     </th>
 </template>
 
