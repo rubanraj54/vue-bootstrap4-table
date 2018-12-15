@@ -2,7 +2,7 @@
   "name": "vue-bootstrap4-table",
   "version": "1.0.0",
   "description": "Advanced table based on Vue 2 and Bootstrap 4",
-  "author": "Rubanraj Ravichandran",
+  "author": "Rubanraj Ravichandran <rubanraj54@gmail.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
