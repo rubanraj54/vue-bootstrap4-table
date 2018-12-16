@@ -188,23 +188,6 @@
 
                 this.refresh();
             },
-
-            test: _.debounce(function(event, column) {
-                let filter_index = _.findIndex(this.data.config.filters, {
-                    name: column.name
-                });
-                if (filter_index == -1) {
-                    this.data.config.filters.push({
-                        type: column.filter.type,
-                        name: column.name,
-                        text: event.target.value
-                    });
-                } else {
-                    this.data.config.filters[filter_index].text = event.target.value;
-                }
-                this.filter();
-            }, 300),
-
             updateFilter(payload) {
                 let event = payload.event;
                 let column = payload.column;

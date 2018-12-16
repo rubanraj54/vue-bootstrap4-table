@@ -80,24 +80,6 @@ export default {
         'font-awesome-icon': FontAwesomeIcon
     },
     computed: {
-        sortIcon() {
-            if (this.config.sort.name == null) {
-                return 'sort';
-            }
-
-            if (this.config.sort.name === this.column.name) {
-                if (this.config.sort.order === "asc") {
-                    return "sort-up";
-                } else if (this.config.sort.order === "desc") {
-                    return "sort-down";
-                } else {
-                    return "sort";
-                }
-            } else {
-                return "sort";
-            }
-        },
-
         isSort() {
             if (this.config.sort.name == null) {
                 return false;
