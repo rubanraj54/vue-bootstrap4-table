@@ -1,6 +1,6 @@
 <template>
     <div>
-        <input type="text" class="form-control" @keyup.stop="updateFilter($event)">
+        <input type="text" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)">
     </div>
 </template>
 

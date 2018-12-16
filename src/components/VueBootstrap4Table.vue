@@ -90,42 +90,48 @@
                             label: "id",
                             name: "id",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "id"
                             }
                         },
                         {
                             label: "year",
                             name: "year",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "year"
                             }
                         },
                         {
                             label: "name",
                             name: "name",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "enter name"
                             }
                         },
                         {
                             label: "color",
                             name: "color",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "Color"
                             }
                         },
                         {
                             label: "value",
                             name: "pantone_value",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "Pantone value"
                             }
                         },
                         {
                             label: "Year",
                             name: "date.year",
                             filter: {
-                                type: "simple"
+                                type: "simple",
+                                placeholder: "Complex year"
                             }
                         }
                     ],
@@ -249,11 +255,13 @@
             },
 
             simpleFilter(value, filter_text) {
+
                 if (typeof value !== "string") {
                     value = value.toString();
                 }
 
-                return value.indexOf(filter_text) > -1;
+
+                return value.toLowerCase().indexOf(filter_text) > -1;
             },
 
             refresh() {
