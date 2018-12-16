@@ -12,47 +12,7 @@
         data: function() {
             return {
                 result: {
-                    rows: [{
-                            id: 1,
-                            name: "Rubanraj",
-                            year: 2000,
-                            color: "#98B2D1",
-                            pantone_value: "15-4020",
-                            date: {
-                                year: 2018
-                            }
-                        },
-                        {
-                            id: 2,
-                            name: "fuchsia rose",
-                            year: 2001,
-                            color: "#C74375",
-                            pantone_value: "17-2031",
-                            date: {
-                                year: 2020
-                            }
-                        },
-                        {
-                            id: 3,
-                            name: "true red",
-                            year: 2002,
-                            color: "#BF1932",
-                            pantone_value: "19-1664",
-                            date: {
-                                year: 2020
-                            }
-                        },
-                        {
-                            id: 4,
-                            name: "eddy",
-                            year: 1902,
-                            color: "#BF122",
-                            pantone_value: "19-1622",
-                            date: {
-                                year: 1993
-                            }
-                        }
-                    ],
+                    rows: [],
                     columns: [{
                             label: "id",
                             name: "id",
@@ -62,57 +22,38 @@
                             }
                         },
                         {
-                            label: "year",
-                            name: "year",
+                            label: "title",
+                            name: "title",
                             filter: {
                                 type: "simple",
-                                placeholder: "year"
-                            }
-                        },
-                        {
-                            label: "name",
-                            name: "name",
-                            filter: {
-                                type: "simple",
-                                placeholder: "enter name"
-                            }
-                        },
-                        {
-                            label: "color",
-                            name: "color",
-                            filter: {
-                                type: "simple",
-                                placeholder: "Color"
-                            }
-                        },
-                        {
-                            label: "value",
-                            name: "pantone_value",
-                            filter: {
-                                type: "simple",
-                                placeholder: "Pantone value"
-                            }
-                        },
-                        {
-                            label: "Year",
-                            name: "date.year",
-                            filter: {
-                                type: "simple",
-                                placeholder: "Complex year"
+                                placeholder: "title"
                             }
                         }
                     ]
                 },
-                config : {
+                config: {
                     pagination: true,
-                    num_of_visible_page: 5,
-                    per_page: 2
+                    num_of_visible_page: 7,
+                    per_page: 10
                 }
             }
         },
         components: {
             VueBootstrap4Table
-        }
+        },
+        mounted() {
+            let self = this;
+            axios.get('https://jsonplaceholder.typicode.com/photos')
+                .then(function(response) {
+                    // handle success
+                    self.result.rows = response.data;
+                    console.log(response);
+                })
+                .catch(function(error) {
+                    // handle error
+                    console.log(error);
+                });
+        },
     }
 </script>
 

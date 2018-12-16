@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <Pagination :page.sync="page" :per_page="per_page" :total="rowCount"></Pagination>
+                <Pagination :page.sync="page" :per_page="per_page" :total="rowCount" :pagiantion_limit="pagiantion_limit"></Pagination>
             </div>
         </div>
     </div>
@@ -172,9 +172,16 @@
                     return;
                 }
 
-                this.data.rows = _.orderBy(
-                    this.data.rows, [this.config.sort.name], [this.config.sort.order]
-                );
+                if (this.config.filters.length == 0) {
+                    this.temp_filtered_results = _.orderBy(
+                        this.original_rows, [this.config.sort.name], [this.config.sort.order]
+                    );
+                } else {
+                    this.data.rows = _.orderBy(
+                        this.data.rows, [this.config.sort.name], [this.config.sort.order]
+                    );
+                }
+
             },
 
             filter() {

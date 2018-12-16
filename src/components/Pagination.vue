@@ -73,7 +73,7 @@
             },
             pagiantion_limit: {
                 type: [String, Number],
-                default: 5
+                default: 7
             }
         },
         data: function() {
