@@ -1,5 +1,5 @@
 <template>
-    <th v-on:click="sort">
+    <th v-on:click="sort" class="text-center">
 
         <slot name="column" :column="column">
             {{column.label}}

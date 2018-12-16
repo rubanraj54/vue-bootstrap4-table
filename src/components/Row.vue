@@ -1,7 +1,7 @@
 <template>
     <tr>
-        <td v-for="(column, key, hindex) in columns" :key="hindex">
-            <slot name="row" :row="row" :column="column" :value="getValueFromRow(row,column.name)">
+        <td v-for="(column, key, hindex) in columns" :key="hindex" class="text-center">
+            <slot name="cell" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
                 {{getValueFromRow(row,column.name)}}
             </slot>
         </td>
