@@ -34,6 +34,10 @@
 
             }
         },
+        mounted() {
+            // console.log(this.row);
+
+        },
         methods: {
             getValueFromRow(row, name) {
                 return _.get(row, name);
