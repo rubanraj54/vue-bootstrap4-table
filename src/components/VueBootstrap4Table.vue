@@ -1,17 +1,28 @@
 <template>
     <div class="container-fluid">
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <Header :columns="data.columns" :config="data.config" v-on:update-sort="updateSort"></Header>
-                <tbody>
-                    <tr class="table-active">
-                        <td v-for="(column, key, index) in data.columns" :key="index">
-                            <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
-                        </td>
-                    </tr>
-                    <Row v-for="(row, key, index) in data.rows" :key="index" :row="row" :columns="data.columns"></Row>
-                </tbody>
-            </table>
+        <!-- TODO configurable header title position -->
+        <div class="card">
+            <div class="card-header text-center">
+                Bootsrap 4 advanced table
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <Header :columns="data.columns" :config="data.config" v-on:update-sort="updateSort"></Header>
+                        <tbody>
+                            <tr class="table-active">
+                                <td v-for="(column, key, index) in data.columns" :key="index">
+                                    <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                                </td>
+                            </tr>
+                            <Row v-for="(row, key, index) in data.rows" :key="index" :row="row" :columns="data.columns"></Row>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <Pagination :page.sync="data.page" :per_page="data.per_page" :total="data.total"></Pagination>
+            </div>
         </div>
     </div>
 </template>
@@ -34,6 +45,7 @@
     import Header from "./Header.vue";
     import Row from "./Row.vue";
     import Simple from "./Filters/Simple.vue";
+    import Pagination from "./Pagination.vue";
 
     export default {
         name: "VueBootstrap4Table",
@@ -43,8 +55,8 @@
                 data: {
                     page: 1,
                     per_page: 3,
-                    total: 12,
-                    total_pages: 4,
+                    total: 4,
+                    pagiantion_limit: 5,
                     rows: [{
                             id: 1,
                             name: "Rubanraj",
@@ -144,16 +156,20 @@
                         filters: []
                     }
                 },
-                original_rows: []
+                original_rows: [],
+                temp_filtered_results: [],
             };
         },
         mounted() {
             this.original_rows = _.cloneDeep(this.data.rows);
+            this.filter();
+            this.paginateFilter();
         },
         components: {
             Header,
             Row,
             Simple,
+            Pagination,
             "font-awesome-icon": FontAwesomeIcon
         },
         methods: {
@@ -249,7 +265,7 @@
                     return flag;
                 });
 
-                this.data.rows = res;
+                this.temp_filtered_results = res;
             },
 
             simpleFilter(value, filter_text) {
@@ -264,14 +280,36 @@
 
             refresh() {
                 this.sort();
+            },
+
+            paginateFilter() {
+                let start = (this.data.page - 1) * this.data.per_page;
+                let end = start + (this.data.per_page);
+                this.data.rows = this.temp_filtered_results.slice(start, end);
             }
+        },
+        computed: {
+
         },
         watch: {
             'data.config.filters': {
                 handler: function(after, before) {
                     this.filter();
+                    this.paginateFilter();
                 },
                 deep: true,
+            },
+            'temp_filtered_results': {
+                handler: function(newVal, oldVal) {
+                    this.paginateFilter();
+                    // this.data.rows = newVal;
+                },
+                deep: true,
+            },
+            'data.page': {
+                handler: function(newVal, oldVal) {
+                    this.paginateFilter();
+                }
             }
         }
     };
