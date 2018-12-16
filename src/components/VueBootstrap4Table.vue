@@ -6,7 +6,7 @@
                 <tbody>
                     <tr class="table-active">
                         <td v-for="(column, key, index) in data.columns" :key="index">
-                            <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter"></Simple>
+                            <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                         </td>
                     </tr>
                     <Row v-for="(row, key, index) in data.rows" :key="index" :row="row" :columns="data.columns"></Row>
@@ -161,6 +161,22 @@
             hasFilter(column) {
                 return _.has(column, 'filter.type');
             },
+
+            clearFilter(column) {
+                let filter_index = this.getFilterIndex(column);
+                if (filter_index !== -1) {
+                    this.data.config.filters.splice(filter_index, 1);
+                }
+            },
+
+            getFilterIndex(column) {
+                return _.findIndex(this.data.config.filters, {
+                    name: column.name
+                });
+
+                // return (filter_index == -1) ? null : this.data.config.filters[filter_index];
+            },
+
             updateSort(column) {
                 if (this.data.config.sort.name == column.name) {
                     this.data.config.sort.order =
@@ -210,7 +226,6 @@
                         this.data.config.filters[filter_index].text = event.target.value;
                     }
                 }
-                this.filter();
             },
 
             sort() {
@@ -260,12 +275,20 @@
                     value = value.toString();
                 }
 
-
+                // TODO - configurable lowercase conversion
                 return value.toLowerCase().indexOf(filter_text) > -1;
             },
 
             refresh() {
                 this.sort();
+            }
+        },
+        watch: {
+            'data.config.filters': {
+                handler: function(after, before) {
+                    this.filter();
+                },
+                deep: true,
             }
         }
     };
