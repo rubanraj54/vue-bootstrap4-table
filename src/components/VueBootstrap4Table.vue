@@ -21,7 +21,14 @@
                 </div>
             </div>
             <div class="card-footer">
-                <Pagination :page.sync="page" :per_page="per_page" :total="rowCount" :pagiantion_limit="pagiantion_limit"></Pagination>
+                <div class="row">
+                    <div class="col-md-6">
+                        <Pagination :page.sync="page" :per_page="per_page" :total="rowCount" :pagiantion_limit="pagiantion_limit"></Pagination>
+                    </div>
+                    <div class="col-md-6">
+                        <PaginationInfo :current-page-rows-length="data.rows.length" :filtered-rows-length="rowCount" :original-rows-length="payload.rows.length"></PaginationInfo>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -46,10 +53,11 @@
     import Row from "./Row.vue";
     import Simple from "./Filters/Simple.vue";
     import Pagination from "./Pagination.vue";
+    import PaginationInfo from "./PaginationInfo.vue";
 
     export default {
         name: "VueBootstrap4Table",
-        props:{
+        props: {
             payload: {
                 type: Object,
                 required: true
@@ -64,7 +72,8 @@
         data: function() {
             return {
                 data: {
-
+                    rows: [],
+                    columns: []
                 },
                 config: {
                     sort: {
@@ -93,6 +102,7 @@
             Row,
             Simple,
             Pagination,
+            PaginationInfo,
             "font-awesome-icon": FontAwesomeIcon
         },
         methods: {
@@ -188,13 +198,7 @@
                 let self = this;
                 let res = _.filter(this.original_rows, function(row) {
                     let flag = true;
-                    // console.log(self.config.);
-
                     _.forEach(self.config.filters, function(filter, key) {
-                        // console.log(filter);
-
-                            // console.log(3333);
-
                         if (filter.text === "") {
                             flag = true;
                             return false;
