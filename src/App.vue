@@ -28,6 +28,14 @@
                                 type: "simple",
                                 placeholder: "title"
                             }
+                        },
+                        {
+                            label: "url",
+                            name: "url",
+                            filter: {
+                                type: "simple",
+                                placeholder: "Enter url"
+                            }
                         }
                     ]
                 },
