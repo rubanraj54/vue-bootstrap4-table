@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :payload="result" :table-config="config"></vue-bootstrap4-table>
+        <vue-bootstrap4-table :data="result" :config="config"></vue-bootstrap4-table>
     </div>
 </template>
 
@@ -57,7 +57,7 @@
                 .then(function(response) {
                     // handle success
                     self.result.rows = response.data;
-                    console.log(response);
+                    // console.log(response);
                 })
                 .catch(function(error) {
                     // handle error

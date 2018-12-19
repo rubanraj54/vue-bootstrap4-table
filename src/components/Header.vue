@@ -2,7 +2,7 @@
     <thead>
         <slot name="columns" :columns="columns">
             <tr>
-                <Column v-for="(column, key, index) in columns" :key="index" :column="column" :config="config" @update-sort="(payload) => $emit('update-sort',payload)"></Column>
+                <Column v-for="(column, key, index) in columns" :key="index" :column="column" :query="query" @update-sort="(payload) => $emit('update-sort',payload)"></Column>
             </tr>
         </slot>
     </thead>
@@ -22,7 +22,7 @@
                     return [];
                 }
             },
-            config: {
+            query: {
                 type:Object,
                 default:function () {
                     return {};

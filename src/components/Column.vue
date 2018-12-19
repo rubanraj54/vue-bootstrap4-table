@@ -12,7 +12,7 @@
         </template>
 
         <template v-else>
-            <template v-if="config.sort.order==='asc'">
+            <template v-if="query.sort.order==='asc'">
                 <div class="float-right">
                     <slot name="sort-asc-icon">
                         &#x1F825;
@@ -20,7 +20,7 @@
                 </div>
             </template>
 
-            <template v-else-if="config.sort.order==='desc'">
+            <template v-else-if="query.sort.order==='desc'">
                 <slot name="sort-desc-icon">
                     <div class="float-right">&#x1F827;</div>
                 </slot>
@@ -51,7 +51,7 @@ export default {
                 return {};
             }
         },
-        config: {
+        query: {
             type: Object,
             default: function () {
                 return {};
@@ -70,11 +70,11 @@ export default {
     },
     computed: {
         isSort() {
-            if (this.config.sort.name == null) {
+            if (this.query.sort.name == null) {
                 return false;
             }
 
-            return this.config.sort.name === this.column.name;
+            return this.query.sort.name === this.column.name;
         },
 
         isSortableColumn() {
