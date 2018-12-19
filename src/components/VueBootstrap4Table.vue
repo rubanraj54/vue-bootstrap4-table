@@ -2,9 +2,7 @@
     <div class="container-fluid">
         <!-- TODO configurable header title position -->
         <div class="card">
-            <div class="card-header text-center">
-                Bootsrap 4 advanced table
-            </div>
+            <div class="card-header text-center">Bootsrap 4 advanced table</div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
@@ -37,18 +35,6 @@
 <script>
     import _ from "lodash";
 
-    import {
-        library
-    } from "@fortawesome/fontawesome-svg-core";
-    import {
-        fas
-    } from "@fortawesome/free-solid-svg-icons";
-    import {
-        FontAwesomeIcon
-    } from "@fortawesome/vue-fontawesome";
-
-    library.add(fas);
-
     import Header from "./Header.vue";
     import Row from "./Row.vue";
     import Simple from "./Filters/Simple.vue";
@@ -67,7 +53,7 @@
                 default: function() {
                     return {};
                 }
-            },
+            }
         },
         data: function() {
             return {
@@ -102,13 +88,10 @@
             Row,
             Simple,
             Pagination,
-            PaginationInfo,
-            "font-awesome-icon": FontAwesomeIcon
+            PaginationInfo
         },
         methods: {
-
             initConfig() {
-
                 if (_.isEmpty(this.tableConfig)) {
                     return;
                 }
@@ -119,11 +102,10 @@
                 } else {
                     this.pagination = false;
                 }
-
             },
 
             hasFilter(column) {
-                return _.has(column, 'filter.type');
+                return _.has(column, "filter.type");
             },
 
             clearFilter(column) {
@@ -179,23 +161,20 @@
                 // TODO- try multipl column sort
 
                 if (this.config.sort.name == null) {
+                    this.paginateFilter();
                     return;
                 }
 
-                if (this.config.filters.length == 0) {
-                    this.temp_filtered_results = _.orderBy(
-                        this.original_rows, [this.config.sort.name], [this.config.sort.order]
-                    );
-                } else {
-                    this.data.rows = _.orderBy(
-                        this.data.rows, [this.config.sort.name], [this.config.sort.order]
-                    );
-                }
+                this.temp_filtered_results = _.orderBy(
+                    this.temp_filtered_results, [this.config.sort.name], [this.config.sort.order]
+                );
 
+                this.paginateFilter();
             },
 
             filter() {
                 let self = this;
+
                 let res = _.filter(this.original_rows, function(row) {
                     let flag = true;
                     _.forEach(self.config.filters, function(filter, key) {
@@ -211,19 +190,17 @@
                                 flag = false;
                                 return false;
                             }
-
                         }
                     });
 
                     return flag;
                 });
-
                 this.temp_filtered_results = res;
+                this.sort();
                 this.page = 1;
             },
 
             simpleFilter(value, filter_text) {
-
                 if (typeof value !== "string") {
                     value = value.toString();
                 }
@@ -238,7 +215,7 @@
 
             paginateFilter() {
                 let start = (this.page - 1) * this.per_page;
-                let end = start + (this.per_page);
+                let end = start + this.per_page;
                 this.data.rows = this.temp_filtered_results.slice(start, end);
             }
         },
@@ -248,39 +225,31 @@
             }
         },
         watch: {
-            'config.filters': {
+            "config.filters": {
                 handler: function(after, before) {
                     this.filter();
-                    this.paginateFilter();
                 },
-                deep: true,
+                deep: true
             },
-            'temp_filtered_results': {
-                handler: function(newVal, oldVal) {
-                    this.paginateFilter();
-                },
-                deep: true,
-            },
-            'page': {
+            page: {
                 handler: function(newVal, oldVal) {
                     this.paginateFilter();
                 }
             },
-            'per_page': {
+            per_page: {
                 handler: function(newVal, oldVal) {
                     this.paginateFilter();
                 }
             },
-            'payload': {
+            payload: {
                 handler: function(newVal, oldVal) {
                     this.data = _.cloneDeep(newVal);
                     this.original_rows = _.cloneDeep(this.data.rows);
                     this.filter();
-                    this.paginateFilter();
                 },
                 deep: true
             },
-            'tableConfig': {
+            tableConfig: {
                 handler: function(newVal, oldVal) {
                     this.initConfig();
                 },
@@ -289,3 +258,11 @@
         }
     };
 </script>
+
+
+// workflow
+// get data(payload)
+// clone to origin_rows
+// do filter
+// do sort
+// do paginate

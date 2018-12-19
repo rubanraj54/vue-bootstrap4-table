@@ -11,12 +11,6 @@
 <script>
     import _ from 'lodash';
 
-    import { library } from '@fortawesome/fontawesome-svg-core'
-    import { fas } from '@fortawesome/free-solid-svg-icons'
-    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-    library.add(fas);
-
-
     import Column from "./Column.vue";
 
     export default {
@@ -44,7 +38,6 @@
 
         },
         components: {
-            'font-awesome-icon' : FontAwesomeIcon,
             Column
         },
         computed: {
