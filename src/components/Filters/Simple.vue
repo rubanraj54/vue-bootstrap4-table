@@ -3,7 +3,9 @@
         <input ref="simple_filter_input" type="text" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)">
         <div class="input-group-append" @click="clearFilter">
             <span class="input-group-text">
-                <font-awesome-icon icon="times-circle" />
+                <slot name="clear-simple-filter-icon">
+                    &#x24E7;
+                </slot>
             </span>
         </div>
     </div>
@@ -12,17 +14,6 @@
 
 <script>
     import _ from "lodash";
-
-    import {
-        library
-    } from "@fortawesome/fontawesome-svg-core";
-    import {
-        fas
-    } from "@fortawesome/free-solid-svg-icons";
-    import {
-        FontAwesomeIcon
-    } from "@fortawesome/vue-fontawesome";
-    library.add(fas);
 
     export default {
         name: "Simple",
@@ -51,7 +42,6 @@
             }, 60),
         },
         components: {
-            "font-awesome-icon": FontAwesomeIcon
         },
         computed: {}
     };

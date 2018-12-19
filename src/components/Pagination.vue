@@ -44,18 +44,6 @@
 <script>
     import _ from 'lodash';
 
-    import {
-        library
-    } from '@fortawesome/fontawesome-svg-core'
-    import {
-        fas
-    } from '@fortawesome/free-solid-svg-icons'
-    import {
-        FontAwesomeIcon
-    } from '@fortawesome/vue-fontawesome'
-
-    library.add(fas);
-
     export default {
         name: 'Pagination',
         props: {
@@ -92,7 +80,6 @@
 
         },
         components: {
-            'font-awesome-icon': FontAwesomeIcon
         },
         computed: {
             totalPages() {

@@ -1,56 +1,49 @@
 <template>
-    <th v-on:click="sort" class="text-center">
+<th v-on="isSortableColumn ? { click: () => sort() } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn}">
+    <slot name="column" :column="column">{{column.label}}</slot>
 
-        <slot name="column" :column="column">
-            {{column.label}}
-        </slot>
-
+    <template v-if="isSortableColumn">
         <template v-if="!isSort">
-            <slot name="no-sort-icon">
-                <font-awesome-icon icon="sort" class="float-right" />
-            </slot>
+            <div class="float-right">
+                <slot name="no-sort-icon">
+                    &#x1F825;&#x1F827;
+                </slot>
+            </div>
         </template>
 
         <template v-else>
             <template v-if="config.sort.order==='asc'">
-                <slot name="sort-asc-icon">
-                    <font-awesome-icon icon="sort-up" class="float-right" />
-                </slot>
+                <div class="float-right">
+                    <slot name="sort-asc-icon">
+                        &#x1F825;
+                    </slot>
+                </div>
             </template>
 
             <template v-else-if="config.sort.order==='desc'">
                 <slot name="sort-desc-icon">
-                    <font-awesome-icon icon="sort-down" class="float-right" />
+                    <div class="float-right">&#x1F827;</div>
                 </slot>
             </template>
 
             <template v-else>
-                <slot name="no-sort-icon">
-                    <font-awesome-icon icon="sort" class="float-right" />
-                </slot>
+                <div class="float-right">
+                    <slot name="no-sort-icon">
+                        &#x1F825;&#x1F827;
+                    </slot>
+                </div>
             </template>
         </template>
+    </template>
 
-    </th>
+</th>
 </template>
 
 <script>
-import _ from 'lodash';
-
-import {
-    library
-} from '@fortawesome/fontawesome-svg-core'
-import {
-    fas
-} from '@fortawesome/free-solid-svg-icons'
-import {
-    FontAwesomeIcon
-} from '@fortawesome/vue-fontawesome'
-
-library.add(fas);
+import _ from "lodash";
 
 export default {
-    name: 'Column',
+    name: "Column",
     props: {
         column: {
             type: Object,
@@ -66,18 +59,14 @@ export default {
         }
     },
     data: function () {
-        return {
-
-        }
+        return {};
     },
     methods: {
         sort() {
-            this.$emit('update-sort', this.column);
+            this.$emit("update-sort", this.column);
         }
-
     },
     components: {
-        'font-awesome-icon': FontAwesomeIcon
     },
     computed: {
         isSort() {
@@ -88,14 +77,21 @@ export default {
             return this.config.sort.name === this.column.name;
         },
 
-    },
-}
+        isSortableColumn() {
+            if (!_.has(this.column,'sort')) {
+                return false;
+            } else {
+                return this.column.sort;
+            }
+        }
+    }
+};
 </script>
 
 // TODO icon color
 
 <style scoped>
-th {
+.vbt-sort-cursor {
     cursor: pointer;
 }
 </style>

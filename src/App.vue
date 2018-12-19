@@ -19,7 +19,8 @@
                             filter: {
                                 type: "simple",
                                 placeholder: "id"
-                            }
+                            },
+                            sort: true
                         },
                         {
                             label: "title",
@@ -27,6 +28,15 @@
                             filter: {
                                 type: "simple",
                                 placeholder: "title"
+                            },
+                            sort: true
+                        },
+                        {
+                            label: "url",
+                            name: "url",
+                            filter: {
+                                type: "simple",
+                                placeholder: "Enter url"
                             }
                         }
                     ]
