@@ -1,6 +1,6 @@
 {
     "name": "vue-bootstrap4-table",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "main": "dist/vue-bootstrap4-table.umd.js",
     "module": "dist/vue-bootstrap4-table.esm.js",
     "unpkg": "dist/vue-bootstrap4-table.min.js",
@@ -66,7 +66,10 @@
         "postcss-url": "^7.2.1",
         "rimraf": "^2.6.0",
         "rollup": "^0.68.0",
+        "rollup-plugin-babel": "^4.1.0",
         "rollup-plugin-buble": "^0.19.6",
+        "rollup-plugin-node-resolve": "^4.0.0",
+        "rollup-plugin-uglify": "^6.0.0",
         "rollup-plugin-vue": "^4.3.2",
         "sass-loader": "^7.1.0",
         "semver": "^5.3.0",
@@ -91,5 +94,10 @@
         "> 1%",
         "last 2 versions",
         "not ie <= 8"
-    ]
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rubanraj54/vue-bootstrap4-table"
+    },
+    "homepage": "https://rubanraj54.gitbook.io"
 }

@@ -6,14 +6,15 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered">
-                        <Header :columns="vbt_data.columns" :query="query" v-on:update-sort="updateSort"></Header>
+                        <Header :columns="vbt_data.columns" :query="query" v-on:update-sort="updateSort" :checkboxRows="checkbox_rows" @select-all-items="selectAllItems" @unselect-all-items="unSelectAllItems"></Header>
                         <tbody>
                             <tr class="table-active">
+                                <td v-show="checkbox_rows"></td>
                                 <td v-for="(column, key, index) in vbt_data.columns" :key="index">
                                     <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                                 </td>
                             </tr>
-                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :columns="vbt_data.columns"></Row>
+                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></Row>
                         </tbody>
                     </table>
                 </div>
@@ -40,6 +41,10 @@
     import Simple from "./Filters/Simple.vue";
     import Pagination from "./Pagination.vue";
     import PaginationInfo from "./PaginationInfo.vue";
+
+    import {
+        EventBus
+    } from '../event-bus.js';
 
     export default {
         name: "VueBootstrap4Table",
@@ -73,7 +78,9 @@
                 original_rows: [],
                 pagiantion_limit: 5,
                 temp_filtered_results: [],
-                pagination: true
+                pagination: true,
+                checkbox_rows: false,
+                selected_items: []
             };
         },
         mounted() {
@@ -102,6 +109,8 @@
                 } else {
                     this.pagination = false;
                 }
+
+                this.checkbox_rows = this.config.checkbox_rows;
             },
 
             hasFilter(column) {
@@ -133,6 +142,59 @@
                 }
 
                 this.refresh();
+            },
+            addSelectedItem(item) {
+                this.selected_items.push(item);
+
+                let difference = [];
+
+                if (!_.isEmpty(this.uniqueId)) {
+                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                } else {
+                    difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                }
+
+                if (difference.length == 0) {
+                    EventBus.$emit('select-select-all-items-checkbox',"from main");
+                } else {
+                    EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                }
+            },
+            selectAllItems() {
+
+                let difference = [];
+
+                if (!_.isEmpty(this.uniqueId)) {
+                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                } else {
+                    difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                }
+
+                this.selected_items.push(...difference);
+            },
+            unSelectAllItems() {
+
+                let difference = [];
+
+                if (!_.isEmpty(this.uniqueId)) {
+                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                } else {
+                    difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                }
+                console.log(difference);
+
+
+                // this.selected_items.push(...difference);
+                this.selected_items = [];
+            },
+            removeSelectedItem(item) {
+                let self = this;
+                _.forEach(this.selected_items, function(selected_item, index) {
+                    if (_.isEqual(item, selected_item)) {
+                        self.selected_items.splice(index, 1);
+                        return false;
+                    }
+                });
             },
             updateFilter(payload) {
                 let event = payload.event;
@@ -222,6 +284,22 @@
         computed: {
             rowCount() {
                 return this.temp_filtered_results.length;
+            },
+            selectedItemsCount() {
+                return this.selected_items.length;
+            },
+            filteredResultsCount() {
+                return this.temp_filtered_results.length;
+            },
+            uniqueId() {
+                let unique_id = "";
+                _.forEach(this.vbt_data.columns,function(column,key){
+                    if (_.has(column, 'uniqueId') && column.uniqueId === true) {
+                        unique_id = column.name;
+                        return false;
+                    }
+                });
+                return unique_id;
             }
         },
         watch: {
@@ -252,6 +330,29 @@
             config: {
                 handler: function(newVal, oldVal) {
                     this.initConfig();
+                },
+                deep: true
+            },
+            temp_filtered_results: {
+                handler: function(newVal, oldVal) {
+                    if (this.selected_items.length == 0) {
+                        EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                        return;
+                    }
+
+                    let difference = [];
+
+                    if (!_.isEmpty(this.uniqueId)) {
+                        difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
+                    } else {
+                        difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
+                    }
+
+                    if (difference.length == 0) {
+                        EventBus.$emit('select-select-all-items-checkbox',"from main");
+                    } else {
+                        EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                    }
                 },
                 deep: true
             }
