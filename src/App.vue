@@ -20,7 +20,8 @@
                                 type: "simple",
                                 placeholder: "id"
                             },
-                            sort: true
+                            sort: true,
+                            uniqueId:true
                         },
                         {
                             label: "title",
@@ -44,7 +45,8 @@
                 config: {
                     pagination: true,
                     num_of_visible_page: 7,
-                    per_page: 10
+                    per_page: 10,
+                    checkbox_rows: true
                 }
             }
         },
