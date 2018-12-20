@@ -2,12 +2,11 @@
     <div>
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <!-- <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
+                <li class="page-item" @click.prevent="pageHandler(page-1)">
+                    <a class="page-link" href="" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
-                        <span class="sr-only">Previous</span>
                     </a>
-                </li> -->
+                </li>
                 <template v-if="!isEmpty">
                     <li class="page-item" v-if="showLeftDot" @click.prevent="pageHandler(1)">
                         <a class="page-link" href=""> 1 </a>
@@ -27,15 +26,14 @@
                 </template>
                 <template v-else>
                     <li class="page-item disabled">
-                        <a class="page-link" href="#">...</a>
+                        <a class="page-link" href="">...</a>
                     </li>
                 </template>
-                <!-- <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
+                <li class="page-item" @click.prevent="pageHandler(page+1)">
+                    <a class="page-link" href="" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">Next</span>
                     </a>
-                </li> -->
+                </li>
             </ul>
         </nav>
     </div>
@@ -75,7 +73,9 @@
         },
         methods: {
             pageHandler(index) {
-                this.$emit('update:page', index);
+                if (index >= 1 && index <= this.totalPages) {
+                    this.$emit('update:page', index);
+                }
             }
 
         },
