@@ -1,6 +1,7 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :data="result" :config="config"></vue-bootstrap4-table>
+        <vue-bootstrap4-table :data="result" :config="config">
+        </vue-bootstrap4-table>
     </div>
 </template>
 
