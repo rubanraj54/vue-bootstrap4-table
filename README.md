@@ -2,7 +2,7 @@
 
 > Advanced table based on Vue 2 and Bootstrap 4
 
-[Quick Demo in Fiddle](https://jsfiddle.net/rubanraj54/d9jnbt10/).
+[Quick Demo in Fiddle](https://jsfiddle.net/rubanraj54/d9jnbt10/6/).
 
 [Docs in gitbook](https://rubanraj54.gitbook.io/workspace/). 
 
