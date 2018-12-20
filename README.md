@@ -4,7 +4,7 @@
 
 [Quick Demo in Fiddle](https://jsfiddle.net/rubanraj54/d9jnbt10/6/).
 
-[Docs in gitbook](https://rubanraj54.gitbook.io/workspace/). 
+[Docs in gitbook](https://rubanraj54.gitbook.io/vue-bootstrap4-table/). 
 
 Note: Under developement.. Please wait for few weeks for complete documentation and demo
 
