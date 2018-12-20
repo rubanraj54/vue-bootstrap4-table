@@ -2,27 +2,27 @@
     <div>
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <li class="page-item">
+                <!-- <li class="page-item">
                     <a class="page-link" href="#" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                         <span class="sr-only">Previous</span>
                     </a>
-                </li>
+                </li> -->
                 <template v-if="!isEmpty">
-                    <li class="page-item" v-if="showLeftDot" @click="pageHandler(1)">
-                        <a class="page-link" href="#"> 1 </a>
+                    <li class="page-item" v-if="showLeftDot" @click.prevent="pageHandler(1)">
+                        <a class="page-link" href=""> 1 </a>
                     </li>
                     <li class="page-item disabled" v-if="showLeftDot">
-                        <a class="page-link" href="#">...</a>
+                        <a class="page-link" href="">...</a>
                     </li>
-                    <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click="pageHandler(index)">
-                        <a class="page-link" href="#">{{index}}</a>
+                    <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click.prevent="pageHandler(index)">
+                        <a class="page-link" href="">{{index}}</a>
                     </li>
                     <li class="page-item disabled" v-if="showRightDot">
-                        <a class="page-link" href="#">...</a>
+                        <a class="page-link" href="">...</a>
                     </li>
-                    <li class="page-item" v-if="showRightDot" @click="pageHandler(totalPages)">
-                        <a class="page-link" href="#"> {{totalPages}} </a>
+                    <li class="page-item" v-if="showRightDot" @click.prevent="pageHandler(totalPages)">
+                        <a class="page-link" href=""> {{totalPages}} </a>
                     </li>
                 </template>
                 <template v-else>
@@ -30,12 +30,12 @@
                         <a class="page-link" href="#">...</a>
                     </li>
                 </template>
-                <li class="page-item">
+                <!-- <li class="page-item">
                     <a class="page-link" href="#" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                         <span class="sr-only">Next</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </nav>
     </div>
