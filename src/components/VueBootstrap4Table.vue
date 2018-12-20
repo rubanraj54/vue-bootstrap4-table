@@ -85,7 +85,18 @@
         },
         mounted() {
             this.vbt_data = _.cloneDeep(this.data);
-            this.original_rows = _.cloneDeep(this.vbt_data.rows);
+
+            // check if user mentioned unique id for a column, if not set unique id for all items
+            if (!this.hasUniqueId) {
+                this.original_rows = _.map(this.vbt_data.rows, function(element, index) {
+                    return _.extend({}, element, {
+                        "vbt_id": index
+                    });
+                });
+            } else {
+                this.original_rows = _.cloneDeep(this.vbt_data.rows);
+            }
+
             this.initConfig();
             this.filter();
             this.paginateFilter();
@@ -128,8 +139,6 @@
                 return _.findIndex(this.query.filters, {
                     name: column.name
                 });
-
-                // return (filter_index == -1) ? null : this.query.filters[filter_index];
             },
 
             updateSort(column) {
@@ -155,9 +164,9 @@
                 }
 
                 if (difference.length == 0) {
-                    EventBus.$emit('select-select-all-items-checkbox',"from main");
+                    EventBus.$emit('select-select-all-items-checkbox', "from main");
                 } else {
-                    EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                    EventBus.$emit('unselect-select-all-items-checkbox', "from main");
                 }
             },
             selectAllItems() {
@@ -177,15 +186,14 @@
                 let difference = [];
 
                 if (!_.isEmpty(this.uniqueId)) {
-                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                    let result = _.intersectionBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                    difference = _.differenceBy(this.selected_items, result, this.uniqueId);
                 } else {
-                    difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                    let result = _.intersectionWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                    difference = _.differenceWith(this.selected_items, result, _.isEqual);
                 }
-                console.log(difference);
 
-
-                // this.selected_items.push(...difference);
-                this.selected_items = [];
+                this.selected_items = difference;
             },
             removeSelectedItem(item) {
                 let self = this;
@@ -195,6 +203,7 @@
                         return false;
                     }
                 });
+                EventBus.$emit('unselect-select-all-items-checkbox');
             },
             updateFilter(payload) {
                 let event = payload.event;
@@ -293,14 +302,34 @@
             },
             uniqueId() {
                 let unique_id = "";
-                _.forEach(this.vbt_data.columns,function(column,key){
+
+                if (!this.hasUniqueId) {
+                    unique_id = "vbt_id";
+                    return unique_id;
+                }
+
+                _.forEach(this.vbt_data.columns, function(column, key) {
                     if (_.has(column, 'uniqueId') && column.uniqueId === true) {
                         unique_id = column.name;
                         return false;
                     }
                 });
+
                 return unique_id;
+            },
+            hasUniqueId() {
+                let has_unique_id = false;
+
+                _.forEach(this.vbt_data.columns, function(column, key) {
+                    if (_.has(column, 'uniqueId') && column.uniqueId === true) {
+                        has_unique_id = true;
+                        return false;
+                    }
+                });
+
+                return has_unique_id;
             }
+
         },
         watch: {
             "query.filters": {
@@ -321,8 +350,19 @@
             },
             data: {
                 handler: function(newVal, oldVal) {
+
                     this.vbt_data = _.cloneDeep(newVal);
-                    this.original_rows = _.cloneDeep(this.vbt_data.rows);
+
+                    // check if user mentioned unique id for a column, if not set unique id for all items
+                    if (!this.hasUniqueId) {
+                        this.original_rows = _.map(this.vbt_data.rows, function(element, index) {
+                            return _.extend({}, element, {
+                                "vbt_id": index
+                            });
+                        });
+                    } else {
+                        this.original_rows = _.cloneDeep(this.vbt_data.rows);
+                    }
                     this.filter();
                 },
                 deep: true
@@ -336,7 +376,7 @@
             temp_filtered_results: {
                 handler: function(newVal, oldVal) {
                     if (this.selected_items.length == 0) {
-                        EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                        EventBus.$emit('unselect-select-all-items-checkbox');
                         return;
                     }
 
@@ -349,9 +389,9 @@
                     }
 
                     if (difference.length == 0) {
-                        EventBus.$emit('select-select-all-items-checkbox',"from main");
+                        EventBus.$emit('select-select-all-items-checkbox');
                     } else {
-                        EventBus.$emit('unselect-select-all-items-checkbox',"from main");
+                        EventBus.$emit('unselect-select-all-items-checkbox');
                     }
                 },
                 deep: true

@@ -2,9 +2,12 @@
 
 > Advanced table based on Vue 2 and Bootstrap 4
 
+[Quick Demo in Fiddle](https://jsfiddle.net/rubanraj54/d9jnbt10/6/).
+
+[Docs in gitbook](https://rubanraj54.gitbook.io/workspace/). 
+
 Note: Under developement.. Please wait for few weeks for complete documentation and demo
 
-For Quick look : https://rubanraj54.gitbook.io/workspace/
 ## Build Setup
 
 ``` bash

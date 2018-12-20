@@ -51,7 +51,6 @@
                 this.select_all_rows = false;
             });
             EventBus.$on('select-select-all-items-checkbox', (msg) => {
-                console.log(msg);
                 this.select_all_rows = true;
             });
         },

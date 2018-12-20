@@ -61,7 +61,6 @@
                     this.$emit('add-selected-item', this.row);
                 } else {
                     this.$emit('remove-selected-item', this.row);
-                    EventBus.$emit('unselect-select-all-items-checkbox','from row');
                 }
             },
             getValueFromRow(row, name) {
