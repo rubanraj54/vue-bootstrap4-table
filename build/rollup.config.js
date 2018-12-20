@@ -1,6 +1,8 @@
 import vue from 'rollup-plugin-vue'; // Handle .vue SFC files
 import buble from 'rollup-plugin-buble'; // Transpile/polyfill with reasonable browser support
 import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+
 import {
     uglify
 } from "rollup-plugin-uglify";
@@ -11,7 +13,7 @@ export default {
         name: 'VueBootstrap4Table',
         exports: 'named',
     },
-    external: ['lodash'],
+    external: ['vue'],
     plugins: [
         // uglify(),
         vue({
@@ -19,6 +21,12 @@ export default {
             compileTemplate: true, // Explicitly convert template to render function
         }),
         buble(), // Transpile to ES5
-        resolve()
+        resolve({
+            jsnext: true,
+            main: true
+        }),
+        commonjs({
+            include: 'node_modules/**'
+        })
     ],
 };

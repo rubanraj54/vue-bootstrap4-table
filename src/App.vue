@@ -5,6 +5,7 @@
 </template>
 
 <script>
+
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
 
     export default {
@@ -21,7 +22,7 @@
                                 placeholder: "id"
                             },
                             sort: true,
-                            uniqueId:true
+                            uniqueId: true
                         },
                         {
                             label: "title",

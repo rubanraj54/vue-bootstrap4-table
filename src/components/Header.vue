@@ -1,7 +1,7 @@
 <template>
     <thead>
         <tr>
-            <th v-show="checkboxRows" class="text-center justify-content-center">
+            <th v-show="checkboxRows" class="text-center justify-content-center" @click="selectCheckbox">
                 <div class="form-check vbt-select-all-checkbox">
                     <input class="form-check-input" type="checkbox" v-model="select_all_rows" value="" @change="handleChange($event)">
                 </div>
@@ -61,7 +61,15 @@
                 } else {
                     this.$emit('unselect-all-items');
                 }
-            }
+            },
+            selectCheckbox() {
+                if (this.select_all_rows) {
+                    this.$emit('unselect-all-items');
+                } else {
+                    this.$emit('select-all-items');
+                }
+                this.select_all_rows = !this.select_all_rows;
+            },
         },
         components: {
             Column

@@ -1,8 +1,8 @@
 <template>
     <tr>
-        <td v-show="checkboxRows" class="text-center">
+        <td v-show="checkboxRows" class="text-center" @click="selectCheckbox">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" v-model="row_selected" @change="handleChange($event)">
+                <input class="form-check-input" type="checkbox" value="" v-model="row_selected" @change="handleChange($event)">
             </div>
         </td>
         <td v-for="(column, key, hindex) in columns" :key="hindex" class="text-center">
@@ -62,6 +62,14 @@
                 } else {
                     this.$emit('remove-selected-item', this.row);
                 }
+            },
+            selectCheckbox() {
+                if (this.row_selected) {
+                    this.$emit('remove-selected-item', this.row);
+                } else {
+                    this.$emit('add-selected-item', this.row);
+                }
+                this.row_selected = !this.row_selected;
             },
             getValueFromRow(row, name) {
                 return _.get(row, name);
