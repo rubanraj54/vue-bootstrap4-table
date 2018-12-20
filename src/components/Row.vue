@@ -1,6 +1,6 @@
 <template>
-    <tr ref="vbt_row" v-bind:style='{"background": (row_higlighted) ? rowHighlightColor : ""}'>
-        <td v-show="checkboxRows" class="text-center" @click="selectCheckbox">
+    <tr ref="vbt_row" v-bind:style='{"background": (row_higlighted) ? rowHighlightColor : ""}' v-on="rowsSelectable ? { click: () => selectCheckbox() } : {}" >
+        <td v-show="checkboxRows" class="text-center" v-on="!rowsSelectable ? { click: () => selectCheckbox() } : {}">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" v-model="row_selected" @change="handleChange($event)">
             </div>
@@ -53,6 +53,10 @@
             highlightRowHoverColor: {
                 type: String,
                 default: "#d6d6d6"
+            },
+            rowsSelectable: {
+                type: Boolean,
+                default: false
             }
         },
         data: function() {
@@ -67,10 +71,6 @@
             this.checkInSelecteditems();
         },
         methods: {
-            test() {
-                console.log(333);
-
-            },
             handleChange(event) {
                 if (event.target.checked) {
                     this.$emit('add-selected-item', this.row);
