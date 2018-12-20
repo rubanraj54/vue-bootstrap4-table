@@ -47,7 +47,9 @@
                     pagination: true,
                     num_of_visible_page: 7,
                     per_page: 10,
-                    checkbox_rows: true
+                    checkbox_rows: true,
+                    highlight_row_hover:true,
+                    highlight_row_hover_color:"#000",
                 }
             }
         },

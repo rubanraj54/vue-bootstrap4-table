@@ -1,5 +1,5 @@
 <template>
-    <tr>
+    <tr ref="vbt_row" v-bind:style='{"background": (row_higlighted) ? rowHighlightColor : ""}'>
         <td v-show="checkboxRows" class="text-center" @click="selectCheckbox">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" v-model="row_selected" @change="handleChange($event)">
@@ -45,17 +45,33 @@
             checkboxRows: {
                 type: Boolean,
                 default: false
+            },
+            highlightRowHover: {
+                type: Boolean,
+                default: false
             }
         },
         data: function() {
             return {
-                row_selected: false
+                row_selected: false,
+                row_higlighted:false,
+                // row_highlight_color: "#d6d6d6",
             }
         },
         mounted() {
+            this.$refs.vbt_row.addEventListener('mouseover', () => {this.row_higlighted = true;});
+            this.$refs.vbt_row.addEventListener('mouseleave', () => {this.row_higlighted = false;});
+            // if (this.highlightRowHover) {
+            //     this.$off('mouseover', () => {this.row_higlighted = true;});
+            //     this.$off('mouseleave', () => {this.row_higlighted = false;});
+            // }
             this.checkInSelecteditems();
         },
         methods: {
+            test() {
+                console.log(333);
+
+            },
             handleChange(event) {
                 if (event.target.checked) {
                     this.$emit('add-selected-item', this.row);
@@ -82,6 +98,9 @@
                 } else {
                     this.row_selected = false;
                 }
+            },
+            rowHover(state) {
+                this.row_higlighted = state;
             }
         },
         watch: {
@@ -107,6 +126,17 @@
                 },
                 deep: true
             }
-        }
+        },
+        computed: {
+            rowHighlightColor() {
+                return (this.highlightRowHover) ? "#d6d6d6" : "";
+            }
+        },
     }
 </script>
+
+<style scoped>
+/* tr:hover {
+    background: #000 !important;
+} */
+</style>

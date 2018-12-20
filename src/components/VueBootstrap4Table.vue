@@ -14,7 +14,7 @@
                                     <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                                 </td>
                             </tr>
-                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></Row>
+                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover"></Row>
                         </tbody>
                     </table>
                 </div>
@@ -80,7 +80,9 @@
                 temp_filtered_results: [],
                 pagination: true,
                 checkbox_rows: false,
-                selected_items: []
+                selected_items: [],
+                highlight_row_hover: false,
+                // highlight_row_hover_color: "#d6d6d6"
             };
         },
         mounted() {
@@ -122,6 +124,7 @@
                 }
 
                 this.checkbox_rows = this.config.checkbox_rows;
+                this.highlight_row_hover = this.config.highlight_row_hover;
             },
 
             hasFilter(column) {
