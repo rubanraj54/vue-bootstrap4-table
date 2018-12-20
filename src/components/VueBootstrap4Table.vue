@@ -14,7 +14,7 @@
                                     <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                                 </td>
                             </tr>
-                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover"></Row>
+                            <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover" :highlight-row-hover-color="highlight_row_hover_color"></Row>
                         </tbody>
                     </table>
                 </div>
@@ -82,7 +82,7 @@
                 checkbox_rows: false,
                 selected_items: [],
                 highlight_row_hover: false,
-                // highlight_row_hover_color: "#d6d6d6"
+                highlight_row_hover_color: "#d6d6d6"
             };
         },
         mounted() {
@@ -123,8 +123,17 @@
                     this.pagination = false;
                 }
 
-                this.checkbox_rows = this.config.checkbox_rows;
-                this.highlight_row_hover = this.config.highlight_row_hover;
+                if (_.has(this.config, 'checkbox_rows')) {
+                    this.checkbox_rows = this.config.checkbox_rows;
+                }
+
+                if (_.has(this.config, 'highlight_row_hover')) {
+                    this.highlight_row_hover = this.config.highlight_row_hover;
+                }
+
+                if (_.has(this.config, 'highlight_row_hover_color')) {
+                    this.highlight_row_hover_color = this.config.highlight_row_hover_color;
+                }
             },
 
             hasFilter(column) {

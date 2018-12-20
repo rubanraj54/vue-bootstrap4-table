@@ -49,22 +49,21 @@
             highlightRowHover: {
                 type: Boolean,
                 default: false
+            },
+            highlightRowHoverColor: {
+                type: String,
+                default: "#d6d6d6"
             }
         },
         data: function() {
             return {
                 row_selected: false,
                 row_higlighted:false,
-                // row_highlight_color: "#d6d6d6",
             }
         },
         mounted() {
             this.$refs.vbt_row.addEventListener('mouseover', () => {this.row_higlighted = true;});
             this.$refs.vbt_row.addEventListener('mouseleave', () => {this.row_higlighted = false;});
-            // if (this.highlightRowHover) {
-            //     this.$off('mouseover', () => {this.row_higlighted = true;});
-            //     this.$off('mouseleave', () => {this.row_higlighted = false;});
-            // }
             this.checkInSelecteditems();
         },
         methods: {
@@ -129,7 +128,7 @@
         },
         computed: {
             rowHighlightColor() {
-                return (this.highlightRowHover) ? "#d6d6d6" : "";
+                return (this.highlightRowHover) ? this.highlightRowHoverColor : "";
             }
         },
     }

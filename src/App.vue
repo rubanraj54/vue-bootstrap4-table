@@ -49,7 +49,7 @@
                     per_page: 10,
                     checkbox_rows: true,
                     highlight_row_hover:true,
-                    highlight_row_hover_color:"#000",
+                    highlight_row_hover_color:"grey",
                 }
             }
         },
