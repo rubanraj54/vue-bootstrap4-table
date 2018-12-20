@@ -69,10 +69,21 @@
                             </ul>
                         </nav>
                     </div>
-                    <!-- <Pagination :page.sync="page" :per_page="per_page" :total="rowCount" :pagiantion_limit="pagiantion_limit"></Pagination> -->
                 </div>
                 <div class="col-md-6">
-                    <PaginationInfo :current-page-rows-length="vbt_data.rows.length" :filtered-rows-length="rowCount" :original-rows-length="data.rows.length"></PaginationInfo>
+                    <div class="text-right justify-content-center">
+                        <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                            <template v-if="currentPageRowsLength != 0">
+                                From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                            </template>
+                            <template v-else>
+                                No results found
+                            </template>
+                            <template>
+                                ({{originalRowsLength}} total records)
+                            </template>
+                        </slot>
+                    </div>
                 </div>
             </div>
         </div>
@@ -432,6 +443,17 @@ export default {
             return has_unique_id;
         },
 
+        currentPageRowsLength() {
+            return this.vbt_data.rows.length;
+        },
+
+        filteredRowsLength() {
+            return this.rowCount;
+        },
+
+        originalRowsLength() {
+            return this.data.rows.length;
+        }
     },
     watch: {
         "query.filters": {
