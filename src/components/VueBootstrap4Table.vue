@@ -7,55 +7,58 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead>
-                            <tr>
-                                <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
-                                    <div class="form-check vbt-select-all-checkbox">
-                                        <input class="form-check-input" type="checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)">
-                                    </div>
-                                </th>
+                        <tr>
+                            <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
+                                <!-- <div class="form-check vbt-select-all-checkbox">
+                                    <input class="form-check-input" type="checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)">
+                                </div> -->
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
+                                    <label class="custom-control-label"></label>
+                                </div>
+                            </th>
 
-                                <slot name="columns" :columns="vbt_data.columns">
-                                    <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSort(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
-                                        <slot name="column" :column="column">{{column.label}}</slot>
+                            <slot name="columns" :columns="vbt_data.columns">
+                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSort(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                                    <slot name="column" :column="column">{{column.label}}</slot>
 
-                                        <template v-if='isSortableColumn(column)'>
-                                            <template v-if="!isSort(column)">
+                                    <template v-if='isSortableColumn(column)'>
+                                        <template v-if="!isSort(column)">
+                                            <div class="float-right">
+                                                <slot name="no-sort-icon">
+                                                    &#x1F825;&#x1F827;
+                                                </slot>
+                                            </div>
+                                        </template>
+
+                                        <template v-else>
+                                            <template v-if="query.sort.order==='asc'">
+                                                <div class="float-right">
+                                                    <slot name="sort-asc-icon">
+                                                        &#x1F825;
+                                                    </slot>
+                                                </div>
+                                            </template>
+
+                                            <template v-else-if="query.sort.order==='desc'">
+                                                <slot name="sort-desc-icon">
+                                                    <div class="float-right">&#x1F827;</div>
+                                                </slot>
+                                            </template>
+
+                                            <template v-else>
                                                 <div class="float-right">
                                                     <slot name="no-sort-icon">
                                                         &#x1F825;&#x1F827;
                                                     </slot>
                                                 </div>
                                             </template>
-
-                                            <template v-else>
-                                                <template v-if="query.sort.order==='asc'">
-                                                    <div class="float-right">
-                                                        <slot name="sort-asc-icon">
-                                                            &#x1F825;
-                                                        </slot>
-                                                    </div>
-                                                </template>
-
-                                                <template v-else-if="query.sort.order==='desc'">
-                                                    <slot name="sort-desc-icon">
-                                                        <div class="float-right">&#x1F827;</div>
-                                                    </slot>
-                                                </template>
-
-                                                <template v-else>
-                                                    <div class="float-right">
-                                                        <slot name="no-sort-icon">
-                                                            &#x1F825;&#x1F827;
-                                                        </slot>
-                                                    </div>
-                                                </template>
-                                            </template>
                                         </template>
-                                    </th>
-                                </slot>
-                            </tr>
-                        </thead>
-                    <!-- <Header :columns="vbt_data.columns" :query="query" v-on:update-sort="updateSort" :checkboxRows="checkbox_rows" @select-all-items="selectAllItems" @unselect-all-items="unSelectAllItems"></Header> -->
+                                    </template>
+                                </th>
+                            </slot>
+                        </tr>
+                    </thead>
                     <tbody>
                         <tr class="table-active">
                             <td v-show="checkbox_rows"></td>
@@ -63,7 +66,18 @@
                                 <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                             </td>
                         </tr>
-                        <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover" :highlight-row-hover-color="highlight_row_hover_color" :rowsSelectable="rows_selectable"></Row>
+                        <!-- data rows stars here -->
+                        <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut(row)" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
+                        <!-- <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (row_higlighted) ? rowHighlightColor : ""}' v-on="rowsSelectable ? { click: () => selectCheckbox() } : {}" > -->
+                            <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
+                            <td v-for="(column, key, hindex) in vbt_data.columns" :key="hindex" class="text-center">
+                                <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
+                                    {{getValueFromRow(row,column.name)}}
+                                </slot>
+                            </td>
+                        </tr>
+                        <!-- data rows ends here -->
+                        <!-- <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover" :highlight-row-hover-color="highlight_row_hover_color" :rowsSelectable="rows_selectable"></Row> -->
                     </tbody>
                 </table>
             </div>
@@ -143,11 +157,8 @@
 <script>
 import _ from "lodash";
 
-import Header from "./Header.vue";
-import Row from "./Row.vue";
+import CheckBox from "./CheckBox.vue";
 import Simple from "./Filters/Simple.vue";
-import Pagination from "./Pagination.vue";
-import PaginationInfo from "./PaginationInfo.vue";
 
 import {
     EventBus
@@ -193,23 +204,22 @@ export default {
             highlight_row_hover: false,
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
-            select_all_rows: false
-
+            select_all_rows: false,
+            row_hovered: null
         };
     },
     mounted() {
         this.vbt_data = _.cloneDeep(this.data);
-
+        let self = this;
         // check if user mentioned unique id for a column, if not set unique id for all items
-        if (!this.hasUniqueId) {
-            this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
-                return _.extend({}, element, {
-                    "vbt_id": index
-                });
-            });
-        } else {
-            this.original_rows = _.cloneDeep(this.vbt_data.rows);
-        }
+        this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
+            let extra = {};
+            if (!self.hasUniqueId) {
+                extra.vbt_id = index + 1;
+            }
+            // extra.row_higlighted = false;
+            return _.extend({}, element, extra);
+        });
 
         this.initConfig();
         this.filter();
@@ -221,11 +231,8 @@ export default {
 
     },
     components: {
-        Header,
-        Row,
+        CheckBox,
         Simple,
-        Pagination,
-        PaginationInfo
     },
     methods: {
         initConfig() {
@@ -286,6 +293,8 @@ export default {
             this.refresh();
         },
         addSelectedItem(item) {
+            console.log(item);
+
             this.selected_items.push(item);
 
             let difference = [];
@@ -297,9 +306,11 @@ export default {
             }
 
             if (difference.length == 0) {
-                EventBus.$emit('select-select-all-items-checkbox', "from main");
+                this.select_all_rows = true;
+                // EventBus.$emit('select-select-all-items-checkbox', "from main");
             } else {
-                EventBus.$emit('unselect-select-all-items-checkbox', "from main");
+                this.select_all_rows = false;
+                // EventBus.$emit('unselect-select-all-items-checkbox', "from main");
             }
         },
         selectAllItems() {
@@ -336,7 +347,8 @@ export default {
                     return false;
                 }
             });
-            EventBus.$emit('unselect-select-all-items-checkbox');
+            // EventBus.$emit('unselect-select-all-items-checkbox');
+            this.select_all_rows = false;
         },
         updateFilter(payload) {
             let event = payload.event;
@@ -463,7 +475,38 @@ export default {
             } else {
                 return column.sort;
             }
-        }
+        },
+        // row method starts here
+        getValueFromRow(row, name) {
+            return _.get(row, name);
+        },
+        getCellSlotName(column) {
+            if (_.has(column,"slot_name")) {
+                return column.slot_name;
+            }
+            return column.name.replace('.','_');
+        },
+        rowHovered(row) {
+            this.row_hovered = _.get(row,this.uniqueId);
+        },
+        rowHoveredOut(row) {
+            this.row_hovered = null;
+        },
+        canHighlightHover(row,row_hovered) {
+            return _.get(row,this.uniqueId) == row_hovered;
+        },
+        selectCheckboxByRow(row) {
+            let result = _.find(this.selected_items, function(selected_item,key){
+                return _.get(selected_item,this.uniqueId) == _.get(row,this.uniqueId);
+            }.bind(this));
+
+            if (typeof result === "undefined") {
+                this.addSelectedItem(row);
+            } else {
+                this.removeSelectedItem(row);
+            }
+        },
+        // row method ends here
     },
     computed: {
         // pagination computed properties -start
@@ -544,6 +587,9 @@ export default {
         },
 
         // pagination info computed properties - end
+        rowHighlightColor() {
+            return (this.highlight_row_hover) ? this.highlight_row_hover_color : "";
+        }
 
     },
     watch: {
@@ -567,17 +613,18 @@ export default {
             handler: function (newVal, oldVal) {
 
                 this.vbt_data = _.cloneDeep(newVal);
+                let self = this;
 
                 // check if user mentioned unique id for a column, if not set unique id for all items
-                if (!this.hasUniqueId) {
-                    this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
-                        return _.extend({}, element, {
-                            "vbt_id": index
-                        });
-                    });
-                } else {
-                    this.original_rows = _.cloneDeep(this.vbt_data.rows);
-                }
+                this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
+                    let extra = {};
+                    if (!self.hasUniqueId) {
+                        extra.vbt_id = index + 1;
+                    }
+                    // extra.row_higlighted = false;
+                    return _.extend({}, element, extra);
+                });
+
                 this.filter();
             },
             deep: true
@@ -591,7 +638,9 @@ export default {
         temp_filtered_results: {
             handler: function (newVal, oldVal) {
                 if (this.selected_items.length == 0) {
-                    EventBus.$emit('unselect-select-all-items-checkbox');
+                    // EventBus.$emit('unselect-select-all-items-checkbox');
+                    this.select_all_rows = false;
+
                     return;
                 }
 
@@ -604,9 +653,11 @@ export default {
                 }
 
                 if (difference.length == 0) {
-                    EventBus.$emit('select-select-all-items-checkbox');
+                    // EventBus.$emit('select-select-all-items-checkbox');
+                    this.select_all_rows = true;
                 } else {
-                    EventBus.$emit('unselect-select-all-items-checkbox');
+                    this.select_all_rows = false;
+                    // EventBus.$emit('unselect-select-all-items-checkbox');
                 }
             },
             deep: true
@@ -665,6 +716,9 @@ export default {
     }
     .vbt-sort-cursor {
         cursor: pointer;
+    }
+    .custom-control-label {
+        vertical-align: top;
     }
 </style>
 
