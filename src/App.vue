@@ -26,6 +26,17 @@
                             uniqueId: true
                         },
                         {
+                            label: "id",
+                            name: "id",
+                            filter: {
+                                type: "simple",
+                                placeholder: "id"
+                            },
+                            sort: true,
+                            uniqueId: true,
+                            slot_name:"my_duplicate_id_column"
+                        },
+                        {
                             label: "title",
                             name: "title",
                             filter: {

@@ -8,7 +8,43 @@
             </th>
 
             <slot name="columns" :columns="columns">
-                <Column v-for="(column, key, index) in columns" :key="index" :column="column" :query="query" @update-sort="(payload) => $emit('update-sort',payload)"></Column>
+                <th v-for="(column, key, index) in columns" :key="index" v-on="isSortableColumn(column) ? { click: () => $emit('update-sort',column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                    <slot name="column" :column="column">{{column.label}}</slot>
+
+                    <template v-if='isSortableColumn(column)'>
+                        <template v-if="!isSort(column)">
+                            <div class="float-right">
+                                <slot name="no-sort-icon">
+                                    &#x1F825;&#x1F827;
+                                </slot>
+                            </div>
+                        </template>
+
+                        <template v-else>
+                            <template v-if="query.sort.order==='asc'">
+                                <div class="float-right">
+                                    <slot name="sort-asc-icon">
+                                        &#x1F825;
+                                    </slot>
+                                </div>
+                            </template>
+
+                            <template v-else-if="query.sort.order==='desc'">
+                                <slot name="sort-desc-icon">
+                                    <div class="float-right">&#x1F827;</div>
+                                </slot>
+                            </template>
+
+                            <template v-else>
+                                <div class="float-right">
+                                    <slot name="no-sort-icon">
+                                        &#x1F825;&#x1F827;
+                                    </slot>
+                                </div>
+                            </template>
+                        </template>
+                    </template>
+                </th>
             </slot>
         </tr>
     </thead>
@@ -70,6 +106,22 @@
                 }
                 this.select_all_rows = !this.select_all_rows;
             },
+            isSort(column) {
+                if (this.query.sort.name == null) {
+                    return false;
+                }
+
+                return this.query.sort.name === column.name;
+            },
+
+            isSortableColumn(column) {
+                if (!_.has(column,'sort')) {
+                    return false;
+                } else {
+                    return column.sort;
+                }
+            }
+
         },
         components: {
             Column
@@ -83,5 +135,8 @@
 <style scoped>
     .vbt-select-all-checkbox {
         margin-bottom: 20px;
+    }
+    .vbt-sort-cursor {
+        cursor: pointer;
     }
 </style>
