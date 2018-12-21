@@ -2,7 +2,9 @@
 <div class="container-fluid">
     <!-- TODO configurable header title position -->
     <div class="card">
-        <div class="card-header text-center">Bootsrap 4 advanced table</div>
+        <div class="card-header text-center">
+            Bootsrap 4 advanced table
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
@@ -103,20 +105,32 @@
                 <!-- pagination ends here -->
 
                 <!-- pagination info start here -->
-                <div class="col-md-6" v-if="pagination_info">
+                <div class="col-md-6">
                     <div class="text-right justify-content-center">
-                        <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
-                            <template v-if="currentPageRowsLength != 0">
-                                From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
-                            </template>
-                            <template v-else>
-                                No results found
-                            </template>
-                            <template>
-                                ({{originalRowsLength}} total records)
-                            </template>
-                        </slot>
-                    </div>
+                        <template v-if="pagination_info">
+                            <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                <template v-if="currentPageRowsLength != 0">
+                                    From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                </template>
+                                <template v-else>
+                                    No results found
+                                </template>
+                                <template>
+                                    ({{originalRowsLength}} total records)
+                                </template>
+                            </slot>
+                        </template>
+                        <template v-if="pagination_info && rows_selectable">
+                            <slot name="pagination-selected-rows-separator">
+                                |
+                            </slot>
+                        </template>
+                        <template v-if="rows_selectable">
+                            <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
+                                {{selectedItemsCount}} rows selected
+                            </slot>
+                        </template>
+                </div>
                 </div>
                 <!-- pagination info ends here -->
             </div>
