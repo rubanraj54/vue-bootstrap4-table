@@ -76,8 +76,9 @@
                 },
                 config: {
                     pagination: true,
+                    // pagination_info: false,
                     num_of_visible_page: 7,
-                    per_page: 2,
+                    per_page: 1,
                     checkbox_rows: true,
                     highlight_row_hover: true,
                     rows_selectable: true,

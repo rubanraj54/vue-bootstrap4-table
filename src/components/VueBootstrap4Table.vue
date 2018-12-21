@@ -50,8 +50,9 @@
         </div>
         <div class="card-footer">
             <div class="row">
+                <!-- pagination starts here -->
                 <div class="col-md-6">
-                    <div>
+                    <div v-if="pagination">
                         <nav aria-label="Page navigation example">
                             <ul class="pagination">
                                 <li class="page-item" @click.prevent="pageHandler(page-1)">
@@ -99,7 +100,10 @@
                         </nav>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <!-- pagination ends here -->
+
+                <!-- pagination info start here -->
+                <div class="col-md-6" v-if="pagination_info">
                     <div class="text-right justify-content-center">
                         <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
                             <template v-if="currentPageRowsLength != 0">
@@ -114,6 +118,7 @@
                         </slot>
                     </div>
                 </div>
+                <!-- pagination info ends here -->
             </div>
         </div>
     </div>
@@ -167,6 +172,7 @@ export default {
             pagiantion_limit: 5,
             temp_filtered_results: [],
             pagination: true,
+            pagination_info: true,
             checkbox_rows: false,
             selected_items: [],
             highlight_row_hover: false,
@@ -218,6 +224,7 @@ export default {
             }
 
             if (this.config.pagination && this.config.pagination == true) {
+                this.pagination = true;
                 this.pagiantion_limit = this.config.num_of_visible_page;
                 this.per_page = this.config.per_page;
             } else {
@@ -242,6 +249,10 @@ export default {
 
             if (_.has(this.config, 'multi_column_sort')) {
                 this.multi_column_sort = this.config.multi_column_sort;
+            }
+
+            if (_.has(this.config, 'pagination_info')) {
+                this.pagination_info = this.config.pagination_info;
             }
         },
 
@@ -415,9 +426,13 @@ export default {
         },
 
         paginateFilter() {
-            let start = (this.page - 1) * this.per_page;
-            let end = start + this.per_page;
-            this.vbt_data.rows = this.temp_filtered_results.slice(start, end);
+            if (this.pagination) {
+                let start = (this.page - 1) * this.per_page;
+                let end = start + this.per_page;
+                this.vbt_data.rows = this.temp_filtered_results.slice(start, end);
+            } else {
+                this.vbt_data.rows = _.cloneDeep(this.temp_filtered_results);
+            }
         },
 
         pageHandler(index) {
@@ -583,12 +598,12 @@ export default {
             },
             deep: true
         },
-        // page: {
-        //     handler: function (newVal, oldVal) {
-        //         this.paginateFilter();
-        //     }
-        // },
         per_page: {
+            handler: function (newVal, oldVal) {
+                this.paginateFilter();
+            }
+        },
+        pagination: {
             handler: function (newVal, oldVal) {
                 this.paginateFilter();
             }
