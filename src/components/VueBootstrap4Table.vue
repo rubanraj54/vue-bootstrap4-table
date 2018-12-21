@@ -6,7 +6,56 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
-                    <Header :columns="vbt_data.columns" :query="query" v-on:update-sort="updateSort" :checkboxRows="checkbox_rows" @select-all-items="selectAllItems" @unselect-all-items="unSelectAllItems"></Header>
+                    <thead>
+                            <tr>
+                                <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
+                                    <div class="form-check vbt-select-all-checkbox">
+                                        <input class="form-check-input" type="checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)">
+                                    </div>
+                                </th>
+
+                                <slot name="columns" :columns="vbt_data.columns">
+                                    <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSort(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                                        <slot name="column" :column="column">{{column.label}}</slot>
+
+                                        <template v-if='isSortableColumn(column)'>
+                                            <template v-if="!isSort(column)">
+                                                <div class="float-right">
+                                                    <slot name="no-sort-icon">
+                                                        &#x1F825;&#x1F827;
+                                                    </slot>
+                                                </div>
+                                            </template>
+
+                                            <template v-else>
+                                                <template v-if="query.sort.order==='asc'">
+                                                    <div class="float-right">
+                                                        <slot name="sort-asc-icon">
+                                                            &#x1F825;
+                                                        </slot>
+                                                    </div>
+                                                </template>
+
+                                                <template v-else-if="query.sort.order==='desc'">
+                                                    <slot name="sort-desc-icon">
+                                                        <div class="float-right">&#x1F827;</div>
+                                                    </slot>
+                                                </template>
+
+                                                <template v-else>
+                                                    <div class="float-right">
+                                                        <slot name="no-sort-icon">
+                                                            &#x1F825;&#x1F827;
+                                                        </slot>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </template>
+                                    </th>
+                                </slot>
+                            </tr>
+                        </thead>
+                    <!-- <Header :columns="vbt_data.columns" :query="query" v-on:update-sort="updateSort" :checkboxRows="checkbox_rows" @select-all-items="selectAllItems" @unselect-all-items="unSelectAllItems"></Header> -->
                     <tbody>
                         <tr class="table-active">
                             <td v-show="checkbox_rows"></td>
@@ -144,6 +193,8 @@ export default {
             highlight_row_hover: false,
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
+            select_all_rows: false
+
         };
     },
     mounted() {
@@ -378,6 +429,41 @@ export default {
                 // this.$emit('update:page', index);
             }
         },
+
+        selectAllCheckbox() {
+            if (this.select_all_rows) {
+                this.unSelectAllItems();
+                // this.$emit('unselect-all-items');
+            } else {
+                this.selectAllItems();
+                // this.$emit('select-all-items');
+            }
+            this.select_all_rows = !this.select_all_rows;
+        },
+        selectAllHandleChange(event) {
+            if (event.target.checked) {
+                // this.$emit('select-all-items');
+                this.selectAllItems();
+            } else {
+                this.unSelectAllItems();
+                // this.$emit('unselect-all-items');
+            }
+        },
+        isSort(column) {
+            if (this.query.sort.name == null) {
+                return false;
+            }
+
+            return this.query.sort.name === column.name;
+        },
+
+        isSortableColumn(column) {
+            if (!_.has(column,'sort')) {
+                return false;
+            } else {
+                return column.sort;
+            }
+        }
     },
     computed: {
         // pagination computed properties -start
@@ -443,6 +529,8 @@ export default {
             return has_unique_id;
         },
 
+        // pagination info computed properties - start
+
         currentPageRowsLength() {
             return this.vbt_data.rows.length;
         },
@@ -453,7 +541,10 @@ export default {
 
         originalRowsLength() {
             return this.data.rows.length;
-        }
+        },
+
+        // pagination info computed properties - end
+
     },
     watch: {
         "query.filters": {
@@ -569,7 +660,14 @@ export default {
     ul.pagination {
         margin-bottom: 0;
     }
+    .vbt-select-all-checkbox {
+        margin-bottom: 20px;
+    }
+    .vbt-sort-cursor {
+        cursor: pointer;
+    }
 </style>
+
 
 // workflow
 // get data(payload)
