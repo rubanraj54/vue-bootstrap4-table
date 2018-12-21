@@ -6,7 +6,6 @@
 </template>
 
 <script>
-
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
 
     export default {
@@ -33,26 +32,44 @@
                                 placeholder: "id"
                             },
                             sort: true,
-                            uniqueId: true,
-                            slot_name:"my_duplicate_id_column"
+                            slot_name: "my_duplicate_id_column"
                         },
                         {
                             label: "title",
                             name: "title",
                             filter: {
                                 type: "simple",
-                                placeholder: "title"
+                                placeholder: "enter title"
                             },
-                            sort: true
+                            sort: true,
                         },
-                        {
-                            label: "url",
-                            name: "url",
-                            filter: {
-                                type: "simple",
-                                placeholder: "Enter url"
-                            }
-                        }
+                        // {
+                        //     label: "user",
+                        //     name: "user",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "title"
+                        //     },
+                        //     sort: true
+                        // },
+                        // {
+                        //     label: "age",
+                        //     name: "age",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "Enter url"
+                        //     },
+                        //     sort: true,
+                        // },
+                        // {
+                        //     label: "age",
+                        //     name: "age",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "Enter url"
+                        //     },
+                        //     sort: true,
+                        // }
                     ]
                 },
                 config: {
@@ -60,8 +77,9 @@
                     num_of_visible_page: 7,
                     per_page: 10,
                     checkbox_rows: true,
-                    highlight_row_hover:true,
-                    rows_selectable:true,
+                    highlight_row_hover: true,
+                    rows_selectable: true,
+                    multi_column_sort: true
                     // highlight_row_hover_color:"grey",
                 }
             }
@@ -74,6 +92,12 @@
             axios.get('https://jsonplaceholder.typicode.com/photos')
                 .then(function(response) {
                     // handle success
+                    //                     self.result.rows = [
+                    //   { 'user': 'fred',   'age': 48 },
+                    //   { 'user': 'barney', 'age': 34 },
+                    //   { 'user': 'fred',   'age': 40 },
+                    //   { 'user': 'barney', 'age': 36 }
+                    // ];
                     self.result.rows = response.data;
                     // console.log(response);
                 })

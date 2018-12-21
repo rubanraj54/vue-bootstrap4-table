@@ -16,41 +16,11 @@
                             </th>
 
                             <slot name="columns" :columns="vbt_data.columns">
-                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSort(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
                                     <slot name="column" :column="column">{{column.label}}</slot>
 
                                     <template v-if='isSortableColumn(column)'>
-                                        <template v-if="!isSort(column)">
-                                            <div class="float-right">
-                                                <slot name="no-sort-icon">
-                                                    &#x1F825;&#x1F827;
-                                                </slot>
-                                            </div>
-                                        </template>
-
-                                        <template v-else>
-                                            <template v-if="query.sort.order==='asc'">
-                                                <div class="float-right">
-                                                    <slot name="sort-asc-icon">
-                                                        &#x1F825;
-                                                    </slot>
-                                                </div>
-                                            </template>
-
-                                            <template v-else-if="query.sort.order==='desc'">
-                                                <slot name="sort-desc-icon">
-                                                    <div class="float-right">&#x1F827;</div>
-                                                </slot>
-                                            </template>
-
-                                            <template v-else>
-                                                <div class="float-right">
-                                                    <slot name="no-sort-icon">
-                                                        &#x1F825;&#x1F827;
-                                                    </slot>
-                                                </div>
-                                            </template>
-                                        </template>
+                                        <SortIcon :sort="query.sort" :column="column"></SortIcon>
                                     </template>
                                 </th>
                             </slot>
@@ -64,8 +34,7 @@
                             </td>
                         </tr>
                         <!-- data rows stars here -->
-                        <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut(row)" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
-                        <!-- <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (row_higlighted) ? rowHighlightColor : ""}' v-on="rowsSelectable ? { click: () => selectCheckbox() } : {}" > -->
+                        <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
                             <td v-for="(column, key, hindex) in vbt_data.columns" :key="hindex" class="text-center">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
@@ -155,6 +124,7 @@
 import _ from "lodash";
 
 import CheckBox from "./CheckBox.vue";
+import SortIcon from "./SortIcon.vue";
 import Simple from "./Filters/Simple.vue";
 
 import {
@@ -186,6 +156,7 @@ export default {
                     name: null,
                     order: "asc"
                 },
+                sort: [],
                 filters: []
             },
             page: 1,
@@ -202,7 +173,8 @@ export default {
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
             select_all_rows: false,
-            row_hovered: null
+            row_hovered: null,
+            multi_column_sort:false
         };
     },
     mounted() {
@@ -214,6 +186,13 @@ export default {
             if (!self.hasUniqueId) {
                 extra.vbt_id = index + 1;
             }
+            // extra.row_higlighted = false;
+            return _.extend({}, element, extra);
+        });
+
+        this.vbt_data.columns = _.map(this.vbt_data.columns, function (element, index) {
+            let extra = {};
+            extra.vbt_col_id = index + 1;
             // extra.row_higlighted = false;
             return _.extend({}, element, extra);
         });
@@ -230,6 +209,7 @@ export default {
     components: {
         CheckBox,
         Simple,
+        SortIcon,
     },
     methods: {
         initConfig() {
@@ -259,6 +239,10 @@ export default {
             if (_.has(this.config, 'rows_selectable')) {
                 this.rows_selectable = this.config.rows_selectable;
             }
+
+            if (_.has(this.config, 'multi_column_sort')) {
+                this.multi_column_sort = this.config.multi_column_sort;
+            }
         },
 
         hasFilter(column) {
@@ -278,19 +262,26 @@ export default {
             });
         },
 
-        updateSort(column) {
-            if (this.query.sort.name == column.name) {
-                this.query.sort.order =
-                    this.query.sort.order == "asc" ? "desc" : "asc";
+        updateSortQuery(column) {
+
+            let result = _.findIndex(this.query.sort, { 'vbt_col_id': column.vbt_col_id });
+
+            if(result == -1) {
+                if (!this.multi_column_sort) {
+                    this.query.sort = []
+                }
+                this.query.sort.push({
+                    vbt_col_id: column.vbt_col_id,
+                    name: column.name,
+                    order: "desc",
+                });
             } else {
-                this.query.sort.name = column.name;
-                this.query.sort.order = "desc";
+                this.query.sort[result].order = this.query.sort[result].order == "asc" ? "desc" : "asc";
             }
 
-            this.refresh();
+            this.sort();
         },
         addSelectedItem(item) {
-            console.log(item);
 
             this.selected_items.push(item);
 
@@ -371,15 +362,17 @@ export default {
         },
 
         sort() {
-            // TODO- try multipl column sort
 
-            if (this.query.sort.name == null) {
-                this.paginateFilter();
-                return;
-            }
+            let names = [];
+            let orders = [];
+
+            _.forEach(this.query.sort,function(value,key) {
+                names.push(value.name);
+                orders.push(value.order);
+            });
 
             this.temp_filtered_results = _.orderBy(
-                this.temp_filtered_results, [this.query.sort.name], [this.query.sort.order]
+                this.temp_filtered_results, names, orders
             );
 
             this.paginateFilter();
@@ -422,10 +415,6 @@ export default {
             return value.toLowerCase().indexOf(filter_text) > -1;
         },
 
-        refresh() {
-            this.sort();
-        },
-
         paginateFilter() {
             let start = (this.page - 1) * this.per_page;
             let end = start + this.per_page;
@@ -458,13 +447,6 @@ export default {
                 // this.$emit('unselect-all-items');
             }
         },
-        isSort(column) {
-            if (this.query.sort.name == null) {
-                return false;
-            }
-
-            return this.query.sort.name === column.name;
-        },
 
         isSortableColumn(column) {
             if (!_.has(column,'sort')) {
@@ -486,7 +468,7 @@ export default {
         rowHovered(row) {
             this.row_hovered = _.get(row,this.uniqueId);
         },
-        rowHoveredOut(row) {
+        rowHoveredOut() {
             this.row_hovered = null;
         },
         canHighlightHover(row,row_hovered) {
@@ -504,6 +486,12 @@ export default {
             }
         },
         // row method ends here
+        whichOrder(column,selected_items) {
+            console.log(_.cloneDeep(column));
+            console.log(_.cloneDeep(selected_items));
+            return true;
+
+        }
     },
     computed: {
         // pagination computed properties -start
@@ -618,6 +606,13 @@ export default {
                     if (!self.hasUniqueId) {
                         extra.vbt_id = index + 1;
                     }
+                    // extra.row_higlighted = false;
+                    return _.extend({}, element, extra);
+                });
+
+                this.vbt_data.columns = _.map(this.vbt_data.columns, function (element, index) {
+                    let extra = {};
+                    extra.vbt_col_id = index + 1;
                     // extra.row_higlighted = false;
                     return _.extend({}, element, extra);
                 });
