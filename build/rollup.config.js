@@ -4,8 +4,9 @@ import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 
 import {
-    uglify
-} from "rollup-plugin-uglify";
+    terser
+} from "rollup-plugin-terser";
+
 
 export default {
     input: 'src/wrapper.js', // Path relative to package.json
@@ -15,7 +16,6 @@ export default {
     },
     external: ['vue'],
     plugins: [
-        // uglify(),
         vue({
             css: true, // Dynamically inject css as a <style> tag
             compileTemplate: true, // Explicitly convert template to render function
@@ -27,6 +27,7 @@ export default {
         }),
         commonjs({
             include: 'node_modules/**'
-        })
+        }),
+        terser()
     ],
 };
