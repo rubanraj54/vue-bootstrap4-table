@@ -14,68 +14,70 @@
             return {
                 result: {
                     rows: [],
-                    columns: [{
-                            label: "id",
-                            name: "id",
+                    columns: [
+                        // {
+                        //     label: "id",
+                        //     name: "id",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "id"
+                        //     },
+                        //     sort: true,
+                        //     uniqueId: true
+                        // },
+                        // {
+                        //     label: "id",
+                        //     name: "id",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "id"
+                        //     },
+                        //     sort: true,
+                        //     slot_name: "my_duplicate_id_column"
+                        // },
+                        // {
+                        //     label: "title",
+                        //     name: "title",
+                        //     filter: {
+                        //         type: "simple",
+                        //         placeholder: "enter title"
+                        //     },
+                        //     sort: true,
+                        // },
+                        {
+                            label: "user",
+                            name: "user",
                             filter: {
                                 type: "simple",
-                                placeholder: "id"
+                                placeholder: "title"
+                            },
+                            sort: true
+                        },
+                        {
+                            label: "age",
+                            name: "age",
+                            filter: {
+                                type: "simple",
+                                placeholder: "Enter url"
+                            },
+                            sort: true,
+                        },
+                        {
+                            label: "id",
+                            name: "test.id",
+                            filter: {
+                                type: "simple",
+                                placeholder: "unique id"
                             },
                             sort: true,
                             uniqueId: true
                         },
-                        {
-                            label: "id",
-                            name: "id",
-                            filter: {
-                                type: "simple",
-                                placeholder: "id"
-                            },
-                            sort: true,
-                            slot_name: "my_duplicate_id_column"
-                        },
-                        {
-                            label: "title",
-                            name: "title",
-                            filter: {
-                                type: "simple",
-                                placeholder: "enter title"
-                            },
-                            sort: true,
-                        },
-                        // {
-                        //     label: "user",
-                        //     name: "user",
-                        //     filter: {
-                        //         type: "simple",
-                        //         placeholder: "title"
-                        //     },
-                        //     sort: true
-                        // },
-                        // {
-                        //     label: "age",
-                        //     name: "age",
-                        //     filter: {
-                        //         type: "simple",
-                        //         placeholder: "Enter url"
-                        //     },
-                        //     sort: true,
-                        // },
-                        // {
-                        //     label: "age",
-                        //     name: "age",
-                        //     filter: {
-                        //         type: "simple",
-                        //         placeholder: "Enter url"
-                        //     },
-                        //     sort: true,
-                        // }
                     ]
                 },
                 config: {
                     pagination: true,
                     num_of_visible_page: 7,
-                    per_page: 10,
+                    per_page: 2,
                     checkbox_rows: true,
                     highlight_row_hover: true,
                     rows_selectable: true,
@@ -92,13 +94,13 @@
             axios.get('https://jsonplaceholder.typicode.com/photos')
                 .then(function(response) {
                     // handle success
-                    //                     self.result.rows = [
-                    //   { 'user': 'fred',   'age': 48 },
-                    //   { 'user': 'barney', 'age': 34 },
-                    //   { 'user': 'fred',   'age': 40 },
-                    //   { 'user': 'barney', 'age': 36 }
-                    // ];
-                    self.result.rows = response.data;
+                                        self.result.rows = [
+                      {'test' : {'id':1}, 'user': 'fred',   'age': 48 },
+                      {'test' : {'id':2}, 'user': 'barney', 'age': 34 },
+                      {'test' : {'id':3}, 'user': 'fred',   'age': 40 },
+                      {'test' : {'id':4}, 'user': 'barney', 'age': 36 }
+                    ];
+                    // self.result.rows = response.data;
                     // console.log(response);
                 })
                 .catch(function(error) {

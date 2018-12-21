@@ -290,7 +290,7 @@ export default {
             if (!_.isEmpty(this.uniqueId)) {
                 difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
             } else {
-                difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                console.log('Unique id not found');
             }
 
             if (difference.length == 0) {
@@ -308,7 +308,7 @@ export default {
             if (!_.isEmpty(this.uniqueId)) {
                 difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
             } else {
-                difference = _.differenceWith(this.temp_filtered_results, this.selected_items, _.isEqual);
+                console.log('Unique id not found');
             }
 
             this.selected_items.push(...difference);
@@ -321,8 +321,7 @@ export default {
                 let result = _.intersectionBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
                 difference = _.differenceBy(this.selected_items, result, this.uniqueId);
             } else {
-                let result = _.intersectionWith(this.temp_filtered_results, this.selected_items, _.isEqual);
-                difference = _.differenceWith(this.selected_items, result, _.isEqual);
+                console.log('Unique id not found');
             }
 
             this.selected_items = difference;
@@ -641,7 +640,7 @@ export default {
                 if (!_.isEmpty(this.uniqueId)) {
                     difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
                 } else {
-                    difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
+                    console.log("unique id not found");
                 }
 
                 if (difference.length == 0) {
