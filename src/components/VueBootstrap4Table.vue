@@ -10,7 +10,7 @@
                         <tr>
                             <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
+                                    <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
                                     <label class="custom-control-label"></label>
                                 </div>
                             </th>

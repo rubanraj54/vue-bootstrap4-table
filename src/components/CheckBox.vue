@@ -1,7 +1,7 @@
 <template>
     <td v-show="checkboxRows" class="text-center" v-on="!rowsSelectable ? { click: () => selectCheckbox() } : {}">
         <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input" v-model="row_selected" v-on="!rowsSelectable ? { change: ($event) => handleChange($event) } : {}"/>
+          <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="row_selected" v-on="!rowsSelectable ? { change: ($event) => handleChange($event) } : {}"/>
           <label class="custom-control-label"></label>
         </div>
     </td>
