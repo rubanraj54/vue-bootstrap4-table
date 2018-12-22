@@ -3,7 +3,7 @@
     <!-- TODO configurable header title position -->
     <div class="card">
         <div class="card-header text-center">
-            Bootsrap 4 advanced table
+            {{card_title}}
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -45,7 +45,6 @@
                             </td>
                         </tr>
                         <!-- data rows ends here -->
-                        <!-- <Row v-for="(row, key, index) in vbt_data.rows" :key="index" :row="row" :selectedItems="selected_items" :columns="vbt_data.columns" :checkboxRows="checkbox_rows" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem" :highlight-row-hover="highlight_row_hover" :highlight-row-hover-color="highlight_row_hover_color" :rowsSelectable="rows_selectable"></Row> -->
                     </tbody>
                 </table>
             </div>
@@ -181,9 +180,9 @@ export default {
             page: 1,
             start: (this.page + 0),
             end: 0,
-            per_page: 3,
+            per_page: 10,
             original_rows: [],
-            pagiantion_limit: 5,
+            num_of_visibile_pagination_buttons: 5,
             temp_filtered_results: [],
             pagination: true,
             pagination_info: true,
@@ -194,7 +193,8 @@ export default {
             rows_selectable: false,
             select_all_rows: false,
             row_hovered: null,
-            multi_column_sort:false
+            multi_column_sort:false,
+            card_title: "",
         };
     },
     mounted() {
@@ -233,41 +233,30 @@ export default {
     },
     methods: {
         initConfig() {
+
             if (_.isEmpty(this.config)) {
                 return;
             }
 
-            if (this.config.pagination && this.config.pagination == true) {
-                this.pagination = true;
-                this.pagiantion_limit = this.config.num_of_visible_page;
-                this.per_page = this.config.per_page;
-            } else {
-                this.pagination = false;
-            }
+            this.pagination = (_.has(this.config, 'pagination')) ? this.config.pagination : true;
 
-            if (_.has(this.config, 'checkbox_rows')) {
-                this.checkbox_rows = this.config.checkbox_rows;
-            }
+            this.num_of_visibile_pagination_buttons = (_.has(this.config, 'num_of_visibile_pagination_buttons')) ? this.config.num_of_visibile_pagination_buttons : 5;
 
-            if (_.has(this.config, 'highlight_row_hover')) {
-                this.highlight_row_hover = this.config.highlight_row_hover;
-            }
+            this.per_page = (_.has(this.config, 'per_page')) ? this.config.per_page : 10;
 
-            if (_.has(this.config, 'highlight_row_hover_color')) {
-                this.highlight_row_hover_color = this.config.highlight_row_hover_color;
-            }
+            this.checkbox_rows = (_.has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
 
-            if (_.has(this.config, 'rows_selectable')) {
-                this.rows_selectable = this.config.rows_selectable;
-            }
+            this.highlight_row_hover = (_.has(this.config, 'highlight_row_hover')) ? this.config.highlight_row_hover : false;
 
-            if (_.has(this.config, 'multi_column_sort')) {
-                this.multi_column_sort = this.config.multi_column_sort;
-            }
+            this.highlight_row_hover_color =  (_.has(this.config, 'highlight_row_hover_color')) ? this.config.highlight_row_hover_color : "#d6d6d6";
 
-            if (_.has(this.config, 'pagination_info')) {
-                this.pagination_info = this.config.pagination_info;
-            }
+            this.rows_selectable = (_.has(this.config, 'rows_selectable')) ? this.config.rows_selectable : false;
+
+            this.multi_column_sort = (_.has(this.config, 'multi_column_sort')) ? this.config.multi_column_sort : false;
+
+            this.pagination_info = (_.has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
+
+            this.card_title = (_.has(this.config, 'card_title')) ? this.config.card_title : "";
         },
 
         hasFilter(column) {
@@ -539,10 +528,10 @@ export default {
             return _.range(this.start, (this.end + 1));
         },
        paginationLimit() {
-           if (this.totalPages < this.pagiantion_limit) {
+           if (this.totalPages < this.num_of_visibile_pagination_buttons) {
                return this.totalPages;
             } else {
-                return this.pagiantion_limit;
+                return this.num_of_visibile_pagination_buttons;
             }
         },
         // pagination computed properties -end
