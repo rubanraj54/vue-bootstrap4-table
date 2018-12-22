@@ -152,10 +152,6 @@ import {
 export default {
     name: "VueBootstrap4Table",
     props: {
-        data: {
-            type: Object,
-            required: true
-        },
         rows: {
             type: Array,
             required: true
@@ -625,7 +621,7 @@ export default {
         },
 
         originalRowsLength() {
-            return this.data.rows.length;
+            return this.rows.length;
         },
 
         // pagination info computed properties - end

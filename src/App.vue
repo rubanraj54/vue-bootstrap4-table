@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :data="result" :rows="rows" :columns="columns" :config="config">
+        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
         </vue-bootstrap4-table>
     </div>
 </template>
@@ -14,72 +14,68 @@
             return {
                 rows: [],
                 columns: [
-                    // {
-                    //     label: "id",
-                    //     name: "id",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "id"
-                    //     },
-                    //     sort: true,
-                    //     uniqueId: true
-                    // },
-                    // {
-                    //     label: "id",
-                    //     name: "id",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "id"
-                    //     },
-                    //     sort: true,
-                    //     slot_name: "my_duplicate_id_column"
-                    // },
-                    // {
-                    //     label: "title",
-                    //     name: "title",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "enter title"
-                    //     },
-                    //     sort: true,
-                    // },
-                    {
-                        label: "user",
-                        name: "user",
-                        filter: {
-                            type: "simple",
-                            placeholder: "title"
-                        },
-                        sort: true,
-                        initial_sort: true,
-                        initial_sort_order: "asc" // default "asc"
-                    },
-                    {
-                        label: "age",
-                        name: "age",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter url"
-                        },
-                        sort: true,
-                        initial_sort: true,
-                        initial_sort_order: "desc" // default "asc"
-                    },
                     {
                         label: "id",
-                        name: "test.id",
+                        name: "id",
                         filter: {
                             type: "simple",
-                            placeholder: "unique id"
+                            placeholder: "id"
                         },
                         sort: true,
                         uniqueId: true
                     },
+                    {
+                        label: "id",
+                        name: "id",
+                        filter: {
+                            type: "simple",
+                            placeholder: "id"
+                        },
+                        sort: true,
+                        slot_name: "my_duplicate_id_column"
+                    },
+                    {
+                        label: "title",
+                        name: "title",
+                        filter: {
+                            type: "simple",
+                            placeholder: "enter title"
+                        },
+                        sort: true,
+                    },
+                    // {
+                    //     label: "user",
+                    //     name: "user",
+                    //     filter: {
+                    //         type: "simple",
+                    //         placeholder: "title"
+                    //     },
+                    //     sort: true,
+                    //     initial_sort: true,
+                    //     initial_sort_order: "asc" // default "asc"
+                    // },
+                    // {
+                    //     label: "age",
+                    //     name: "age",
+                    //     filter: {
+                    //         type: "simple",
+                    //         placeholder: "Enter url"
+                    //     },
+                    //     sort: true,
+                    //     initial_sort: true,
+                    //     initial_sort_order: "desc" // default "asc"
+                    // },
+                    // {
+                    //     label: "id",
+                    //     name: "test.id",
+                    //     filter: {
+                    //         type: "simple",
+                    //         placeholder: "unique id"
+                    //     },
+                    //     sort: true,
+                    //     uniqueId: true
+                    // },
                 ],
-                result: {
-                    rows: [],
-                    columns:[]
-                },
                 config: {
                     pagination: true,
                     pagination_info: true,
@@ -102,13 +98,13 @@
             axios.get('https://jsonplaceholder.typicode.com/photos')
                 .then(function(response) {
                     // handle success
-                                        self.rows = [
-                      {'test' : {'id':1}, 'user': 'fred',   'age': 48 },
-                      {'test' : {'id':2}, 'user': 'barney', 'age': 34 },
-                      {'test' : {'id':3}, 'user': 'fred',   'age': 40 },
-                      {'test' : {'id':4}, 'user': 'barney', 'age': 36 }
-                    ];
-                    // self.result.rows = response.data;
+                    //                     self.rows = [
+                    //   {'test' : {'id':1}, 'user': 'fred',   'age': 48 },
+                    //   {'test' : {'id':2}, 'user': 'barney', 'age': 34 },
+                    //   {'test' : {'id':3}, 'user': 'fred',   'age': 40 },
+                    //   {'test' : {'id':4}, 'user': 'barney', 'age': 36 }
+                    // ];
+                    self.rows = response.data;
                     // console.log(response);
                 })
                 .catch(function(error) {
