@@ -95,17 +95,9 @@
         },
         mounted() {
             let self = this;
-            axios.get('https://jsonplaceholder.typicode.com/photos')
+            axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/70775393694aa5e47633e957588df67453c12c02/src/assets/toy_data/users.json')
                 .then(function(response) {
-                    // handle success
-                    //                     self.rows = [
-                    //   {'test' : {'id':1}, 'user': 'fred',   'age': 48 },
-                    //   {'test' : {'id':2}, 'user': 'barney', 'age': 34 },
-                    //   {'test' : {'id':3}, 'user': 'fred',   'age': 40 },
-                    //   {'test' : {'id':4}, 'user': 'barney', 'age': 36 }
-                    // ];
                     self.rows = response.data;
-                    // console.log(response);
                 })
                 .catch(function(error) {
                     // handle error
