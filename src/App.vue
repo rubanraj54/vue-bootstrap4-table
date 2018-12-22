@@ -51,7 +51,9 @@
                                 type: "simple",
                                 placeholder: "title"
                             },
-                            sort: true
+                            sort: true,
+                            initial_sort: true,
+                            initial_sort_order: "asc" // default "asc"
                         },
                         {
                             label: "age",
@@ -61,6 +63,8 @@
                                 placeholder: "Enter url"
                             },
                             sort: true,
+                            initial_sort: true,
+                            initial_sort_order: "desc" // default "asc"
                         },
                         {
                             label: "id",

@@ -217,7 +217,9 @@ export default {
             return _.extend({}, element, extra);
         });
 
+
         this.initConfig();
+        this.initialSort();
         this.filter();
         this.paginateFilter();
 
@@ -252,11 +254,45 @@ export default {
 
             this.rows_selectable = (_.has(this.config, 'rows_selectable')) ? this.config.rows_selectable : false;
 
-            this.multi_column_sort = (_.has(this.config, 'multi_column_sort')) ? this.config.multi_column_sort : false;
+            this.multi_column_sort = (_.has(this.config, 'multi_column_sort')) ? (this.config.multi_column_sort) : false;
 
             this.pagination_info = (_.has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
 
             this.card_title = (_.has(this.config, 'card_title')) ? this.config.card_title : "";
+        },
+
+        initialSort() {
+            let initial_sort_columns =  _.filter(this.vbt_data.columns, function(column) { return _.has(column,'initial_sort') });
+
+            _.forEach(initial_sort_columns,function(initial_sort_column,key) {
+                let result = _.findIndex(this.query.sort, { 'vbt_col_id': initial_sort_column.vbt_col_id });
+
+                if(result == -1) {
+                    // initial sort order validation starts here
+                    let initial_sort_order = "asc";
+                    if (_.has(initial_sort_column,"initial_sort_order")) {
+                        if (_.includes(["asc","desc"], initial_sort_column.initial_sort_order)) {
+                            initial_sort_order = initial_sort_column.initial_sort_order;
+                        } else {
+                            console.log("invalid initial_sort_order, so setting it to default");
+                        }
+                    }
+                    // initial sort order validation ends here
+                    this.query.sort.push({
+                        vbt_col_id: initial_sort_column.vbt_col_id,
+                        name: initial_sort_column.name,
+                        order: initial_sort_order,
+                    });
+
+                } else {
+                    this.query.sort[result].order = initial_sort_column.initial_sort_order;
+                }
+
+                // if multicolum sort sort is false, then consider only first initial sort column
+                if (!this.multi_column_sort) {
+                    return false;
+                }
+            }.bind(this));
         },
 
         hasFilter(column) {
@@ -281,14 +317,16 @@ export default {
             let result = _.findIndex(this.query.sort, { 'vbt_col_id': column.vbt_col_id });
 
             if(result == -1) {
+
                 if (!this.multi_column_sort) {
-                    this.query.sort = []
+                    this.query.sort = [];
                 }
                 this.query.sort.push({
                     vbt_col_id: column.vbt_col_id,
                     name: column.name,
                     order: "desc",
                 });
+
             } else {
                 this.query.sort[result].order = this.query.sort[result].order == "asc" ? "desc" : "asc";
             }
@@ -710,8 +748,10 @@ export default {
                 this.end = this.page + (this.paginationLimit - 1);
             }
         },
-        multi_column_sort(newVal,oldVal) {
-            this.resetSort();
+        'config.multi_column_sort': {
+            handler : function(newVal,oldVal) {
+                this.resetSort();
+            }
         }
     }
 };
