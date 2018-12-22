@@ -17,7 +17,7 @@
         "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/vue-bootstrap4-table.min.js"
     },
     "dependencies": {
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.11"
     },
     "devDependencies": {
         "jquery": "^3.3.1",
