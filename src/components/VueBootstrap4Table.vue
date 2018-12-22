@@ -503,11 +503,9 @@ export default {
             }
         },
         // row method ends here
-        whichOrder(column,selected_items) {
-            console.log(_.cloneDeep(column));
-            console.log(_.cloneDeep(selected_items));
-            return true;
-
+        resetSort() {
+            this.query.sort = [];
+            this.filter();
         }
     },
     computed: {
@@ -711,6 +709,9 @@ export default {
                 this.start = this.page;
                 this.end = this.page + (this.paginationLimit - 1);
             }
+        },
+        multi_column_sort(newVal,oldVal) {
+            this.resetSort();
         }
     }
 };
