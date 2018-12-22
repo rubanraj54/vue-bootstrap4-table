@@ -25,24 +25,46 @@
                         uniqueId: true
                     },
                     {
-                        label: "id",
-                        name: "id",
+                        label: "First Name",
+                        name: "name.first_name",
                         filter: {
                             type: "simple",
-                            placeholder: "id"
+                            placeholder: "Enter first name"
                         },
                         sort: true,
-                        slot_name: "my_duplicate_id_column"
+                        // slot_name: "my_duplicate_id_column"
                     },
                     {
-                        label: "title",
-                        name: "title",
+                        label: "Last Name",
+                        name: "name.last_name",
                         filter: {
                             type: "simple",
-                            placeholder: "enter title"
+                            placeholder: "Enter last name"
                         },
                         sort: true,
-                    }
+                    },
+                    {
+                        label: "Email",
+                        name: "email",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter email"
+                        },
+                        sort: true,
+                    },
+                    {
+                        label: "City",
+                        name: "address.city",
+                        sort: true,
+                    },
+                    {
+                        label: "Country",
+                        name: "address.country",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter country"
+                        },
+                    },
                 ],
                 config: {
                     pagination: true,
@@ -65,9 +87,9 @@
             let self = this;
             axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/toy_data/users_500.json')
                 .then(function(response) {
-                    console.log(typeof JSON.parse(response.data));
+                    // console.log(typeof response.data);
 
-                    // self.rows = response.data;
+                    self.rows = response.data;
                 })
                 .catch(function(error) {
                     // handle error
