@@ -42,39 +42,7 @@
                             placeholder: "enter title"
                         },
                         sort: true,
-                    },
-                    // {
-                    //     label: "user",
-                    //     name: "user",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "title"
-                    //     },
-                    //     sort: true,
-                    //     initial_sort: true,
-                    //     initial_sort_order: "asc" // default "asc"
-                    // },
-                    // {
-                    //     label: "age",
-                    //     name: "age",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "Enter url"
-                    //     },
-                    //     sort: true,
-                    //     initial_sort: true,
-                    //     initial_sort_order: "desc" // default "asc"
-                    // },
-                    // {
-                    //     label: "id",
-                    //     name: "test.id",
-                    //     filter: {
-                    //         type: "simple",
-                    //         placeholder: "unique id"
-                    //     },
-                    //     sort: true,
-                    //     uniqueId: true
-                    // },
+                    }
                 ],
                 config: {
                     pagination: true,
@@ -95,9 +63,11 @@
         },
         mounted() {
             let self = this;
-            axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/70775393694aa5e47633e957588df67453c12c02/src/assets/toy_data/users.json')
+            axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/toy_data/users_500.json')
                 .then(function(response) {
-                    self.rows = response.data;
+                    console.log(typeof JSON.parse(response.data));
+
+                    // self.rows = response.data;
                 })
                 .catch(function(error) {
                     // handle error
