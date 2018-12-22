@@ -17,8 +17,8 @@
                                 </div>
                             </th>
 
-                            <slot name="columns" :columns="vbt_data.columns">
-                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center vbt-column-header" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                            <slot name="columns" :columns="vbt_columns">
+                                <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center vbt-column-header" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
                                     <slot name="column" :column="column">{{column.label}}</slot>
 
                                     <template v-if='isSortableColumn(column)'>
@@ -31,14 +31,14 @@
                     <tbody>
                         <tr class="table-active">
                             <td v-show="checkbox_rows"></td>
-                            <td v-for="(column, key, index) in vbt_data.columns" :key="index">
+                            <td v-for="(column, key, index) in vbt_columns" :key="index">
                                 <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
                             </td>
                         </tr>
                         <!-- data rows stars here -->
-                        <tr v-for="(row, key, index) in vbt_data.rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
+                        <tr v-for="(row, key, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
-                            <td v-for="(column, key, hindex) in vbt_data.columns" :key="hindex" class="text-center">
+                            <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" class="text-center">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
                                     {{getValueFromRow(row,column.name)}}
                                 </slot>
@@ -156,6 +156,14 @@ export default {
             type: Object,
             required: true
         },
+        rows: {
+            type: Array,
+            required: true
+        },
+        columns: {
+            type: Array,
+            required: true
+        },
         config: {
             type: Object,
             default: function () {
@@ -165,10 +173,8 @@ export default {
     },
     data: function () {
         return {
-            vbt_data: {
-                rows: [],
-                columns: []
-            },
+            vbt_rows: [],
+            vbt_columns: [],
             query: {
                 sort: {
                     name: null,
@@ -198,25 +204,23 @@ export default {
         };
     },
     mounted() {
-        this.vbt_data = _.cloneDeep(this.data);
+        this.vbt_rows = _.cloneDeep(this.rows);
+        this.vbt_columns = _.cloneDeep(this.columns);
         let self = this;
         // check if user mentioned unique id for a column, if not set unique id for all items
-        this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
+        this.original_rows = _.map(this.vbt_rows, function (element, index) {
             let extra = {};
             if (!self.hasUniqueId) {
                 extra.vbt_id = index + 1;
             }
-            // extra.row_higlighted = false;
             return _.extend({}, element, extra);
         });
 
-        this.vbt_data.columns = _.map(this.vbt_data.columns, function (element, index) {
+        this.vbt_columns = _.map(this.vbt_columns, function (element, index) {
             let extra = {};
             extra.vbt_col_id = index + 1;
-            // extra.row_higlighted = false;
             return _.extend({}, element, extra);
         });
-
 
         this.initConfig();
         this.initialSort();
@@ -262,7 +266,7 @@ export default {
         },
 
         initialSort() {
-            let initial_sort_columns =  _.filter(this.vbt_data.columns, function(column) { return _.has(column,'initial_sort') });
+            let initial_sort_columns =  _.filter(this.vbt_columns, function(column) { return _.has(column,'initial_sort') });
 
             _.forEach(initial_sort_columns,function(initial_sort_column,key) {
                 let result = _.findIndex(this.query.sort, { 'vbt_col_id': initial_sort_column.vbt_col_id });
@@ -470,9 +474,9 @@ export default {
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
-                this.vbt_data.rows = this.temp_filtered_results.slice(start, end);
+                this.vbt_rows = this.temp_filtered_results.slice(start, end);
             } else {
-                this.vbt_data.rows = _.cloneDeep(this.temp_filtered_results);
+                this.vbt_rows = _.cloneDeep(this.temp_filtered_results);
             }
         },
 
@@ -588,7 +592,7 @@ export default {
                 return unique_id;
             }
 
-            _.forEach(this.vbt_data.columns, function (column, key) {
+            _.forEach(this.vbt_columns, function (column, key) {
                 if (_.has(column, 'uniqueId') && column.uniqueId === true) {
                     unique_id = column.name;
                     return false;
@@ -600,7 +604,7 @@ export default {
         hasUniqueId() {
             let has_unique_id = false;
 
-            _.forEach(this.vbt_data.columns, function (column, key) {
+            _.forEach(this.vbt_columns, function (column, key) {
                 if (_.has(column, 'uniqueId') && column.uniqueId === true) {
                     has_unique_id = true;
                     return false;
@@ -613,7 +617,7 @@ export default {
         // pagination info computed properties - start
 
         currentPageRowsLength() {
-            return this.vbt_data.rows.length;
+            return this.vbt_rows.length;
         },
 
         filteredRowsLength() {
@@ -647,26 +651,34 @@ export default {
                 this.paginateFilter();
             }
         },
-        data: {
+        rows: {
             handler: function (newVal, oldVal) {
 
-                this.vbt_data = _.cloneDeep(newVal);
+                this.vbt_rows = _.cloneDeep(this.rows);
                 let self = this;
 
                 // check if user mentioned unique id for a column, if not set unique id for all items
-                this.original_rows = _.map(this.vbt_data.rows, function (element, index) {
+                this.original_rows = _.map(this.vbt_rows, function (element, index) {
                     let extra = {};
                     if (!self.hasUniqueId) {
                         extra.vbt_id = index + 1;
                     }
-                    // extra.row_higlighted = false;
                     return _.extend({}, element, extra);
                 });
 
-                this.vbt_data.columns = _.map(this.vbt_data.columns, function (element, index) {
+                this.filter();
+            },
+            deep: true
+        },
+        columns: {
+            handler: function (newVal, oldVal) {
+
+                this.vbt_columns = _.cloneDeep(this.columns);
+                let self = this;
+
+                this.vbt_columns = _.map(this.vbt_columns, function (element, index) {
                     let extra = {};
                     extra.vbt_col_id = index + 1;
-                    // extra.row_higlighted = false;
                     return _.extend({}, element, extra);
                 });
 
