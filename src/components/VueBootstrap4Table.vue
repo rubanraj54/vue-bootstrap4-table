@@ -120,12 +120,12 @@
                                 </template>
                             </slot>
                         </template>
-                        <template v-if="pagination_info && rows_selectable">
+                        <template v-if="pagination_info && (rows_selectable || checkbox_rows)">
                             <slot name="pagination-selected-rows-separator">
                                 |
                             </slot>
                         </template>
-                        <template v-if="rows_selectable">
+                        <template v-if="rows_selectable || checkbox_rows">
                             <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
                                 {{selectedItemsCount}} rows selected
                             </slot>
