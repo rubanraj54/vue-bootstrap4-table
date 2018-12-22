@@ -18,7 +18,7 @@
                             </th>
 
                             <slot name="columns" :columns="vbt_data.columns">
-                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                                <th v-for="(column, key, index) in vbt_data.columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center vbt-column-header" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
                                     <slot name="column" :column="column">{{column.label}}</slot>
 
                                     <template v-if='isSortableColumn(column)'>
@@ -739,6 +739,12 @@ export default {
     }
     .custom-control-label {
         vertical-align: top;
+    }
+    .vbt-column-header {
+        -webkit-user-select: none;  /* Chrome all / Safari all */
+        -moz-user-select: none;     /* Firefox all */
+        -ms-user-select: none;      /* IE 10+ */
+        user-select: none;          /* Likely future */
     }
 </style>
 
