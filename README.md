@@ -6,6 +6,8 @@
 
 [Docs in gitbook](https://rubanraj54.gitbook.io/vue-bootstrap4-table/). 
 
+![Demo](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/demo.gif)
+
 Note: Under developement.. Please wait for few weeks for complete documentation and demo
 
 ## Build Setup
