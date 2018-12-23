@@ -19,7 +19,9 @@
 
                             <slot name="columns" :columns="vbt_columns">
                                 <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center vbt-column-header" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
-                                    <slot name="column" :column="column">{{column.label}}</slot>
+                                    <slot :name="'column_' + getCellSlotName(column)" :column="column">
+                                        {{column.label}}
+                                    </slot>
 
                                     <template v-if='isSortableColumn(column)'>
                                         <SortIcon :sort="query.sort" :column="column"></SortIcon>

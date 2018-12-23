@@ -1,6 +1,16 @@
 <template>
     <div id="app">
         <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+            <template slot="name_first_name" slot-scope="props">
+                <i>
+                    {{props.cell_value + "$"}}
+                </i>
+            </template>
+            <template slot="column_name_first_name" slot-scope="props">
+                <i>
+                    {{props.column.label + " $"}}
+                </i>
+            </template>
         </vue-bootstrap4-table>
     </div>
 </template>
@@ -74,7 +84,7 @@
                     checkbox_rows: true,
                     highlight_row_hover: true,
                     rows_selectable: true,
-                    multi_column_sort: true,
+                    multi_column_sort: false,
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table"
                 }
@@ -87,12 +97,9 @@
             let self = this;
             axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/toy_data/users_500.json')
                 .then(function(response) {
-                    // console.log(typeof response.data);
-
                     self.rows = response.data;
                 })
                 .catch(function(error) {
-                    // handle error
                     console.log(error);
                 });
         },
