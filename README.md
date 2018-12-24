@@ -1,18 +1,15 @@
-
-
-
-
-# vue-bootstrap4-table
+# 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
 
 [Quick Demo in Codepen](https://codepen.io/rubanraj54/full/zyZdzN).
 
-[Docs in gitbook](https://rubanraj54.gitbook.io/vue-bootstrap4-table/). 
+[Docs in gitbook](https://rubanraj54.gitbook.io/vue-bootstrap4-table/).
 
 ![Demo](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/demo.gif)
 
-# Features
+
+# 2. Features
 * Multi column filtering (Optimized filtering)
 * Single & Multi column sorting
 * Pagination (True! It works out of the box intelligently)
@@ -20,21 +17,21 @@
 * Checkbox selection for rows
 * Highly customizable
 
-# Installation
-## Install via npm
+# 3. Installation
+## 3.1. Install via npm
 
 **`$ npm i vue-bootstrap4-table --save`**
 
 Currently this package will install only the vue-bootstrap4-table component, not their dependencies. So make sure to install the following dependencies.
 
-### Dependencies
+### 3.1.1. Dependencies
 
 -   bootstrap 4 (js and css) You should include bootstrap before vue-bootstrap4-table plugin.
-    
+
 
 We are using **`lodash`** internally, so you don't need to install separately for this plugin.
 
-## Install via CDN
+## 3.2. Install via CDN
 ```html
 <link  rel="stylesheet"  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"  crossorigin="anonymous">
 
@@ -52,7 +49,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
-# Basic Usage
+# 4. Basic Usage
 It is easy to include vue-bootstrap4-table as a component in your application.
 
 Import VueBootstrap4Table component in any of your vue component and start using it right away.
@@ -155,8 +152,8 @@ export default {
 }
 </script>
 ```
-# Columns
-## Basic structure
+# 5. Columns
+## 5.1. Basic structure
 For example, your "columns" object might look like this,
 
 ```javascript
@@ -195,7 +192,7 @@ columns: [{
     }]
 ```
 
-##  Attributes details
+## 5.2. Attributes details
 |Attributes|Description|
 |--|--|
 |label | Name for the column header |
@@ -207,10 +204,10 @@ columns: [{
 |initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`** |
 |initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`** |
 
-## Column slot
+## 5.3. Column slot
 
 At some point, you might want to override or format the values in the column header. **`vue-bootstrap4-table`** allow you to achieve that with the help of vue slotting.
-### Example
+### 5.3.1. Example
 
 ```vue
 ...
@@ -244,20 +241,20 @@ columns: [{
 ```
 Column slot name will be combination of **`column_`** keyword with the **`name`** which you provided in the columns configuration. In the above example, **`slot="column_email"`** represents the "email" column header in the table.
 
-### Note
+### 5.3.2. Note
 You might have some columns with nested objects names. In that case, the slot name will be **`column_`** keyword + column **`name`** and dots(.) in the column **`name`** will be replaced by underscore(_).
 
 You can see the above example, slot name for **`name.first_name`** column is **`column_name_first_name`**.
 
-### props
+### 5.3.3. props
 From **`slot-scope="props"`** you can access the following attributes.
 
 |Attributes  | Description |
 |--|--|
 | props.column | Current column config object |
-# Rows
+# 6. Rows
 You bind your list of items as array of objects to **`rows`** props to **`vue-bootstrap4-table`** component, then voilà.. you can start work with the table.
-## Basic structure
+## 6.1. Basic structure
 ```javascript
 rows: [{
         "id": 1,
@@ -294,9 +291,9 @@ rows: [{
         "email": "delia.becker@cormier.com",
     }]
 ```
-## Row Slot
+## 6.2. Row Slot
 At some point, you might want to override or format the values in the row cells. **`vue-bootstrap4-table`** allow you to achieve that with the help of vue slotting.
-### Example
+### 6.2.1. Example
 ```vue
 ...
 <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
@@ -328,12 +325,12 @@ columns: [{
 </script>
 ```
 Slot name will be same as the name which you provided in the columns configuration. In the above example, **`slot="email"`** represents the "email" column in the table.
-### Note
+### 6.2.2. Note
 You might have some columns getting the values from nested objects from **`rows`**. In that case, the slot name will be column **`name`** and dots(.) in the column **`name`** will be replaced by underscore(_).
 
 You can see the above example, slot name for **`name.first_name`** column is **`name_first_name`**.
 
-### props
+### 6.2.3. props
 From **`slot-scope="props"`** you can access the following attributes.
 
 | Attributes | Description |
@@ -342,9 +339,9 @@ From **`slot-scope="props"`** you can access the following attributes.
 | props.row |  Current row object|
 | props.column |  Current column config object|
 
-# Sorting
+# 7. Sorting
 Sorting configuration is added along with the each column config.
-## Example
+## 7.1. Example
 ```vue
 ...
 columns: [
@@ -358,20 +355,20 @@ columns: [
 ]
 ...
 ```
-## Attributes details
+## 7.2. Attributes details
 | Attributes | Description |
 |--|--|
 | sort | Enable or disable sorting in column. Default value is **`false`** |
 | initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`** |
 | initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`** |
 
-## Single column sorting
+## 7.3. Single column sorting
 By default single column sort mode is enabled.
 
-## Multi column sorting
+## 7.4. Multi column sorting
 If you would like to enable the multi column sorting, set **`multi_column_sort`**  to **`true`**  in table **`config`** props.
 
-### Example
+### 7.4.1. Example
 
 ```vue
 <template>
@@ -407,11 +404,11 @@ If you would like to enable the multi column sorting, set **`multi_column_sort`*
     }
 </script>
 ```
-# Filtering
+# 8. Filtering
 Filtering configuration is added along with the each column config.
-## Simple Filter
+## 8.1. Simple Filter
 Filter the rows based on the given keyword. If you don't specify filter config then filter feature will be disabled for the specific column.
-### Example
+### 8.1.1. Example
 ```javascript
 ...
 columns: [
@@ -426,15 +423,15 @@ columns: [
 ]
 ...
 ```
-### Attributes details
+### 8.1.2. Attributes details
 
 |Attributes  |  Description | Default |
 |--|--|--|
 | filter.type | Defines the type of filter. Currently basic filter is supported. |Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
-# Pagination & Info
+# 9. Pagination & Info
 Pagination component is built based on Bootstrap 4 pagination template. You can enable or disable pagination and pagination info details based on your choice.
-## Example
+## 9.1. Example
 ```vue
 <template>
     <div id="app">
@@ -470,7 +467,7 @@ Pagination component is built based on Bootstrap 4 pagination template. You can 
     }
 </script>
 ```
-## Attributes details
+## 9.2. Attributes details
 | Attributes | Description | type | Default |
 |--|--|--|--|
 | pagination | Enable/Disable pagination in the table | Boolean |true  |
@@ -478,9 +475,9 @@ Pagination component is built based on Bootstrap 4 pagination template. You can 
 |num_of_visibile_pagination_buttons  | Limit the number of visible pagination buttons in the pagination bar | Number | 5 |
 | per_page |Number of rows to display per page  |Number  |10  |
 
-## Slot
+## 9.3. Slot
 Currently you can override "Previous" & "Next" button icon/text.
-### Previous & Next button
+### 9.3.1. Previous & Next button
 ```vue
 ...
 <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
@@ -495,14 +492,14 @@ Currently you can override "Previous" & "Next" button icon/text.
 ```
 After applying the above custom template to **`previous`** and  **`next`** button, pagination component will look like this.
 
-### Pagination info
+### 9.3.2. Pagination info
 
 ```vue
 ...
 <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
     <template slot="pagination-info" slot-scope="props">
-        This page total is {{props.currentPageRowsLength}} | 
-        Filterd results total is {{props.filteredRowsLength}} | 
+        This page total is {{props.currentPageRowsLength}} |
+        Filterd results total is {{props.filteredRowsLength}} |
         Original data total is {{props.originalRowsLength}}
     </template>
 </vue-bootstrap4-table>
@@ -510,19 +507,19 @@ After applying the above custom template to **`previous`** and  **`next`** butto
 ```
 After applying the above custom template to pagination info , pagination info component will look like this.
 
-#### props
+#### 9.3.2.1. props
 From **`slot-scope="props"`** you can access the following attributes.
 
-| Attributes |  Description| 
+| Attributes |  Description|
 |--|--|
 | props.currentPageRowsLength | Number of rows currently showing in the page |
 | props.filteredRowsLength | Total number of items in the result after filtering |
 |  props.originalRowsLength| Original number of items in the data|
 
-# Config
+# 10. Config
 You can optionally pass config as a prop to **`vue-bootstrap4-table`** component to override the table configuration defaults.
 
-## Example
+## 10.1. Example
 ```vue
 <template>
     <div id="app">
@@ -567,7 +564,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 
 > If you don't provide an attribute in the config, then default value will be assigned to that attribute.
 
-##  Attributes details
+## 10.2. Attributes details
 
 |Attributes  | Description | type| Default |
 |--|--|--|--|
@@ -583,7 +580,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | card_title | Sets the table title in the card header | String| "" (empty string) |
 
 
-## Build Setup
+# 11. Build Setup
 
 ``` bash
 # install dependencies
