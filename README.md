@@ -1,5 +1,6 @@
 
 
+
 # vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -210,7 +211,7 @@ columns: [{
 At some point, you might want to override or format the values in the column header. **`vue-bootstrap4-table`** allow you to achieve that with the help of vue slotting.
 ### Example
 
-```javascript
+```vue
 ...
 <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
     <template slot="column_email" slot-scope="props">
@@ -253,9 +254,93 @@ From **`slot-scope="props"`** you can access the following attributes.
 |Attributes  | Description |
 |--|--|
 | props.column | Current column config object |
+# Rows
+You bind your list of items as array of objects to **`rows`** props to **`vue-bootstrap4-table`** component, then voilà.. you can start work with the table.
+## Basic structure
+```javascript
+rows: [{
+        "id": 1,
+        "name": {
+            "first_name": "Vladimir",
+            "last_name": "Nitzsche"
+        },
+        "address": {
+            "country": "Mayotte"
+        },
+        "email": "franecki.anastasia@gmail.com",
+    },
+    {
+        "id": 2,
+        "name": {
+            "first_name": "Irwin",
+            "last_name": "Bayer"
+        },
+        "age": 23,
+        "address": {
+            "country": "Guernsey"
+        },
+        "email": "rlittle@macejkovic.biz",
+    },
+    {
+        "id": 3,
+        "name": {
+            "first_name": "Don",
+            "last_name": "Herman"
+        },
+        "address": {
+            "country": "Papua New Guinea"
+        },
+        "email": "delia.becker@cormier.com",
+    }]
+```
+## Row Slot
+At some point, you might want to override or format the values in the row cells. **`vue-bootstrap4-table`** allow you to achieve that with the help of vue slotting.
+### Example
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+    <template slot="email" slot-scope="props">
+        <i>
+            {{props.cell_value}}
+        </i>
+    </template>
+    <template slot="name_first_name" slot-scope="props">
+        <b>
+            {{props.cell_value}}
+        </b>
+    </template>
+</vue-bootstrap4-table>
+...
+<script>
+...
+columns: [{
+            label: "First Name",
+            name: "name.first_name", // access nested objects properties with "."
+            sort: false,
+        },
+        {
+            label: "Email",
+            name: "email",
+            sort: true,
+        }],
+...
+</script>
+```
+Slot name will be same as the name which you provided in the columns configuration. In the above example, **`slot="email"`** represents the "email" column in the table.
+### Note
+You might have some columns getting the values from nested objects from **`rows`**. In that case, the slot name will be column **`name`** and dots(.) in the column **`name`** will be replaced by underscore(_).
 
+You can see the above example, slot name for **`name.first_name`** column is **`name_first_name`**.
+
+### props
+From **`slot-scope="props"`** you can access the following attributes.
 
 ## Build Setup
+| Attributes | Description |
+|--|--|
+| props.cell_value |  Returns the actual value of the cell|
+| props.row |  Current row object|
+| props.column |  Current column config object|
 
 ``` bash
 # install dependencies
