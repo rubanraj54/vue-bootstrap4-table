@@ -170,7 +170,8 @@ columns: [{
         name: "name.first_name", // access nested objects properties with "."
         filter: {
             type: "simple",
-            placeholder: "Enter first name"
+            placeholder: "Enter first name",
+            case_sensitive: true, // "false" by default
         },
         sort: true, // "false" by default
         initial_sort: true, // "false" by default
@@ -199,6 +200,7 @@ columns: [{
 |filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) |
 |filter.type | Type of filter you want to use for your column (currently **`"simple"`** filter only supported) |
 |filter.placeholder | Placeholder is **`hint`** text for filter text box |
+|filter.case_sensitive | Enable/Disable case sensitive filtering. Default value is **`false`**|
 |sort | Enable or disable sorting in column. Default value is **`false`** |
 |initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`** |
 |initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`** |
@@ -416,7 +418,8 @@ columns: [
         name: "name.first_name", // access nested objects properties with "."
         filter: {
             type: "simple",
-            placeholder: "Enter first name"
+            placeholder: "Enter first name",
+            case_sensitive: true, // "false" by default
         }
     }
 ]
@@ -428,6 +431,7 @@ columns: [
 |--|--|--|
 | filter.type | Defines the type of filter. Currently basic filter is supported. |Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
+| filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
 # 9. Pagination & Info
 Pagination component is built based on Bootstrap 4 pagination template. You can enable or disable pagination and pagination info details based on your choice.
 ## 9.1. Example
