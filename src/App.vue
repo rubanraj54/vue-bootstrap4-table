@@ -1,15 +1,10 @@
 <template>
     <div id="app">
         <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
-            <template slot="name_first_name" slot-scope="props">
-                <i>
-                    {{props.cell_value + "$"}}
-                </i>
-            </template>
-            <template slot="column_name_first_name" slot-scope="props">
-                <i>
-                    {{props.column.label + " $"}}
-                </i>
+            <template slot="pagination-info" slot-scope="props">
+                This page total is {{props.currentPageRowsLength}} |
+                Filterd results total is {{props.filteredRowsLength}} |
+                Original data total is {{props.originalRowsLength}}
             </template>
         </vue-bootstrap4-table>
     </div>

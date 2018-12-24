@@ -131,7 +131,7 @@
                                 {{selectedItemsCount}} rows selected
                             </slot>
                         </template>
-                </div>
+                    </div>
                 </div>
                 <!-- pagination info ends here -->
             </div>
