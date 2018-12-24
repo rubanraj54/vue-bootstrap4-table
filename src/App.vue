@@ -44,7 +44,8 @@
                         name: "name.last_name",
                         filter: {
                             type: "simple",
-                            placeholder: "Enter last name"
+                            placeholder: "Enter last name",
+                            case_sensitive: true
                         },
                         sort: true,
                     },

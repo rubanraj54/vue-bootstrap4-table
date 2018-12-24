@@ -402,7 +402,8 @@ export default {
                     this.query.filters.push({
                         type: column.filter.type,
                         name: column.name,
-                        text: event.target.value
+                        text: event.target.value,
+                        config: column.filter
                     });
                 }
             } else {
@@ -443,7 +444,7 @@ export default {
                     }
 
                     if (filter.type === "simple") {
-                        if (self.simpleFilter(_.get(row, filter.name), filter.text)) {
+                        if (self.simpleFilter(_.get(row, filter.name), filter.text,filter.config)) {
                             flag = true;
                         } else {
                             flag = false;
@@ -459,13 +460,24 @@ export default {
             this.page = 1;
         },
 
-        simpleFilter(value, filter_text) {
+        simpleFilter(value, filter_text,config) {
+
             if (typeof value !== "string") {
                 value = value.toString();
             }
 
-            // TODO - configurable lowercase conversion
-            return value.toLowerCase().indexOf(filter_text) > -1;
+            if (typeof filter_text !== "string") {
+                value = filter_text.toString();
+            }
+
+            let is_case_sensitive = (_.has(config,'case_sensitive')) ? config.case_sensitive : false;
+
+            if (!is_case_sensitive) {
+                value = value.toLowerCase();
+                filter_text = filter_text.toLowerCase();
+            }
+
+            return value.indexOf(filter_text) > -1;
         },
 
         paginateFilter() {
