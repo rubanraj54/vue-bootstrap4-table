@@ -192,7 +192,7 @@ export default {
             pagination_info: true,
             checkbox_rows: false,
             selected_items: [],
-            highlight_row_hover: false,
+            highlight_row_hover: true,
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
             select_all_rows: false,
@@ -250,7 +250,7 @@ export default {
 
             this.checkbox_rows = (_.has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
 
-            this.highlight_row_hover = (_.has(this.config, 'highlight_row_hover')) ? this.config.highlight_row_hover : false;
+            this.highlight_row_hover = (_.has(this.config, 'highlight_row_hover')) ? this.config.highlight_row_hover : true;
 
             this.highlight_row_hover_color =  (_.has(this.config, 'highlight_row_hover_color')) ? this.config.highlight_row_hover_color : "#d6d6d6";
 

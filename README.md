@@ -140,7 +140,6 @@ export default {
                 }],
             config: {
                 checkbox_rows: true,
-                highlight_row_hover: true,
                 rows_selectable: true,
                 card_title: "Vue Bootsrap 4 advanced table"
             }
@@ -547,7 +546,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
                     num_of_visibile_pagination_buttons: 7, // default 5
                     per_page: 5, // default 10
                     checkbox_rows: true, // default false
-                    highlight_row_hover: true, // default false
+                    highlight_row_hover: true, // default true
                     rows_selectable: true, // default false
                     multi_column_sort: true, // default false
                     highlight_row_hover_color:"grey", // default "#d6d6d6"
@@ -573,7 +572,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | num_of_visibile_pagination_buttons | Limit the number of visible pagination buttons in the pagination bar |Number | 5 |
 | per_page | Number of rows to display per page |Number | 10  |
 | checkbox_rows | Enable/Disable checkbox in each rows |Boolean | false |
-| highlight_row_hover | Enable/Disable highlighting row on hover |Boolean | false |
+| highlight_row_hover | Enable/Disable highlighting row on hover |Boolean | true |
 |rows_selectable  | Enable/Disable selecting items on row click |Boolean | false |
 | multi_column_sort | Enable/Disable multi column sorting | Boolean|  false|
 | highlight_row_hover_color | Change the row hover highlighting color | String| "#d6d6d6" |
