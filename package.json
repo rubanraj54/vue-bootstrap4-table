@@ -1,6 +1,6 @@
 {
     "name": "vue-bootstrap4-table",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "main": "dist/vue-bootstrap4-table.umd.js",
     "module": "dist/vue-bootstrap4-table.esm.js",
     "unpkg": "dist/vue-bootstrap4-table.min.js",
@@ -101,5 +101,6 @@
         "type": "git",
         "url": "https://github.com/rubanraj54/vue-bootstrap4-table"
     },
-    "homepage": "https://rubanraj54.gitbook.io"
+    "homepage": "https://rubanraj54.gitbook.io",
+    "license": "MIT"
 }
