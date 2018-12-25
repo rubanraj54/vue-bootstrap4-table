@@ -10,6 +10,49 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
+                            <th :colspan="headerColSpan">
+                                <div class="row" v-if="global_search.visibility">
+                                    <!-- global search text starts here -->
+                                    <div class="input-group col-md-2">
+                                        <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
+                                        <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
+                                            <span class="input-group-text">
+                                                <slot name="clear-global-search-icon">
+                                                    &#x24E7;
+                                                </slot>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <!-- global search text ends here -->
+
+                                    <!-- refresh & reset button starts here -->
+                                    <div class="btn-group col-md-1" role="group" aria-label="Basic example">
+                                        <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
+                                            <slot name="refresh-button-text">
+                                                Refresh
+                                            </slot>
+                                        </button>
+                                        <button type="button" v-if="show_reset_button" class="btn btn-secondary" @click="resetQuery">
+                                            <slot name="reset-button-text">
+                                                Reset Query
+                                            </slot>
+                                        </button>
+                                    </div>
+                                    <!-- refresh & reset button ends here -->
+
+                                    <!-- action buttons starts here -->
+                                    <div class="btn-group col-md-9 justify-content-end" role="group" aria-label="Basic example">
+                                        <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
+                                            {{action.btn_text}}
+                                        </button>
+                                    </div>
+                                    <!-- action buttons button ends here -->
+
+                                </div>
+                            </th>
+                        </tr>
+
+                        <tr>
                             <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
@@ -99,6 +142,23 @@
                                         </span>
                                     </a>
                                 </li>
+                                <!-- Number of rows per page starts here -->
+                                <div class="dropdown show vbt-per-page-dropdown">
+                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{per_page}}
+                                    </a>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <a v-for="(option, key, index) in per_page_options" :key="index" class="dropdown-item" href="" @click.prevent="perPageHandler(option)" v-bind:class="{ active:  (option == per_page)}">
+                                            {{option}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Number of rows per page ends here -->
+
+                                <div class="input-group col-sm-2">
+                                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
+                                </div>
                             </ul>
                         </nav>
                     </div>
@@ -167,19 +227,22 @@ export default {
             default: function () {
                 return {};
             }
-        }
+        },
+        actions: {
+            type: Array,
+            default: function () {
+                return [];
+            }
+        },
     },
     data: function () {
         return {
             vbt_rows: [],
             vbt_columns: [],
             query: {
-                sort: {
-                    name: null,
-                    order: "asc"
-                },
                 sort: [],
-                filters: []
+                filters: [],
+                global_search: ""
             },
             page: 1,
             start: (this.page + 0),
@@ -199,6 +262,15 @@ export default {
             row_hovered: null,
             multi_column_sort:false,
             card_title: "",
+            global_search: {
+                placeholder: "Enter search text",
+                visibility: true,
+                case_sensitive: false
+            },
+            per_page_options : [5,10,15],
+            go_to_page: "",
+            show_refresh_button: true,
+            show_reset_button: true,
         };
     },
     mounted() {
@@ -246,6 +318,8 @@ export default {
 
             this.num_of_visibile_pagination_buttons = (_.has(this.config, 'num_of_visibile_pagination_buttons')) ? this.config.num_of_visibile_pagination_buttons : 5;
 
+            this.per_page_options = (_.has(this.config, 'per_page_options')) ? this.config.per_page_options : [5,10,15];
+
             this.per_page = (_.has(this.config, 'per_page')) ? this.config.per_page : 10;
 
             this.checkbox_rows = (_.has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
@@ -261,6 +335,17 @@ export default {
             this.pagination_info = (_.has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
 
             this.card_title = (_.has(this.config, 'card_title')) ? this.config.card_title : "";
+
+            if (_.has(this.config, 'global_search')) {
+                this.global_search.placeholder = (_.has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
+                this.global_search.visibility = (_.has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
+                this.global_search.case_sensitive = (_.has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
+            }
+
+            this.show_refresh_button = (_.has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
+
+            this.show_reset_button = (_.has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
+
         },
 
         initialSort() {
@@ -339,6 +424,8 @@ export default {
 
             this.selected_items.push(item);
 
+            this.$emit('on-select-rows', {"seleted_items":this.selected_items,"selected_item":item});
+
             let difference = [];
 
             if (!_.isEmpty(this.uniqueId)) {
@@ -366,6 +453,9 @@ export default {
             }
 
             this.selected_items.push(...difference);
+
+            this.$emit('on-all-select-rows', {"seleted_items":this.selected_items});
+
         },
         unSelectAllItems() {
 
@@ -379,6 +469,9 @@ export default {
             }
 
             this.selected_items = difference;
+
+            this.$emit('on-all-unselect-rows', {"seleted_items":this.selected_items});
+
         },
         removeSelectedItem(item) {
             let self = this;
@@ -388,6 +481,9 @@ export default {
                     return false;
                 }
             });
+
+            this.$emit('on-unselect-rows', {"seleted_items":this.selected_items,"unselected_item":item});
+
             // EventBus.$emit('unselect-select-all-items-checkbox');
             this.select_all_rows = false;
         },
@@ -455,9 +551,56 @@ export default {
 
                 return flag;
             });
+
             this.temp_filtered_results = res;
+
+            // Do global search only if global search text is not empty and
+            // filtered results is also not empty
+            if (this.query.global_search !== "" && this.rowCount != 0 ) {
+                this.temp_filtered_results = this.globalSearch(this.temp_filtered_results);
+            }
+
             this.sort();
             this.page = 1;
+        },
+
+        globalSearch(temp_filtered_results) {
+            let self = this;
+
+            let global_search_results = _.filter(temp_filtered_results, function (row) {
+                let flag = false;
+                _.forEach(self.vbt_columns, function (vbt_column, key) {
+
+                    let value = _.get(row, vbt_column.name);
+                    let global_search_text = self.query.global_search;
+
+                    if (typeof value === "undefined") {
+                        value =  "";
+                    }
+
+                    if (typeof value !== "string") {
+                        value = value.toString();
+                    }
+
+                    if (typeof global_search_text !== "string") {
+                        global_search_text = global_search_text.toString();
+                    }
+
+                    if (!self.global_search.case_sensitive) {
+                        value = value.toLowerCase();
+                        global_search_text = global_search_text.toLowerCase();
+                    }
+
+                    if (value.indexOf(global_search_text) > -1) {
+                        flag = true;
+                        return false;
+                    }
+                });
+
+                return flag;
+            });
+
+            return global_search_results;
         },
 
         simpleFilter(value, filter_text,config) {
@@ -481,6 +624,7 @@ export default {
         },
 
         paginateFilter() {
+
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
@@ -558,6 +702,53 @@ export default {
         resetSort() {
             this.query.sort = [];
             this.filter();
+        },
+
+        updateGlobalSearch: _.debounce(function(event) {
+            this.query.global_search = event.target.value;
+        }, 60),
+
+        clearGlobalSearch() {
+            this.query.global_search = "";
+            $(this.$refs.global_search).val("");
+        },
+
+        perPageHandler(option) {
+            this.per_page = option;
+        },
+
+        gotoPage() {
+            if (this.go_to_page >= 1 && this.go_to_page <= this.totalPages) {
+
+                let go_to_page = parseInt(this.go_to_page);
+                this.page = go_to_page;
+
+                if (!_.includes(this.range,go_to_page)) {
+                    if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
+                        this.end = this.totalPages;
+                        this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
+                    } else {
+                        this.start = go_to_page;
+                        this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
+                    }
+                }
+
+            } else {
+                console.log("invalid page number");
+            }
+        },
+
+        resetQuery() {
+
+            this.query = {
+                sort: [],
+                filters: [],
+                global_search: ""
+            }
+
+            $(this.$refs.global_search).val("");
+            EventBus.$emit('reset-query');
+
         }
     },
     computed: {
@@ -641,6 +832,14 @@ export default {
         // pagination info computed properties - end
         rowHighlightColor() {
             return (this.highlight_row_hover) ? this.highlight_row_hover_color : "";
+        },
+
+        headerColSpan() {
+            let count = (this.checkbox_rows) ? 1 : 0;
+
+            count += this.vbt_columns.length;
+
+            return count;
         }
 
     },
@@ -650,6 +849,11 @@ export default {
                 this.filter();
             },
             deep: true
+        },
+        "query.global_search": {
+            handler: function (newVal, oldVal) {
+                this.filter();
+            }
         },
         per_page: {
             handler: function (newVal, oldVal) {
@@ -774,6 +978,11 @@ export default {
             handler : function(newVal,oldVal) {
                 this.resetSort();
             }
+        },
+        per_page(newVal,oldVal) {
+            // if the current page is greater than possible total pages, then reset the current page to 1
+            this.page = 1;
+            this.paginateFilter();
         }
     }
 };
@@ -797,6 +1006,12 @@ export default {
         -moz-user-select: none;     /* Firefox all */
         -ms-user-select: none;      /* IE 10+ */
         user-select: none;          /* Likely future */
+    }
+    .input-group-append.vbt-global-search-clear {
+        cursor: pointer;
+    }
+    .vbt-per-page-dropdown {
+        margin-left: 8px;
     }
 </style>
 
