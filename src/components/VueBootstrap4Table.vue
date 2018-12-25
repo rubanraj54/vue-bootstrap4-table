@@ -16,11 +16,23 @@
                                         <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
                                         <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
                                             <span class="input-group-text">
-                                                <slot name="clear-simple-filter-icon">
+                                                <slot name="clear-global-search-icon">
                                                     &#x24E7;
                                                 </slot>
                                             </span>
                                         </div>
+                                    </div>
+                                    <div class="btn-group col-md-1" role="group" aria-label="Basic example">
+                                        <button type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
+                                            <slot name="refresh-button-text">
+                                                Refresh
+                                            </slot>
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" @click="resetQuery">
+                                            <slot name="reset-button-text">
+                                                Reset Query
+                                            </slot>
+                                        </button>
                                     </div>
                                 </div>
                             </th>
@@ -131,7 +143,7 @@
                                 <!-- Number of rows per page ends here -->
 
                                 <div class="input-group col-sm-2">
-                                    <input ref="global_search" type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
+                                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
                                 </div>
                             </ul>
                         </nav>
@@ -208,10 +220,6 @@ export default {
             vbt_rows: [],
             vbt_columns: [],
             query: {
-                sort: {
-                    name: null,
-                    order: "asc"
-                },
                 sort: [],
                 filters: [],
                 global_search: ""
@@ -703,6 +711,19 @@ export default {
             } else {
                 console.log("invalid page number");
             }
+        },
+
+        resetQuery() {
+
+            this.query = {
+                sort: [],
+                filters: [],
+                global_search: ""
+            }
+
+            $(this.$refs.global_search).val("");
+            EventBus.$emit('reset-query');
+
         }
     },
     computed: {

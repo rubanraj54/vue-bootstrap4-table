@@ -14,6 +14,10 @@
 <script>
     import _ from "lodash";
 
+    import {
+        EventBus
+    } from '../../event-bus.js';
+
     export default {
         name: "Simple",
         props: {
@@ -26,6 +30,11 @@
         },
         data: function() {
             return {};
+        },
+        mounted() {
+            EventBus.$on('reset-query', () => {
+                $(this.$refs.simple_filter_input).val("");
+            });
         },
         methods: {
             clearFilter() {
