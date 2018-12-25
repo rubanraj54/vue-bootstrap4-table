@@ -87,7 +87,8 @@
                         placeholder: "Enter custom Search text",
                         visibility: true,
                         case_sensitive: false // default false
-                    }
+                    },
+                    per_page_options: [1,15,20,30]
                 }
             }
         },

@@ -116,6 +116,19 @@
                                         </span>
                                     </a>
                                 </li>
+                                <!-- Number of rows per page starts here -->
+                                <div class="dropdown show vbt-per-page-dropdown">
+                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{per_page}}
+                                    </a>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <a v-for="(option, key, index) in per_page_options" :key="index" class="dropdown-item" href="" @click.prevent="perPageHandler(option)" v-bind:class="{ active:  (option == per_page)}">
+                                            {{option}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Number of rows per page ends here -->
                             </ul>
                         </nav>
                     </div>
@@ -221,7 +234,8 @@ export default {
                 placeholder: "Enter search text",
                 visibility: true,
                 case_sensitive: false
-            }
+            },
+            per_page_options : [5,10,15]
         };
     },
     mounted() {
@@ -269,6 +283,8 @@ export default {
 
             this.num_of_visibile_pagination_buttons = (_.has(this.config, 'num_of_visibile_pagination_buttons')) ? this.config.num_of_visibile_pagination_buttons : 5;
 
+            this.per_page_options = (_.has(this.config, 'per_page_options')) ? this.config.per_page_options : [5,10,15];
+
             this.per_page = (_.has(this.config, 'per_page')) ? this.config.per_page : 10;
 
             this.checkbox_rows = (_.has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
@@ -290,6 +306,7 @@ export default {
                 this.global_search.visibility = (_.has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (_.has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
             }
+
 
         },
 
@@ -569,6 +586,7 @@ export default {
         },
 
         paginateFilter() {
+
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
@@ -655,6 +673,10 @@ export default {
         clearGlobalSearch() {
             this.query.global_search = "";
             $(this.$refs.global_search).val("");
+        },
+
+        perPageHandler(option) {
+            this.per_page = option;
         }
     },
     computed: {
@@ -884,6 +906,11 @@ export default {
             handler : function(newVal,oldVal) {
                 this.resetSort();
             }
+        },
+        per_page(newVal,oldVal) {
+            // if the current page is greater than possible total pages, then reset the current page to 1
+            this.page = 1;
+            this.paginateFilter();
         }
     }
 };
@@ -910,6 +937,9 @@ export default {
     }
     .input-group-append.vbt-global-search-clear {
         cursor: pointer;
+    }
+    .vbt-per-page-dropdown {
+        margin-left: 8px;
     }
 </style>
 
