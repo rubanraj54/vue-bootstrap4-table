@@ -26,7 +26,7 @@
                                     <!-- global search text ends here -->
 
                                     <!-- refresh & reset button starts here -->
-                                    <div class="btn-group col-md-1" role="group" aria-label="Basic example">
+                                    <div class="btn-group col-md-2" role="group" aria-label="Basic example">
                                         <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
                                             <slot name="refresh-button-text">
                                                 Refresh
@@ -41,7 +41,7 @@
                                     <!-- refresh & reset button ends here -->
 
                                     <!-- action buttons starts here -->
-                                    <div class="btn-group col-md-9 justify-content-end" role="group" aria-label="Basic example">
+                                    <div class="btn-group col-md-8 justify-content-end" role="group" aria-label="Basic example">
                                         <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
                                             {{action.btn_text}}
                                         </button>
