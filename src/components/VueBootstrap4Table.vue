@@ -23,12 +23,12 @@
                                         </div>
                                     </div>
                                     <div class="btn-group col-md-1" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
+                                        <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
                                             <slot name="refresh-button-text">
                                                 Refresh
                                             </slot>
                                         </button>
-                                        <button type="button" class="btn btn-secondary" @click="resetQuery">
+                                        <button type="button" v-if="show_reset_button" class="btn btn-secondary" @click="resetQuery">
                                             <slot name="reset-button-text">
                                                 Reset Query
                                             </slot>
@@ -248,7 +248,9 @@ export default {
                 case_sensitive: false
             },
             per_page_options : [5,10,15],
-            go_to_page: ""
+            go_to_page: "",
+            show_refresh_button: true,
+            show_reset_button: true,
         };
     },
     mounted() {
@@ -320,6 +322,9 @@ export default {
                 this.global_search.case_sensitive = (_.has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
             }
 
+            this.show_refresh_button = (_.has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
+
+            this.show_reset_button = (_.has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
 
         },
 
