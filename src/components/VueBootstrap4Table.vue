@@ -10,6 +10,23 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
+                            <th colspan="7">
+                                <div class="row">
+                                    <div class="input-group col-md-2">
+                                        <input ref="global_search" type="text" class="form-control"  @keyup.stop="updateGlobalSearch($event)">
+                                        <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
+                                            <span class="input-group-text">
+                                                <slot name="clear-simple-filter-icon">
+                                                    &#x24E7;
+                                                </slot>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+
+                        <tr>
                             <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
@@ -179,7 +196,8 @@ export default {
                     order: "asc"
                 },
                 sort: [],
-                filters: []
+                filters: [],
+                global_search: ""
             },
             page: 1,
             start: (this.page + 0),
@@ -466,9 +484,54 @@ export default {
 
                 return flag;
             });
+
             this.temp_filtered_results = res;
+
+            // Do global search only if global search text is not empty and
+            // filtered results is also not empty
+            if (this.query.global_search !== "" && this.rowCount != 0 ) {
+                this.temp_filtered_results = this.globalSearch(this.temp_filtered_results);
+            }
+
             this.sort();
             this.page = 1;
+        },
+
+        globalSearch(temp_filtered_results) {
+            let self = this;
+
+            let global_search_results = _.filter(temp_filtered_results, function (row) {
+                let flag = false;
+                _.forEach(self.vbt_columns, function (vbt_column, key) {
+
+                    let value = _.get(row, vbt_column.name);
+                    let global_search_text = self.query.global_search;
+
+                    if (typeof value === "undefined") {
+                        value =  "";
+                    }
+
+                    if (typeof value !== "string") {
+                        value = value.toString();
+                    }
+
+                    if (typeof global_search_text !== "string") {
+                        global_search_text = global_search_text.toString();
+                    }
+
+                    value = value.toLowerCase();
+                    global_search_text = global_search_text.toLowerCase();
+
+                    if (value.indexOf(global_search_text) > -1) {
+                        flag = true;
+                        return false;
+                    }
+                });
+
+                return flag;
+            });
+
+            return global_search_results;
         },
 
         simpleFilter(value, filter_text,config) {
@@ -569,6 +632,15 @@ export default {
         resetSort() {
             this.query.sort = [];
             this.filter();
+        },
+
+        updateGlobalSearch: _.debounce(function(event) {
+            this.query.global_search = event.target.value;
+        }, 60),
+
+        clearGlobalSearch() {
+            this.query.global_search = "";
+            $(this.$refs.global_search).val("");
         }
     },
     computed: {
@@ -661,6 +733,11 @@ export default {
                 this.filter();
             },
             deep: true
+        },
+        "query.global_search": {
+            handler: function (newVal, oldVal) {
+                this.filter();
+            }
         },
         per_page: {
             handler: function (newVal, oldVal) {
@@ -808,6 +885,9 @@ export default {
         -moz-user-select: none;     /* Firefox all */
         -ms-user-select: none;      /* IE 10+ */
         user-select: none;          /* Likely future */
+    }
+    .input-group-append.vbt-global-search-clear {
+        cursor: pointer;
     }
 </style>
 

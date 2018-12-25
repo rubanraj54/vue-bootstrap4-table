@@ -1,7 +1,7 @@
 <template>
     <div class="input-group">
         <input ref="simple_filter_input" type="text" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)">
-        <div class="input-group-append" @click="clearFilter">
+        <div class="input-group-append vbt-simple-filter-clear" @click="clearFilter">
             <span class="input-group-text">
                 <slot name="clear-simple-filter-icon">
                     &#x24E7;
@@ -9,7 +9,6 @@
             </span>
         </div>
     </div>
-    <!-- <input type="search" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)"> -->
 </template>
 
 <script>
@@ -48,7 +47,7 @@
 </script>
 
 <style scoped>
-    .input-group-append {
+    .input-group-append.vbt-simple-filter-clear {
         cursor: pointer;
     }
 </style>
