@@ -432,8 +432,18 @@ columns: [
 | filter.type | Defines the type of filter. Currently basic filter is supported. |Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
+
 # 9. Pagination & Info
 Pagination component is built based on Bootstrap 4 pagination template. You can enable or disable pagination and pagination info details based on your choice.
+    
+| ![Default pagination component](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/default_pagination.png) | 
+|:--:| 
+| *Default pagination component* |
+
+| ![Default pagination info compoent](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/default_pagination_info.png) | 
+|:--:| 
+| *Default pagination info compoent* |
+
 ## 9.1. Example
 ```vue
 <template>
@@ -495,6 +505,10 @@ Currently you can override "Previous" & "Next" button icon/text.
 ```
 After applying the above custom template to **`previous`** and  **`next`** button, pagination component will look like this.
 
+| ![Pagination after applying slot](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/default_pagination_slot.png) | 
+|:--:| 
+| *Pagination after applying slot* |
+
 ### 9.3.2. Pagination info
 
 ```vue
@@ -509,6 +523,10 @@ After applying the above custom template to **`previous`** and  **`next`** butto
 ...
 ```
 After applying the above custom template to pagination info , pagination info component will look like this.
+
+| ![Pagination info after applying slot](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/default_pagination_info_slot.png) | 
+|:--:| 
+| *Pagination info after applying slot* |
 
 #### 9.3.2.1. props
 From **`slot-scope="props"`** you can access the following attributes.
