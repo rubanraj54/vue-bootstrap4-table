@@ -82,7 +82,11 @@
                     rows_selectable: true,
                     multi_column_sort: false,
                     // highlight_row_hover_color:"grey",
-                    card_title: "Vue Bootsrap 4 advanced table"
+                    card_title: "Vue Bootsrap 4 advanced table",
+                    global_search: {
+                        placeholder: "Enter custom Search text",
+                        visibility: true
+                    }
                 }
             }
         },

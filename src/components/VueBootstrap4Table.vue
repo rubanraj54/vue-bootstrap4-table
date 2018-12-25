@@ -11,9 +11,9 @@
                     <thead>
                         <tr>
                             <th colspan="7">
-                                <div class="row">
+                                <div class="row" v-if="global_search.visibility">
                                     <div class="input-group col-md-2">
-                                        <input ref="global_search" type="text" class="form-control"  @keyup.stop="updateGlobalSearch($event)">
+                                        <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
                                         <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
                                             <span class="input-group-text">
                                                 <slot name="clear-simple-filter-icon">
@@ -217,6 +217,10 @@ export default {
             row_hovered: null,
             multi_column_sort:false,
             card_title: "",
+            global_search: {
+                placeholder: "Enter search text",
+                visibility: true
+            }
         };
     },
     mounted() {
@@ -279,6 +283,12 @@ export default {
             this.pagination_info = (_.has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
 
             this.card_title = (_.has(this.config, 'card_title')) ? this.config.card_title : "";
+
+            if (_.has(this.config, 'global_search')) {
+                this.global_search.placeholder = (_.has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
+                this.global_search.visibility = (_.has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
+            }
+
         },
 
         initialSort() {
