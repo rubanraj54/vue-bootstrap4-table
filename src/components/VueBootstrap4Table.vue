@@ -219,7 +219,8 @@ export default {
             card_title: "",
             global_search: {
                 placeholder: "Enter search text",
-                visibility: true
+                visibility: true,
+                case_sensitive: false
             }
         };
     },
@@ -287,6 +288,7 @@ export default {
             if (_.has(this.config, 'global_search')) {
                 this.global_search.placeholder = (_.has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
                 this.global_search.visibility = (_.has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
+                this.global_search.case_sensitive = (_.has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
             }
 
         },
@@ -529,8 +531,10 @@ export default {
                         global_search_text = global_search_text.toString();
                     }
 
-                    value = value.toLowerCase();
-                    global_search_text = global_search_text.toLowerCase();
+                    if (!self.global_search.case_sensitive) {
+                        value = value.toLowerCase();
+                        global_search_text = global_search_text.toLowerCase();
+                    }
 
                     if (value.indexOf(global_search_text) > -1) {
                         flag = true;

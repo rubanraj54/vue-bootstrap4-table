@@ -71,14 +71,6 @@
                             placeholder: "Enter country"
                         },
                     },
-                    {
-                        label: "Country",
-                        name: "address.country",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter country"
-                        },
-                    },
                 ],
                 config: {
                     pagination: true,
@@ -93,7 +85,8 @@
                     card_title: "Vue Bootsrap 4 advanced table",
                     global_search: {
                         placeholder: "Enter custom Search text",
-                        visibility: true
+                        visibility: true,
+                        case_sensitive: false // default false
                     }
                 }
             }
