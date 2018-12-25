@@ -129,6 +129,10 @@
                                     </div>
                                 </div>
                                 <!-- Number of rows per page ends here -->
+
+                                <div class="input-group col-sm-2">
+                                    <input ref="global_search" type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
+                                </div>
                             </ul>
                         </nav>
                     </div>
@@ -235,7 +239,8 @@ export default {
                 visibility: true,
                 case_sensitive: false
             },
-            per_page_options : [5,10,15]
+            per_page_options : [5,10,15],
+            go_to_page: ""
         };
     },
     mounted() {
@@ -677,6 +682,27 @@ export default {
 
         perPageHandler(option) {
             this.per_page = option;
+        },
+
+        gotoPage() {
+            if (this.go_to_page >= 1 && this.go_to_page <= this.totalPages) {
+
+                let go_to_page = parseInt(this.go_to_page);
+                this.page = go_to_page;
+
+                if (!_.includes(this.range,go_to_page)) {
+                    if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
+                        this.end = this.totalPages;
+                        this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
+                    } else {
+                        this.start = go_to_page;
+                        this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
+                    }
+                }
+
+            } else {
+                console.log("invalid page number");
+            }
         }
     },
     computed: {
