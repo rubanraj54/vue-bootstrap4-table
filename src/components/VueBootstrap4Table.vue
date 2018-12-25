@@ -10,7 +10,7 @@
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th colspan="7">
+                            <th :colspan="headerColSpan">
                                 <div class="row" v-if="global_search.visibility">
                                     <div class="input-group col-md-2">
                                         <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
@@ -734,6 +734,14 @@ export default {
         // pagination info computed properties - end
         rowHighlightColor() {
             return (this.highlight_row_hover) ? this.highlight_row_hover_color : "";
+        },
+
+        headerColSpan() {
+            let count = (this.checkbox_rows) ? 1 : 0;
+
+            count += this.vbt_columns.length;
+
+            return count;
         }
 
     },

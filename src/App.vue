@@ -71,6 +71,14 @@
                             placeholder: "Enter country"
                         },
                     },
+                    {
+                        label: "Country",
+                        name: "address.country",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter country"
+                        },
+                    },
                 ],
                 config: {
                     pagination: true,
