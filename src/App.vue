@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" @on-select-rows="onSelectRows">
             <template slot="pagination-info" slot-scope="props">
                 This page total is {{props.currentPageRowsLength}} |
                 Filterd results total is {{props.filteredRowsLength}} |
@@ -27,7 +27,7 @@
                             placeholder: "id"
                         },
                         sort: true,
-                        uniqueId: true
+                        // uniqueId: true
                     },
                     {
                         label: "First Name",
@@ -84,6 +84,12 @@
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table"
                 }
+            }
+        },
+        methods: {
+            onSelectRows(payload) {
+                console.log(payload);
+
             }
         },
         components: {

@@ -339,6 +339,8 @@ export default {
 
             this.selected_items.push(item);
 
+            this.$emit('on-select-rows', {"seleted_items":this.selected_items,"selected_item":item});
+
             let difference = [];
 
             if (!_.isEmpty(this.uniqueId)) {
@@ -366,6 +368,9 @@ export default {
             }
 
             this.selected_items.push(...difference);
+
+            this.$emit('on-all-select-rows', {"seleted_items":this.selected_items});
+
         },
         unSelectAllItems() {
 
@@ -379,6 +384,9 @@ export default {
             }
 
             this.selected_items = difference;
+
+            this.$emit('on-all-unselect-rows', {"seleted_items":this.selected_items});
+
         },
         removeSelectedItem(item) {
             let self = this;
@@ -388,6 +396,9 @@ export default {
                     return false;
                 }
             });
+
+            this.$emit('on-unselect-rows', {"seleted_items":this.selected_items,"unselected_item":item});
+
             // EventBus.$emit('unselect-select-all-items-checkbox');
             this.select_all_rows = false;
         },
