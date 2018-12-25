@@ -12,6 +12,7 @@
                         <tr>
                             <th :colspan="headerColSpan">
                                 <div class="row" v-if="global_search.visibility">
+                                    <!-- global search text starts here -->
                                     <div class="input-group col-md-2">
                                         <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
                                         <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
@@ -22,6 +23,9 @@
                                             </span>
                                         </div>
                                     </div>
+                                    <!-- global search text ends here -->
+
+                                    <!-- refresh & reset button starts here -->
                                     <div class="btn-group col-md-1" role="group" aria-label="Basic example">
                                         <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
                                             <slot name="refresh-button-text">
@@ -34,6 +38,16 @@
                                             </slot>
                                         </button>
                                     </div>
+                                    <!-- refresh & reset button ends here -->
+
+                                    <!-- action buttons starts here -->
+                                    <div class="btn-group col-md-9 justify-content-end" role="group" aria-label="Basic example">
+                                        <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
+                                            {{action.btn_text}}
+                                        </button>
+                                    </div>
+                                    <!-- action buttons button ends here -->
+
                                 </div>
                             </th>
                         </tr>
@@ -213,7 +227,13 @@ export default {
             default: function () {
                 return {};
             }
-        }
+        },
+        actions: {
+            type: Array,
+            default: function () {
+                return [];
+            }
+        },
     },
     data: function () {
         return {
