@@ -1,3 +1,4 @@
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -433,6 +434,60 @@ columns: [
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
 
+# Global search
+Global search searches the complete list of rows for the given search keyword.
+
+You can enable or disable search text input with custom configuration as shown in the below example.
+
+## Example
+
+```vue
+<template>
+    <div id="app">
+        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+        </vue-bootstrap4-table>
+    </div>
+</template>
+
+<script>
+    import VueBootstrap4Table from 'vue-bootstrap4-table'
+
+    export default {
+        name: 'App',
+        data: function() {
+            return {
+                rows: [
+                ...
+                ],
+                columns: [
+                ...
+                ],
+                config: {
+                    ...
+                   global_search: {
+                        placeholder: "Enter custom Search text",
+                        visibility: true,
+                        case_sensitive: false
+                    },
+                    ...
+                }
+            }
+        },
+        components: {
+            VueBootstrap4Table
+        }
+    }
+</script>
+```
+## Attributes details
+
+| Attributes | Description | Type| Default |
+|--|--|--|--|
+| global_search.placeholder | Placeholder is **`hint`** text for search text box | String | "Enter search text" |
+| global_search.visibility | Show/Hide global search text input | Boolean | true |
+| global_search.case_sensitive | Enable/Disable case sensitive searching. | Boolean | false |
+
+
 # 9. Pagination & Info
 Pagination component is built based on Bootstrap 4 pagination template. You can enable or disable pagination and pagination info details based on your choice.
     
@@ -471,6 +526,7 @@ Pagination component is built based on Bootstrap 4 pagination template. You can 
                     pagination_info: true, // default true
                     num_of_visibile_pagination_buttons: 7, // default 5
                     per_page: 5, // default 10
+                    per_page_options:  [5,  10,  20,  30],
                 }
             }
         },
@@ -487,7 +543,7 @@ Pagination component is built based on Bootstrap 4 pagination template. You can 
 | pagination_info |Enable/Disable pagination info in the table  |  Boolean|  true|
 |num_of_visibile_pagination_buttons  | Limit the number of visible pagination buttons in the pagination bar | Number | 5 |
 | per_page |Number of rows to display per page  |Number  |10  |
-
+| per_page_options |List of options to choose how many rows being showed in single page  |Array of numbers  |[5,10,15]  |
 ## 9.3. Slot
 Currently you can override "Previous" & "Next" button icon/text.
 ### 9.3.1. Previous & Next button
@@ -537,6 +593,136 @@ From **`slot-scope="props"`** you can access the following attributes.
 | props.filteredRowsLength | Total number of items in the result after filtering |
 |  props.originalRowsLength| Original number of items in the data|
 
+# Refresh and Reset button
+
+## Refresh Button
+
+Refresh button emits a refresh event to your application (parent component). You can listen for this event and make ajax call for new data and update **`rows`** data. Table will receive the new data and update the rows with current queries.
+
+### Example
+
+```vue
+<template>
+    <div id="app">
+        <vue-bootstrap4-table :rows="rows" 
+                                :columns="columns" 
+                                :config="config"
+                                @refresh-data="onRefreshData">
+        </vue-bootstrap4-table>
+    </div>
+</template>
+
+<script>
+    import VueBootstrap4Table from 'vue-bootstrap4-table'
+
+    export default {
+        name: 'App',
+        data: function() {
+            return {
+                rows: [
+                ...
+                ],
+                columns: [
+                ...
+                ],
+                config: {
+                    ...
+                    show_refresh_button: true, // default is also true
+                    ...
+                }
+            }
+        },
+        methods: {
+            onRefreshData() {
+                // you can make ajax call here for new data and 
+                // set result to this.rows
+            }
+        },
+        components: {
+            VueBootstrap4Table
+        }
+    }
+</script>
+```
+
+## Reset button
+
+Reset button resets currently applied **`sorting, filtering, and global search`** queries.
+
+By default reset button is enabled. If you would like to disable reset button, set **`show_reset_button`** to **`false`** in initial config.
+
+| Attributes | Description | type | Default |
+|--|--|--|--|
+|show_refresh_button  | Show/Hide Refresh button | Boolean | true |
+| show_reset_button | Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. | Boolean | true |
+
+# Custom action buttons
+
+You can add your custom buttons in the table by **`actions`** props and listen for their events in your component.
+
+## Example
+
+```vue
+<template>
+    <div id="app">
+        <vue-bootstrap4-table :rows="rows" 
+                                :columns="columns" 
+                                :config="config"
+                                @on-download="onDownload">
+        </vue-bootstrap4-table>
+    </div>
+</template>
+
+<script>
+    import VueBootstrap4Table from 'vue-bootstrap4-table'
+
+    export default {
+        name: 'App',
+        data: function() {
+            return {
+                rows: [
+                ...
+                ],
+                columns: [
+                ...
+                ],
+                actions: [
+                    {
+                        btn_text: "Download",
+                        event_name: "on-download",
+                        event_payload: {
+                            msg: "my custom msg"
+                        }
+                    }
+                ],
+                config: {
+                    ...
+                }
+            }
+        },
+        methods: {
+            onDownload(payload) {
+                console.log(payload);
+            }
+        },
+        components: {
+            VueBootstrap4Table
+        }
+    }
+</script>
+```
+
+Each action object should contain the below attributes.
+
+## Attributes details
+
+| Attributes | Description | type | Default |
+|--|--|--|--|
+| btn_name | Display name for the button |String  |  " "|
+| event_name |  Name of the event that you want to listen back (Mandatory)| String | undefined |
+| event_payload | Payload you want to send with the event | Any | undefined |
+
+
 # 10. Config
 You can optionally pass config as a prop to **`vue-bootstrap4-table`** component to override the table configuration defaults.
 
@@ -563,16 +749,24 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
                 ...
                 ],
                 config: {
-                    pagination: true, // default true
-                    pagination_info: true, // default true
-                    num_of_visibile_pagination_buttons: 7, // default 5
-                    per_page: 5, // default 10
-                    checkbox_rows: true, // default false
-                    highlight_row_hover: true, // default true
-                    rows_selectable: true, // default false
-                    multi_column_sort: true, // default false
-                    highlight_row_hover_color:"grey", // default "#d6d6d6"
-                    card_title: "Vue Bootsrap 4 advanced table" // default ""
+                    pagination: true,
+                    pagination_info: true, 
+                    num_of_visibile_pagination_buttons: 7, 
+                    per_page: 5, 
+                    checkbox_rows: true, 
+                    highlight_row_hover: true, 
+                    rows_selectable: true, 
+                    multi_column_sort: true, 
+                    highlight_row_hover_color:"grey", 
+                    card_title: "Vue Bootsrap 4 advanced table",
+                    global_search:  {
+	                    placeholder:  "Enter custom Search text",
+	                    visibility:  true,
+	                    case_sensitive:  false
+	                },
+	                per_page_options:  [5,  10,  20,  30],
+	                show_refresh_button:  true,
+	                show_reset_button:  true,
                 }
             }
         },
@@ -599,7 +793,60 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | multi_column_sort | Enable/Disable multi column sorting | Boolean|  false|
 | highlight_row_hover_color | Change the row hover highlighting color | String| "#d6d6d6" |
 | card_title | Sets the table title in the card header | String| "" (empty string) |
+|  global_search.placeholder | Placeholder is **`hint`** text for search text box  | String  |  "Enter search text" |
+| global_search.visibility  |  Show/Hide global search text input |  Boolean |  true |
+|global_search.case_sensitive   | Enable/Disable case sensitive searching.  | Boolean  |  false |
+| per_page_options  | List of options to choose how many rows being showed in single page  |  Array of numbers  | [5,10,15]|
+| show_refresh_button  |  Show/Hide Refresh button | Boolean  | true  |
+| show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
 
+# Events
+
+## on-select-row
+
+Triggered after selecting a row.
+
+### Payload (Object)
+
+|  Attribute| Description |
+|--|--|
+|selected_items  | List of currently selected rows |
+| selected_item | Currently selected item |
+
+## on-all-select-rows
+
+Triggers after clicking select all check box.
+
+### Payload (Object)
+
+|  Attribute| Description |
+|--|--|
+|selected_items  | List of currently selected rows |
+
+## on-unselect-row
+
+Triggered after deselecting a row.
+
+### Payload (Object)
+
+|  Attribute| Description |
+|--|--|
+|selected_items  | List of currently selected rows |
+| unselected_item |Currently deselected item |
+
+## on-all-unselect-rows
+
+Triggers after clicking deselect all check box.
+
+### Payload (Object)
+
+|  Attribute| Description |
+|--|--|
+|selected_items  | List of currently selected rows |
+
+## refresh-data
+
+Triggers after clicking refresh button. This event doesn't carry any payload.
 
 # 11. Build Setup
 
