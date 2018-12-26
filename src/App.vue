@@ -1,10 +1,16 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-rows="onSelectRows" @refresh-data="onRefreshData" @on-test="testone">
+        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-row="onSelectRows" @refresh-data="onRefreshData" @on-download="onDownload">
             <template slot="pagination-info" slot-scope="props">
                     This page total is {{props.currentPageRowsLength}} |
                     Filterd results total is {{props.filteredRowsLength}} |
                     Original data total is {{props.originalRowsLength}}
+            </template>
+            <template slot="refresh-button-text">
+                ⟳ my refresh
+            </template>
+            <template slot="reset-button-text">
+                ⟳ my reset
             </template>
         </vue-bootstrap4-table>
     </div>
@@ -94,19 +100,11 @@
                 msg : "msg from parent",
                 actions: [
                     {
-                        btn_text: "test",
-                        event_name: "on-test",
+                        btn_text: "Download",
+                        event_name: "on-download",
                         event_payload: {
                             msg: "my custom msg"
                         }
-                    },
-                    {
-                        btn_text: "test2",
-                        event_name: "on-test-two"
-                    },
-                    {
-                        btn_text: "test3",
-                        event_name: "on-test-three"
                     }
                 ],
             }
@@ -115,7 +113,8 @@
             onSelectRows(payload) {
                 console.log(payload);
             },
-            testone(payload) {
+            onDownload(payload) {
+                alert(payload.msg)
                 console.log(payload);
             },
             onRefreshData() {
