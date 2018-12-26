@@ -222,6 +222,10 @@ export default {
             type: Array,
             required: true
         },
+        totalRows: {
+            type: Number,
+            default: 0
+        },
         config: {
             type: Object,
             default: function () {
@@ -271,6 +275,8 @@ export default {
             go_to_page: "",
             show_refresh_button: true,
             show_reset_button: true,
+            server_mode: false,
+            total_rows: 0
         };
     },
     mounted() {
@@ -346,6 +352,8 @@ export default {
 
             this.show_reset_button = (_.has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
 
+            this.server_mode = (_.has(this.config, 'server_mode')) ? (this.config.server_mode) : false;
+
         },
 
         initialSort() {
@@ -417,10 +425,13 @@ export default {
             } else {
                 this.query.sort[result].order = this.query.sort[result].order == "asc" ? "desc" : "asc";
             }
-
-            this.sort();
+            if (!this.server_mode) {
+                this.sort();
+            }
+            // this.sort();
         },
         addSelectedItem(item) {
+            // console.log(item);
 
             this.selected_items.push(item);
 
@@ -447,7 +458,11 @@ export default {
             let difference = [];
 
             if (!_.isEmpty(this.uniqueId)) {
-                difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                if (this.server_mode) {
+                    difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                } else {
+                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                }
             } else {
                 console.log('Unique id not found');
             }
@@ -529,6 +544,7 @@ export default {
         },
 
         filter() {
+
             let self = this;
 
             let res = _.filter(this.original_rows, function (row) {
@@ -628,9 +644,19 @@ export default {
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
-                this.vbt_rows = this.temp_filtered_results.slice(start, end);
+                if (!this.server_mode) {
+                    this.vbt_rows = this.temp_filtered_results.slice(start, end);
+                } else {
+                    this.emitQueryParams();
+                    // this.$emit('on-change-query',_.cloneDeep(this.query));
+                }
             } else {
-                this.vbt_rows = _.cloneDeep(this.temp_filtered_results);
+                if (!this.server_mode) {
+                    this.vbt_rows = _.cloneDeep(this.temp_filtered_results);
+                } else {
+                    this.emitQueryParams();
+                    // this.$emit('on-change-query',_.cloneDeep(this.query));
+                }
             }
         },
 
@@ -688,11 +714,15 @@ export default {
             return _.get(row,this.uniqueId) == row_hovered;
         },
         selectCheckboxByRow(row) {
-            let result = _.find(this.selected_items, function(selected_item,key){
-                return _.get(selected_item,this.uniqueId) == _.get(row,this.uniqueId);
-            }.bind(this));
+            let matches = [];
 
-            if (typeof result === "undefined") {
+            if (!this.hasUniqueId) {
+                matches = _.intersectionWith(this.selected_items, [row], _.isEqual);
+            } else {
+                matches = _.intersectionBy(this.selected_items, [row], this.uniqueId);
+            }
+
+            if (matches.length == 0) {
                 this.addSelectedItem(row);
             } else {
                 this.removeSelectedItem(row);
@@ -749,6 +779,28 @@ export default {
             $(this.$refs.global_search).val("");
             EventBus.$emit('reset-query');
 
+        },
+
+        emitQueryParams() {
+            if (this.server_mode) {
+                let queryParams = _.cloneDeep(this.query);
+                let sort = _.map(queryParams.sort, o => _.omit(o, 'vbt_col_id'));
+                let filters = _.map(queryParams.filters, o => _.omit(o, 'config'));
+                let global_search = queryParams.global_search;
+                let per_page = _.clone(this.per_page);
+                let page = _.clone(this.page);
+
+                let payload = {
+                    sort : sort,
+                    filters : filters,
+                    global_search : global_search,
+                    per_page : per_page,
+                    page: page
+                }
+
+                this.$emit('on-change-query',payload);
+                // console.log(queryParams);
+            }
         }
     },
     computed: {
@@ -777,7 +829,12 @@ export default {
         },
         // pagination computed properties -end
         rowCount() {
-            return this.temp_filtered_results.length;
+            if (!this.server_mode) {
+                return this.temp_filtered_results.length;
+            } else {
+                return this.totalRows;
+            }
+                // return this.temp_filtered_results.length;
         },
         selectedItemsCount() {
             return this.selected_items.length;
@@ -826,7 +883,7 @@ export default {
         },
 
         originalRowsLength() {
-            return this.rows.length;
+            return (this.server_mode)? this.rowCount : this.rows.length;
         },
 
         // pagination info computed properties - end
@@ -846,23 +903,41 @@ export default {
     watch: {
         "query.filters": {
             handler: function (after, before) {
-                this.filter();
+                if (!this.server_mode) {
+                    this.filter();
+                }
             },
             deep: true
         },
         "query.global_search": {
             handler: function (newVal, oldVal) {
-                this.filter();
+                if (!this.server_mode) {
+                    this.filter();
+                }
+                // this.filter();
             }
+        },
+        "query": {
+            handler: function (newVal, oldVal) {
+                if (this.server_mode) {
+                    this.emitQueryParams();
+                    // this.$emit('on-change-query',_.cloneDeep(newVal));
+                }
+            },
+            deep: true
         },
         per_page: {
             handler: function (newVal, oldVal) {
-                this.paginateFilter();
+                if (!this.server_mode) {
+                    this.paginateFilter();
+                }
             }
         },
         pagination: {
             handler: function (newVal, oldVal) {
-                this.paginateFilter();
+                if (!this.server_mode) {
+                    this.paginateFilter();
+                }
             }
         },
         rows: {
@@ -880,7 +955,14 @@ export default {
                     return _.extend({}, element, extra);
                 });
 
-                this.filter();
+                if (!this.server_mode) {
+                    this.filter();
+                } else {
+                    this.vbt_rows = _.cloneDeep(this.original_rows);
+                    // this.paginateFilter();
+                }
+                    // this.filter();
+
             },
             deep: true
         },
@@ -1016,9 +1098,10 @@ export default {
 </style>
 
 
-// workflow
+// workflow - server
 // get data(payload)
 // clone to origin_rows
 // do filter
+// do global search
 // do sort
 // do paginate
