@@ -35,7 +35,7 @@
                             placeholder: "id"
                         },
                         sort: true,
-                        // uniqueId: true
+                        uniqueId: true
                     },
                     {
                         label: "Payment Amount",

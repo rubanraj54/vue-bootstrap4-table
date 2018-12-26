@@ -440,7 +440,15 @@ export default {
             let difference = [];
 
             if (!_.isEmpty(this.uniqueId)) {
-                difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                if (this.server_mode) {
+                    if (this.hasUniqueId) {
+                        difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                    } else {
+                        difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
+                    }
+                } else {
+                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                }
             } else {
                 console.log('Unique id not found');
             }
@@ -459,7 +467,11 @@ export default {
 
             if (!_.isEmpty(this.uniqueId)) {
                 if (this.server_mode) {
-                    difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                    if (this.hasUniqueId) {
+                        difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                    } else {
+                        difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
+                    }
                 } else {
                     difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
                 }
@@ -477,8 +489,18 @@ export default {
             let difference = [];
 
             if (!_.isEmpty(this.uniqueId)) {
-                let result = _.intersectionBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
-                difference = _.differenceBy(this.selected_items, result, this.uniqueId);
+                if (this.server_mode) {
+                    if (this.hasUniqueId) {
+                        let result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                        difference = _.differenceBy(this.selected_items, result, this.uniqueId);
+                    } else {
+                        let result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
+                        difference = _.differenceWith(this.selected_items, result, _.isEqual);
+                    }
+                } else {
+                    let result = _.intersectionBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
+                    difference = _.differenceBy(this.selected_items, result, this.uniqueId);
+                }
             } else {
                 console.log('Unique id not found');
             }
@@ -705,13 +727,23 @@ export default {
             return column.name.replace('.','_');
         },
         rowHovered(row) {
-            this.row_hovered = _.get(row,this.uniqueId);
+            // if it is server mode and
+            // doesnt have unique id, then set the complete row object to row_hovered
+            if (this.server_mode && !this.hasUniqueId) {
+                this.row_hovered = row;
+            } else {
+                this.row_hovered = _.get(row,this.uniqueId);
+            }
         },
         rowHoveredOut() {
             this.row_hovered = null;
         },
         canHighlightHover(row,row_hovered) {
-            return _.get(row,this.uniqueId) == row_hovered;
+            if (this.server_mode && !this.hasUniqueId) {
+                return _.isEqual(row, row_hovered)
+            } else {
+                return _.get(row,this.uniqueId) == row_hovered;
+            }
         },
         selectCheckboxByRow(row) {
             let matches = [];
@@ -946,19 +978,19 @@ export default {
                 this.vbt_rows = _.cloneDeep(this.rows);
                 let self = this;
 
-                // check if user mentioned unique id for a column, if not set unique id for all items
-                this.original_rows = _.map(this.vbt_rows, function (element, index) {
-                    let extra = {};
-                    if (!self.hasUniqueId) {
-                        extra.vbt_id = index + 1;
-                    }
-                    return _.extend({}, element, extra);
-                });
 
                 if (!this.server_mode) {
+                    // check if user mentioned unique id for a column, if not set unique id for all items
+                    this.original_rows = _.map(this.vbt_rows, function (element, index) {
+                        let extra = {};
+                        if (!self.hasUniqueId) {
+                            extra.vbt_id = index + 1;
+                        }
+                        return _.extend({}, element, extra);
+                    });
                     this.filter();
                 } else {
-                    this.vbt_rows = _.cloneDeep(this.original_rows);
+                    // this.vbt_rows = _.cloneDeep(this.original_rows);
                     // this.paginateFilter();
                 }
                     // this.filter();
@@ -1015,6 +1047,39 @@ export default {
             },
             deep: true
         },
+
+        vbt_rows: {
+            handler: function (newVal, oldVal) {
+
+                if (this.server_mode) {
+                    if (this.selected_items.length == 0) {
+                        // EventBus.$emit('unselect-select-all-items-checkbox');
+                        this.select_all_rows = false;
+
+                        return;
+                    }
+
+                    let difference = [];
+
+                    if (this.hasUniqueId) {
+                        difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
+                    } else {
+                        difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
+                    }
+
+                    if (difference.length == 0) {
+                        // EventBus.$emit('select-select-all-items-checkbox');
+                        this.select_all_rows = true;
+                    } else {
+                        this.select_all_rows = false;
+                        // EventBus.$emit('unselect-select-all-items-checkbox');
+                    }
+                }
+
+            },
+            deep: true
+        },
+
         page(newVal, oldVal) {
             if (newVal == this.totalPages) {
                 this.start = newVal - (this.paginationLimit - 1);
