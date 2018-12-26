@@ -428,10 +428,8 @@ export default {
             if (!this.server_mode) {
                 this.sort();
             }
-            // this.sort();
         },
         addSelectedItem(item) {
-            // console.log(item);
 
             this.selected_items.push(item);
 
@@ -439,18 +437,10 @@ export default {
 
             let difference = [];
 
-            if (!_.isEmpty(this.uniqueId)) {
-                if (this.server_mode) {
-                    if (this.hasUniqueId) {
-                        difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
-                    } else {
-                        difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
-                    }
-                } else {
-                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
-                }
+            if (this.server_mode && !this.hasUniqueId) {
+                difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
             } else {
-                console.log('Unique id not found');
+                difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
 
             if (difference.length == 0) {
@@ -465,18 +455,10 @@ export default {
 
             let difference = [];
 
-            if (!_.isEmpty(this.uniqueId)) {
-                if (this.server_mode) {
-                    if (this.hasUniqueId) {
-                        difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
-                    } else {
-                        difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
-                    }
-                } else {
-                    difference = _.differenceBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
-                }
+            if (this.server_mode && !this.hasUniqueId) {
+                difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
             } else {
-                console.log('Unique id not found');
+                difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
 
             this.selected_items.push(...difference);
@@ -488,21 +470,12 @@ export default {
 
             let difference = [];
 
-            if (!_.isEmpty(this.uniqueId)) {
-                if (this.server_mode) {
-                    if (this.hasUniqueId) {
-                        let result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
-                        difference = _.differenceBy(this.selected_items, result, this.uniqueId);
-                    } else {
-                        let result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
-                        difference = _.differenceWith(this.selected_items, result, _.isEqual);
-                    }
-                } else {
-                    let result = _.intersectionBy(this.temp_filtered_results, this.selected_items, this.uniqueId);
-                    difference = _.differenceBy(this.selected_items, result, this.uniqueId);
-                }
+            if (this.server_mode && !this.hasUniqueId) {
+                let result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
+                difference = _.differenceWith(this.selected_items, result, _.isEqual);
             } else {
-                console.log('Unique id not found');
+                let result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                difference = _.differenceBy(this.selected_items, result, this.uniqueId);
             }
 
             this.selected_items = difference;
@@ -831,7 +804,6 @@ export default {
                 }
 
                 this.$emit('on-change-query',payload);
-                // console.log(queryParams);
             }
         }
     },
@@ -866,7 +838,6 @@ export default {
             } else {
                 return this.totalRows;
             }
-                // return this.temp_filtered_results.length;
         },
         selectedItemsCount() {
             return this.selected_items.length;
@@ -946,14 +917,12 @@ export default {
                 if (!this.server_mode) {
                     this.filter();
                 }
-                // this.filter();
             }
         },
         "query": {
             handler: function (newVal, oldVal) {
                 if (this.server_mode) {
                     this.emitQueryParams();
-                    // this.$emit('on-change-query',_.cloneDeep(newVal));
                 }
             },
             deep: true
@@ -976,11 +945,10 @@ export default {
             handler: function (newVal, oldVal) {
 
                 this.vbt_rows = _.cloneDeep(this.rows);
-                let self = this;
-
 
                 if (!this.server_mode) {
                     // check if user mentioned unique id for a column, if not set unique id for all items
+                    let self = this;
                     this.original_rows = _.map(this.vbt_rows, function (element, index) {
                         let extra = {};
                         if (!self.hasUniqueId) {
@@ -989,11 +957,7 @@ export default {
                         return _.extend({}, element, extra);
                     });
                     this.filter();
-                } else {
-                    // this.vbt_rows = _.cloneDeep(this.original_rows);
-                    // this.paginateFilter();
                 }
-                    // this.filter();
 
             },
             deep: true
@@ -1002,7 +966,6 @@ export default {
             handler: function (newVal, oldVal) {
 
                 this.vbt_columns = _.cloneDeep(this.columns);
-                let self = this;
 
                 this.vbt_columns = _.map(this.vbt_columns, function (element, index) {
                     let extra = {};
@@ -1020,21 +983,22 @@ export default {
             },
             deep: true
         },
-        temp_filtered_results: {
+
+        vbt_rows: {
             handler: function (newVal, oldVal) {
+
                 if (this.selected_items.length == 0) {
                     // EventBus.$emit('unselect-select-all-items-checkbox');
                     this.select_all_rows = false;
-
                     return;
                 }
 
                 let difference = [];
 
-                if (!_.isEmpty(this.uniqueId)) {
-                    difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
+                if (this.server_mode && !this.hasUniqueId) {
+                    difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
                 } else {
-                    console.log("unique id not found");
+                    difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
                 }
 
                 if (difference.length == 0) {
@@ -1043,37 +1007,6 @@ export default {
                 } else {
                     this.select_all_rows = false;
                     // EventBus.$emit('unselect-select-all-items-checkbox');
-                }
-            },
-            deep: true
-        },
-
-        vbt_rows: {
-            handler: function (newVal, oldVal) {
-
-                if (this.server_mode) {
-                    if (this.selected_items.length == 0) {
-                        // EventBus.$emit('unselect-select-all-items-checkbox');
-                        this.select_all_rows = false;
-
-                        return;
-                    }
-
-                    let difference = [];
-
-                    if (this.hasUniqueId) {
-                        difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
-                    } else {
-                        difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
-                    }
-
-                    if (difference.length == 0) {
-                        // EventBus.$emit('select-select-all-items-checkbox');
-                        this.select_all_rows = true;
-                    } else {
-                        this.select_all_rows = false;
-                        // EventBus.$emit('unselect-select-all-items-checkbox');
-                    }
                 }
 
             },
