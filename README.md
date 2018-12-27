@@ -803,11 +803,11 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
 | server_mode  |  Enable/Disable server side processing (Sorting, Filtering, Global search & pagination) |Boolean   | false  |
 
-# Server mode
+# 14. Server mode
 
 In server mode, client side filtering, sorting, global search and pagination will be disabled. Instead your server will do all this and returns only the processed response. New response will update the rows in the table.
 
-## Example
+## 14.1. Example
 
 ```vue
 <template>
@@ -883,7 +883,7 @@ In server mode, client side filtering, sorting, global search and pagination wil
 </style>
 ```
 
-### Step 1
+### 14.1.1. Step 1
 
 In your application you should have the below information in **`data.`**
 
@@ -898,7 +898,7 @@ queryParams: {
 total_rows: 0,
 ```
 
-### Step 2
+### 14.1.2. Step 2
 
 If you want to work with pagination, then don't forget to set **`total_rows`** as prop to **`totalRows`**.
 
@@ -913,7 +913,7 @@ Then listen for the event **`on-change-query`**.
 </vue-bootstrap4-table>
 ```
 
-### Step 3
+### 14.1.3. Step 3
 
 Wherever there is a change in table query params, you will get your new query params in your **`onChangeQuery`** function. With the new values update your **`queryParams`** and fetch new data from server.
 
@@ -924,7 +924,7 @@ onChangeQuery(queryParams) {
 },
 ```
 
-### Step 4
+### 14.1.4. Step 4
 
 I assume you are using **`axios`** library for handling ajax requests.
 
@@ -948,55 +948,55 @@ fetchData() {
         });
 }
 ```
-# 14. Events
+# 15. Events
 
-## 14.1. on-select-row
+## 15.1. on-select-row
 
 Triggered after selecting a row.
 
-### 14.1.1. Payload (Object)
+### 15.1.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 | selected_item | Currently selected item |
 
-## 14.2. on-all-select-rows
+## 15.2. on-all-select-rows
 
 Triggers after clicking select all check box.
 
-### 14.2.1. Payload (Object)
+### 15.2.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 
-## 14.3. on-unselect-row
+## 15.3. on-unselect-row
 
 Triggered after deselecting a row.
 
-### 14.3.1. Payload (Object)
+### 15.3.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 | unselected_item |Currently deselected item |
 
-## 14.4. on-all-unselect-rows
+## 15.4. on-all-unselect-rows
 
 Triggers after clicking deselect all check box.
 
-### 14.4.1. Payload (Object)
+### 15.4.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 
-## 14.5. refresh-data
+## 15.5. refresh-data
 
 Triggers after clicking refresh button. This event doesn't carry any payload.
 
-# 15. Build Setup
+# 16. Build Setup
 
 ``` bash
 # install dependencies

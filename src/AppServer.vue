@@ -1,19 +1,10 @@
 <template>
     <div id="app">
-        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-row="onSelectRows" @refresh-data="onRefreshData" @on-change-query="onChangeQuery" @on-download="onDownload" :totalRows="total_rows">
-            <template slot="pagination-info" slot-scope="props">
-                        This page total is {{props.currentPageRowsLength}} |
-                        Filterd results total is {{props.filteredRowsLength}} |
-                        Original data total is {{props.originalRowsLength}}
-            </template>
-
-            <template slot="refresh-button-text">
-                ⟳ my refresh
-            </template>
-
-            <template slot="reset-button-text">
-                ⟳ my reset
-            </template>
+        <vue-bootstrap4-table :rows="rows"
+                              :columns="columns"
+                              :config="config"
+                              @on-change-query="onChangeQuery"
+                              :totalRows="total_rows">
         </vue-bootstrap4-table>
     </div>
 </template>
@@ -108,84 +99,19 @@
                         }
                     })
                     .then(function(response) {
-                        console.log(response);
-
                         self.rows = response.data.data;
                         self.total_rows = response.data.total;
                     })
                     .catch(function(error) {
                         console.log(error);
                     });
-            },
-            onSelectRows(payload) {
-                console.log(payload);
-            },
-            onDownload(payload) {
-                alert(payload.msg)
-                console.log(payload);
-            },
-            onRefreshData() {
-                let dummy = [{
-                    "name": {
-                        "first_name": "asdf",
-                        "last_name": "afds"
-                    },
-                    "id": 1,
-                    "age": 27,
-                    "address": {
-                        "city": "Port asdf",
-                        "street": "311 Marlen Skyway Suite 457",
-                        "postcode": "59419",
-                        "country": "Mayotte"
-                    },
-                    "salary": 2574,
-                    "email": "franecki.asfd@gmail.com",
-                    "website": "reichert.info",
-                    "mobile": "+1-704-796-2565"
-                }, {
-                    "name": {
-                        "first_name": "xcv",
-                        "last_name": "asdf"
-                    },
-                    "id": 2,
-                    "age": 23,
-                    "address": {
-                        "city": "asdf",
-                        "street": "asdf Tiara Valleys",
-                        "postcode": "df-4010",
-                        "country": "sdfa"
-                    },
-                    "salary": 2126,
-                    "email": "rlittle@macejkovic.biz",
-                    "website": "wisoky.com",
-                    "mobile": "+asf"
-                }, {
-                    "name": {
-                        "first_name": "asdfsdf",
-                        "last_name": "asdf"
-                    },
-                    "id": 3,
-                    "age": 30,
-                    "address": {
-                        "city": "asf",
-                        "street": "7729 Ashleigh Radial Apt. 649",
-                        "postcode": "54914-6608",
-                        "country": "Papua New Guinea"
-                    },
-                    "salary": 3805,
-                    "email": "delasfia.becker@cormier.com",
-                    "website": "ksdfuhlman.com",
-                    "mobile": "220.872.2938 x35208"
-                }];
-
-                this.rows = dummy;
             }
+
         },
         components: {
             VueBootstrap4Table
         },
         mounted() {
-            let self = this;
             this.fetchData();
         },
     }
