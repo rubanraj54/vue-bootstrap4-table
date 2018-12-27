@@ -13,10 +13,12 @@
 
 # 2. Features
 * Multi column filtering (Optimized filtering)
+* Global search
 * Single & Multi column sorting
 * Pagination (True! It works out of the box intelligently)
 * Pagination Information
 * Checkbox selection for rows
+* Client & Server mode
 * Highly customizable
 
 # 3. Installation
