@@ -1,4 +1,5 @@
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -767,6 +768,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 	                per_page_options:  [5,  10,  20,  30],
 	                show_refresh_button:  true,
 	                show_reset_button:  true,
+	                server_mode:  true,
                 }
             }
         },
@@ -799,7 +801,153 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | per_page_options  | List of options to choose how many rows being showed in single page  |  Array of numbers  | [5,10,15]|
 | show_refresh_button  |  Show/Hide Refresh button | Boolean  | true  |
 | show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
+| server_mode  |  Enable/Disable server side processing (Sorting, Filtering, Global search & pagination) |Boolean   | false  |
 
+# Server mode
+
+In server mode, client side filtering, sorting, global search and pagination will be disabled. Instead your server will do all this and returns only the processed response. New response will update the rows in the table.
+
+## Example
+
+```vue
+<template>
+    <div id="app">
+        <vue-bootstrap4-table :rows="rows"
+                              :columns="columns"
+                              :config="config"
+                              @on-change-query="onChangeQuery"
+                              :totalRows="total_rows">
+        </vue-bootstrap4-table>
+    </div>
+</template>
+
+<script>
+    import VueBootstrap4Table from 'vue-bootstrap4-table'
+    export default {
+        name: 'App',
+        data: function() {
+            return {
+                rows: [],
+                columns: [
+                ...
+                ],
+                config: {
+                    ...
+                    server_mode: true // by default false
+                    ...
+                },
+                queryParams: {
+                    sort: [],
+                    filters: [],
+                    global_search: "",
+                    per_page: 10,
+                    page: 1,
+                },
+                total_rows: 0,
+            }
+        },
+        methods: {
+            onChangeQuery(queryParams) {
+                this.queryParams = queryParams;
+                this.fetchData();
+            },
+            fetchData() {
+                let self = this;
+                axios.get('http://example.com/search', {
+                        params: {
+                            "queryParams": this.queryParams,
+                            "page": this.queryParams.page
+                        }
+                    })
+                    .then(function(response) {
+                        self.rows = response.data.data;
+                        self.total_rows = response.data.total;
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            }
+
+        },
+        components: {
+            VueBootstrap4Table
+        },
+        mounted() {
+            this.fetchData();
+        },
+    }
+</script>
+
+<style>
+
+</style>
+```
+
+### Step 1
+
+In your application you should have the below information in **`data.`**
+
+```javascript
+queryParams: {
+    sort: [],
+    filters: [],
+    global_search: "",
+    per_page: 10,
+    page: 1,
+},
+total_rows: 0,
+```
+
+### Step 2
+
+If you want to work with pagination, then don't forget to set **`total_rows`** as prop to **`totalRows`**.
+
+Then listen for the event **`on-change-query`**.
+
+```vue
+<vue-bootstrap4-table :rows="rows"
+        :columns="columns"
+        :config="config"
+        @on-change-query="onChangeQuery"
+        :totalRows="total_rows">
+</vue-bootstrap4-table>
+```
+
+### Step 3
+
+Wherever there is a change in table query params, you will get your new query params in your **`onChangeQuery`** function. With the new values update your **`queryParams`** and fetch new data from server.
+
+```javascript
+onChangeQuery(queryParams) {
+    this.queryParams = queryParams;
+    this.fetchData();
+},
+```
+
+### Step 4
+
+I assume you are using **`axios`** library for handling ajax requests.
+
+Once you have the new updated result, update **rows** with new data and also update **`total_rows`** with the total number of records.
+
+```javascript
+fetchData() {
+    let self = this;
+    axios.get('http://example.com/search', {
+            params: {
+                "queryParams": this.queryParams,
+                "page": this.queryParams.page
+            }
+        })
+        .then(function(response) {
+            self.rows = response.data.data;
+            self.total_rows = response.data.total;
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+}
+```
 # 14. Events
 
 ## 14.1. on-select-row
