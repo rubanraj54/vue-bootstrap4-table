@@ -1,5 +1,6 @@
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -49,7 +50,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.10/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.12/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -185,6 +186,10 @@ columns: [{
         label: "Email",
         name: "email",
         sort: true,
+        row_text_alignment:  "text-left",
+        column_text_alignment:  "text-left",
+        row_classes:  "my-row-class1 my-row-class2",
+        column_classes:  "my-column-class1 my-column-class2"
     },
     {
         label: "Country",
@@ -197,17 +202,21 @@ columns: [{
 ```
 
 ## 5.2. Attributes details
-|Attributes|Description|
-|--|--|
-|label | Name for the column header |
-|name | Name of the attribute that you would like to show from **`"rows"`** object. You can access nested objects properties with "." |
-|filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) |
-|filter.type | Type of filter you want to use for your column (currently **`"simple"`** filter only supported) |
-|filter.placeholder | Placeholder is **`hint`** text for filter text box |
-|filter.case_sensitive | Enable/Disable case sensitive filtering. Default value is **`false`**|
-|sort | Enable or disable sorting in column. Default value is **`false`** |
-|initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`** |
-|initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`** |
+|Attributes|Description|Type|Default|
+|--|--|--|--|
+|label | Name for the column header | String| " " |
+|name | Name of the attribute that you would like to show from **`"rows"`** object. You can access nested objects properties with "." | String| " " |
+|filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) | Object| Empty |
+|filter.type | Type of filter you want to use for your column (currently **`"simple"`** filter only supported) | String| " " |
+|filter.placeholder | Placeholder is **`hint`** text for filter text box |String |" " |
+|filter.case_sensitive | Enable/Disable case sensitive filtering.| Boolean | false |
+|sort | Enable or disable sorting in column.| Boolean | false |
+|initial_sort | Sort the column at the first time loading. This only works if **`sort`** is **`true`** | Boolean | false |
+|initial_sort_order | Sort the column at the first time loading based on given order. This only works if **`initial_sort`** is **`true`** |String | "asc" |
+| row_text_alignment | Align your text in the row cell. Possible options are, `"text-justify","text-right","text-left","text-center"` | String | "text-center" |
+| column_text_alignment | Align your text in the column header. Possible options are, `"text-justify","text-right","text-left","text-center"` | String | "text-center" |
+| row_classes | You can specify your custom classes for each row under specified column. You can add multiple classes with a space delimiter. This classes will be added to **`<td>`** element. | String | " " |
+| column_classes | You can specify your custom classes for each column header. You can add multiple classes with a space delimiter.This classes will be added to **`<th>`** element. |  String|" "  |
 
 ## 5.3. Column slot
 
