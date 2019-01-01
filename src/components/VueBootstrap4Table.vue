@@ -80,7 +80,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="table-active">
+                        <tr class="table-active" v-if="showFilterRow">
                             <td v-show="checkbox_rows"></td>
                             <td v-for="(column, key, index) in vbt_columns" :key="index">
                                 <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
@@ -963,6 +963,17 @@ export default {
 
         showToolsRow() {
             return (this.global_search.visibility == true || this.show_refresh_button == true || this.show_reset_button == true || this.actions.length > 0);
+        },
+
+        showFilterRow() {
+            let show_row = false;
+            _.forEach(this.columns,function(column,key) {
+                if (_.has(column, "filter")) {
+                    show_row = true;
+                    return false;
+                }
+            });
+            return show_row;
         }
 
     },

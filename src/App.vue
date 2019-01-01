@@ -30,13 +30,11 @@
                 columns: [{
                         label: "id",
                         name: "id",
-                        filter: {
-                            type: "simple",
-                            placeholder: "id"
-                        },
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "id"
+                        // },
                         sort: true,
-                        row_text_alignment: "text-right",
-                        column_text_alignment: "text-right",
                         // row_classes: "myrowclassone myrowclasstwo",
                         // column_classes: "column-class-one column-class-two"
                         // uniqueId: true
@@ -44,10 +42,10 @@
                     {
                         label: "First Name",
                         name: "name.first_name",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter first name"
-                        },
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter first name"
+                        // },
                         sort: true,
                         row_text_alignment: "text-left",
                         column_text_alignment: "text-right",
@@ -56,21 +54,21 @@
                     {
                         label: "Last Name",
                         name: "name.last_name",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter last name",
-                            case_sensitive: true
-                        },
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter last name",
+                        //     case_sensitive: true
+                        // },
                         sort: true,
                         row_classes: ["myrowclassone","myrowclasstwo"]
                     },
                     {
                         label: "Email",
                         name: "email",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter email"
-                        },
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter email"
+                        // },
                         sort: true,
                         row_text_alignment: "text-left",
                         column_text_alignment: "text-left",
@@ -83,10 +81,10 @@
                     {
                         label: "Country",
                         name: "address.country",
-                        filter: {
-                            type: "simple",
-                            placeholder: "Enter country"
-                        },
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter country"
+                        // },
                     },
                 ],
                 config: {
@@ -102,12 +100,12 @@
                     card_title: "Vue Bootsrap 4 advanced table",
                     global_search: {
                         placeholder: "Enter custom Search text",
-                        visibility: true,
+                        visibility: false,
                         case_sensitive: false // default false
                     },
                     per_page_options: [5, 10, 20, 30],
-                    show_reset_button: true,
-                    show_refresh_button: true,
+                    show_reset_button: false,
+                    show_refresh_button: false,
                     server_mode: false
                 },
                 msg: "msg from parent",
