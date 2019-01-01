@@ -35,6 +35,10 @@
                             placeholder: "id"
                         },
                         sort: true,
+                        row_text_alignment: "text-right",
+                        column_text_alignment: "text-right",
+                        // row_classes: "myrowclassone myrowclasstwo",
+                        // column_classes: "column-class-one column-class-two"
                         // uniqueId: true
                     },
                     {
@@ -45,6 +49,8 @@
                             placeholder: "Enter first name"
                         },
                         sort: true,
+                        row_text_alignment: "text-left",
+                        column_text_alignment: "text-right",
                         // slot_name: "my_duplicate_id_column"
                     },
                     {
@@ -56,6 +62,7 @@
                             case_sensitive: true
                         },
                         sort: true,
+                        row_classes: ["myrowclassone","myrowclasstwo"]
                     },
                     {
                         label: "Email",
@@ -65,6 +72,8 @@
                             placeholder: "Enter email"
                         },
                         sort: true,
+                        row_text_alignment: "text-left",
+                        column_text_alignment: "text-left",
                     },
                     {
                         label: "City",
