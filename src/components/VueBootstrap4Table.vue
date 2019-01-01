@@ -9,36 +9,42 @@
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead>
-                        <tr>
+                        <tr v-if="showToolsRow">
                             <th :colspan="headerColSpan">
-                                <div class="row" v-if="global_search.visibility">
-                                    <!-- global search text starts here -->
-                                    <div class="input-group col-md-2">
-                                        <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
-                                        <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
-                                            <span class="input-group-text">
-                                                <slot name="clear-global-search-icon">
-                                                    &#x24E7;
-                                                </slot>
-                                            </span>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class=row>
+                                            <!-- global search text starts here -->
+                                            <div class="col-md-6 input-group" v-if="global_search.visibility">
+                                                <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
+                                                <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
+                                                    <span class="input-group-text">
+                                                        <slot name="clear-global-search-icon">
+                                                            &#x24E7;
+                                                        </slot>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <!-- global search text ends here -->
+
+                                            <!-- refresh & reset button starts here -->
+                                            <div class="col-md-6">
+                                                <div class="btn-group" role="group" aria-label="Basic example">
+                                                    <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
+                                                        <slot name="refresh-button-text">
+                                                            Refresh
+                                                        </slot>
+                                                    </button>
+                                                    <button type="button" v-if="show_reset_button" class="btn btn-secondary" @click="resetQuery">
+                                                        <slot name="reset-button-text">
+                                                            Reset Query
+                                                        </slot>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <!-- refresh & reset button ends here -->
                                         </div>
                                     </div>
-                                    <!-- global search text ends here -->
-
-                                    <!-- refresh & reset button starts here -->
-                                    <div class="btn-group col-md-2" role="group" aria-label="Basic example">
-                                        <button v-if="show_refresh_button" type="button" class="btn btn-secondary" @click="$emit('refresh-data')">
-                                            <slot name="refresh-button-text">
-                                                Refresh
-                                            </slot>
-                                        </button>
-                                        <button type="button" v-if="show_reset_button" class="btn btn-secondary" @click="resetQuery">
-                                            <slot name="reset-button-text">
-                                                Reset Query
-                                            </slot>
-                                        </button>
-                                    </div>
-                                    <!-- refresh & reset button ends here -->
 
                                     <!-- action buttons starts here -->
                                     <div class="btn-group col-md-8 justify-content-end" role="group" aria-label="Basic example">
@@ -61,7 +67,7 @@
                             </th>
 
                             <slot name="columns" :columns="vbt_columns">
-                                <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="text-center vbt-column-header" v-bind:class="{'vbt-sort-cursor':isSortableColumn(column)}">
+                                <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="vbt-column-header" :class="columnClasses(column)">
                                     <slot :name="'column_' + getCellSlotName(column)" :column="column">
                                         {{column.label}}
                                     </slot>
@@ -83,7 +89,7 @@
                         <!-- data rows stars here -->
                         <tr v-for="(row, key, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
-                            <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" class="text-center">
+                            <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" :class="rowClasses(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
                                     {{getValueFromRow(row,column.name)}}
                                 </slot>
@@ -805,7 +811,60 @@ export default {
 
                 this.$emit('on-change-query',payload);
             }
+        },
+
+        rowClasses(column) {
+            let classes = "";
+
+            let default_text_alignment = "text-center";
+
+            //decide text alignment class - starts here
+            let alignments = ["text-justify","text-right","text-left","text-center"];
+            if (_.has(column, "row_text_alignment") && _.includes(alignments, column.row_text_alignment)) {
+                classes = classes + " " + column.row_text_alignment;
+            } else {
+                classes = classes + " " + default_text_alignment;
+            }
+            //decide text alignment class - ends here
+
+            // adding user defined classes to rows - starts here
+            if (_.has(column, "row_classes")) {
+                classes = classes + " " + column.row_classes;
+            }
+            // adding user defined classes to rows - ends here
+
+            return classes;
+        },
+
+        columnClasses(column) {
+            let classes = "";
+
+            let default_text_alignment = "text-center";
+
+            //decide text alignment class - starts here
+            let alignments = ["text-justify","text-right","text-left","text-center"];
+            if (_.has(column, "column_text_alignment") && _.includes(alignments, column.column_text_alignment)) {
+                classes = classes + " " + column.column_text_alignment;
+            } else {
+                classes = classes + " " + default_text_alignment;
+            }
+            //decide text alignment class - ends here
+
+            // adding user defined classes to rows - starts here
+            if (_.has(column, "column_classes")) {
+                classes = classes + " " + column.column_classes;
+            }
+            // adding user defined classes to rows - ends here
+
+            // adding classes for sortable column - starts here
+            if (this.isSortableColumn(column)) {
+                classes = classes + " vbt-sort-cursor";
+            }
+            // adding classes for sortable column - ends here
+
+            return classes;
         }
+
     },
     computed: {
         // pagination computed properties -start
@@ -900,6 +959,10 @@ export default {
             count += this.vbt_columns.length;
 
             return count;
+        },
+
+        showToolsRow() {
+            return (this.global_search.visibility == true || this.show_refresh_button == true || this.show_reset_button == true || this.actions.length > 0);
         }
 
     },
