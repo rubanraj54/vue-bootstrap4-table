@@ -7,6 +7,16 @@
                         Original data total is {{props.originalRowsLength}}
 </template>
 
+<template slot="sort-asc-icon">
+    <i class="fas fa-sort-up"></i>
+</template>
+<template slot="sort-desc-icon">
+    <i class="fas fa-sort-down"></i>
+</template>
+<template slot="no-sort-icon">
+    <i class="fas fa-sort"></i>
+</template>
+
 <template slot="refresh-button-text">
      ⟳ my refresh
 </template>
@@ -60,7 +70,6 @@
                         //     case_sensitive: true
                         // },
                         sort: true,
-                        row_classes: ["myrowclassone","myrowclasstwo"]
                     },
                     {
                         label: "Email",
@@ -72,6 +81,8 @@
                         sort: true,
                         row_text_alignment: "text-left",
                         column_text_alignment: "text-left",
+                        row_classes: "my-row-class1 my-row-class2",
+                        column_classes: "my-column-class1 my-column-class2"
                     },
                     {
                         label: "City",

@@ -73,7 +73,23 @@
                                     </slot>
 
                                     <template v-if='isSortableColumn(column)'>
-                                        <SortIcon :sort="query.sort" :column="column"></SortIcon>
+                                        <SortIcon :sort="query.sort" :column="column">
+                                                <template slot="vbt-sort-asc-icon">
+                                                    <slot name="sort-asc-icon">
+                                                            &#x1F825;
+                                                    </slot>
+                                                </template>
+                                                <template slot="vbt-sort-desc-icon">
+                                                    <slot name="sort-desc-icon">
+                                                            &#x1F827;
+                                                    </slot>
+                                                </template>
+                                                <template slot="vbt-no-sort-icon">
+                                                    <slot name="no-sort-icon">
+                                                            &#x1F825;&#x1F827;
+                                                    </slot>
+                                                </template>
+                                        </SortIcon>
                                     </template>
                                 </th>
                             </slot>

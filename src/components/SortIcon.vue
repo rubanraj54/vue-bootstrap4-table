@@ -1,20 +1,20 @@
 <template>
 <div class="float-right">
     <template v-if="order == 'asc'">
-        <slot name="sort-asc-icon">
-            &#x1F825;
+        <slot name="vbt-sort-asc-icon">
+
         </slot>
     </template>
 
     <template v-else-if="order==='desc'">
-        <slot name="sort-desc-icon">
-            &#x1F827;
+        <slot name="vbt-sort-desc-icon">
+
         </slot>
     </template>
 
     <template v-else>
-        <slot name="no-sort-icon">
-            &#x1F825;&#x1F827;
+        <slot name="vbt-no-sort-icon">
+
         </slot>
     </template>
 </div>
