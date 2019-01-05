@@ -59,9 +59,11 @@
             $('.dropdown-menu').on('click', function(e) {
                 e.stopPropagation();
             });
-            // EventBus.$on('reset-query', () => {
-                //     $(this.$refs.simple_filter_input).val("");
-            // });
+            EventBus.$on('reset-query', () => {
+                this.selected_option_indexes = [];
+                // console.log(333);
+
+            });
         },
         methods: {
             addOption(index) {
@@ -113,6 +115,9 @@
         },
         watch: {
             selected_option_indexes(newVal,oldVal) {
+                if (this.newVal.length === 0) {
+                    return;
+                }
                 let filtered_options = _.filter(this.options, (option,index) => {return _.includes(newVal,index)});
                 let payload = {};
                 payload.column = _.cloneDeep(this.column);
