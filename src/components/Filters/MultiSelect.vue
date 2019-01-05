@@ -34,18 +34,6 @@
                 type: Array,
                 default: function() {
                     return [
-                        {
-                            "name" : "option one",
-                            "value" : "Bindya"
-                        },
-                        {
-                            "name" : "option two",
-                            "value" : "option two"
-                        },
-                        {
-                            "name" : "option three",
-                            "value" : "option three"
-                        },
                     ]
                 }
             }

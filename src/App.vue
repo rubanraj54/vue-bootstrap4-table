@@ -60,7 +60,21 @@
                         name: "name.first_name",
                         filter: {
                             type: "multi-select",
-                            placeholder: "Enter first name"
+                            placeholder: "Enter first name",
+                            options: [
+                                {
+                                    "name" : "Bindya",
+                                    "value" : "Bindya"
+                                },
+                                {
+                                    "name" : "option two",
+                                    "value" : "option two"
+                                },
+                                {
+                                    "name" : "option three",
+                                    "value" : "option three"
+                                },
+                            ]
                         },
                         sort: true,
                         // slot_name: "my_duplicate_id_column"
