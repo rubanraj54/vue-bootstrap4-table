@@ -7,6 +7,22 @@
                         Original data total is {{props.originalRowsLength}}
 </template>
 
+<template slot="sort-asc-icon">
+    <i class="fas fa-sort-up"></i>
+</template>
+<template slot="paginataion-previous-button">
+    Previous
+</template>
+<template slot="paginataion-next-button">
+    <i class="fas fa-step-forward"></i>
+</template>
+<template slot="sort-desc-icon">
+    <i class="fas fa-sort-down"></i>
+</template>
+<template slot="no-sort-icon">
+    <i class="fas fa-sort"></i>
+</template>
+
 <template slot="refresh-button-text">
      ⟳ my refresh
 </template>
@@ -42,25 +58,22 @@
                     {
                         label: "First Name",
                         name: "name.first_name",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "Enter first name"
-                        // },
+                        filter: {
+                            type: "multi-select",
+                            placeholder: "Enter first name"
+                        },
                         sort: true,
-                        row_text_alignment: "text-left",
-                        column_text_alignment: "text-right",
                         // slot_name: "my_duplicate_id_column"
                     },
                     {
                         label: "Last Name",
                         name: "name.last_name",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "Enter last name",
-                        //     case_sensitive: true
-                        // },
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter last name",
+                            // case_sensitive: true
+                        },
                         sort: true,
-                        row_classes: ["myrowclassone","myrowclasstwo"]
                     },
                     {
                         label: "Email",
@@ -72,6 +85,8 @@
                         sort: true,
                         row_text_alignment: "text-left",
                         column_text_alignment: "text-left",
+                        row_classes: "my-row-class1 my-row-class2",
+                        column_classes: "my-column-class1 my-column-class2"
                     },
                     {
                         label: "City",
@@ -104,7 +119,7 @@
                         case_sensitive: false // default false
                     },
                     per_page_options: [5, 10, 20, 30],
-                    show_reset_button: false,
+                    show_reset_button: true,
                     show_refresh_button: false,
                     server_mode: false
                 },

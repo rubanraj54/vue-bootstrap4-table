@@ -73,19 +73,41 @@
                                     </slot>
 
                                     <template v-if='isSortableColumn(column)'>
-                                        <SortIcon :sort="query.sort" :column="column"></SortIcon>
+                                        <SortIcon :sort="query.sort" :column="column">
+                                                <template slot="vbt-sort-asc-icon">
+                                                    <slot name="sort-asc-icon">
+                                                            &#x1F825;
+                                                    </slot>
+                                                </template>
+                                                <template slot="vbt-sort-desc-icon">
+                                                    <slot name="sort-desc-icon">
+                                                            &#x1F827;
+                                                    </slot>
+                                                </template>
+                                                <template slot="vbt-no-sort-icon">
+                                                    <slot name="no-sort-icon">
+                                                            &#x1F825;&#x1F827;
+                                                    </slot>
+                                                </template>
+                                        </SortIcon>
                                     </template>
                                 </th>
                             </slot>
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- filter row starts here -->
                         <tr class="table-active" v-if="showFilterRow">
                             <td v-show="checkbox_rows"></td>
-                            <td v-for="(column, key, index) in vbt_columns" :key="index">
-                                <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                            <td v-for="(column, key, index) in vbt_columns" :key="index" align="center">
+                                <template v-if="hasFilter(column)">
+                                    <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                                    <MultiSelect v-if="column.filter.type == 'multi-select'" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
+                                </template>
                             </td>
                         </tr>
+                        <!-- filter row ends here -->
+
                         <!-- data rows stars here -->
                         <tr v-for="(row, key, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
@@ -105,68 +127,18 @@
                 <!-- pagination starts here -->
                 <div class="col-md-6">
                     <div v-if="pagination">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination">
-                                <li class="page-item" @click.prevent="pageHandler(page-1)">
-                                    <a class="page-link" href="" aria-label="Previous">
-                                        <span aria-hidden="true">
-                                            <slot name="paginataion-previous-button">
-                                                &laquo;
-                                            </slot>
-                                        </span>
-                                    </a>
-                                </li>
-                                <template v-if="!isEmpty">
-                                    <li class="page-item" v-if="showLeftDot" @click.prevent="pageHandler(1)">
-                                        <a class="page-link" href=""> 1 </a>
-                                    </li>
-                                    <li class="page-item disabled" v-if="showLeftDot">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                    <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click.prevent="pageHandler(index)">
-                                        <a class="page-link" href="">{{index}}</a>
-                                    </li>
-                                    <li class="page-item disabled" v-if="showRightDot">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                    <li class="page-item" v-if="showRightDot" @click.prevent="pageHandler(totalPages)">
-                                        <a class="page-link" href=""> {{totalPages}} </a>
-                                    </li>
-                                </template>
-
-                                <template v-else>
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                </template>
-                                <li class="page-item" @click.prevent="pageHandler(page+1)">
-                                    <a class="page-link" href="" aria-label="Next">
-                                        <span aria-hidden="true">
-                                            <slot name="paginataion-next-button">
-                                                &raquo;
-                                            </slot>
-                                        </span>
-                                    </a>
-                                </li>
-                                <!-- Number of rows per page starts here -->
-                                <div class="dropdown show vbt-per-page-dropdown">
-                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{per_page}}
-                                    </a>
-
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a v-for="(option, key, index) in per_page_options" :key="index" class="dropdown-item" href="" @click.prevent="perPageHandler(option)" v-bind:class="{ active:  (option == per_page)}">
-                                            {{option}}
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- Number of rows per page ends here -->
-
-                                <div class="input-group col-sm-2">
-                                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
-                                </div>
-                            </ul>
-                        </nav>
+                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                            <template slot="vbt-paginataion-previous-button">
+                                <slot name="paginataion-previous-button">
+                                    &laquo;
+                                </slot>
+                            </template>
+                            <template slot="vbt-paginataion-next-button">
+                                <slot name="paginataion-next-button">
+                                    &raquo;
+                                </slot>
+                            </template>
+                        </Pagination>
                     </div>
                 </div>
                 <!-- pagination ends here -->
@@ -211,7 +183,9 @@ import _ from "lodash";
 
 import CheckBox from "./CheckBox.vue";
 import SortIcon from "./SortIcon.vue";
+import Pagination from "./Pagination.vue";
 import Simple from "./Filters/Simple.vue";
+import MultiSelect from "./Filters/MultiSelect.vue";
 
 import {
     EventBus
@@ -255,8 +229,6 @@ export default {
                 global_search: ""
             },
             page: 1,
-            start: (this.page + 0),
-            end: 0,
             per_page: 10,
             original_rows: [],
             num_of_visibile_pagination_buttons: 5,
@@ -278,7 +250,6 @@ export default {
                 case_sensitive: false
             },
             per_page_options : [5,10,15],
-            go_to_page: "",
             show_refresh_button: true,
             show_reset_button: true,
             server_mode: false,
@@ -309,15 +280,13 @@ export default {
         this.filter();
         this.paginateFilter();
 
-        // pagination bootstrap - start
-        this.end = (this.page + (this.paginationLimit - 1));
-        // pagination bootstrap - end
-
     },
     components: {
         CheckBox,
         Simple,
+        MultiSelect,
         SortIcon,
+        Pagination,
     },
     methods: {
         initConfig() {
@@ -526,6 +495,33 @@ export default {
                 }
             }
         },
+        updateMultiSelectFilter(payload) {
+            let selected_options = payload.selected_options;
+            let column = payload.column;
+
+
+            let filter_index = _.findIndex(this.query.filters, {
+                name: column.name
+            });
+
+            if (filter_index == -1) {
+                if (selected_options.length === 0) {
+                    return;
+                }
+                this.query.filters.push({
+                    type: column.filter.type,
+                    name: column.name,
+                    selected_options: selected_options,
+                    config: column.filter
+                });
+            } else {
+                if (selected_options.length === 0) {
+                    this.query.filters.splice(filter_index, 1);
+                } else {
+                    this.query.filters[filter_index].selected_options = selected_options;
+                }
+            }
+        },
 
         sort() {
 
@@ -551,13 +547,20 @@ export default {
             let res = _.filter(this.original_rows, function (row) {
                 let flag = true;
                 _.forEach(self.query.filters, function (filter, key) {
-                    if (filter.text === "") {
-                        flag = true;
-                        return false;
-                    }
 
                     if (filter.type === "simple") {
+                        if (filter.text === "") {
+                            flag = true;
+                            return false;
+                        }
                         if (self.simpleFilter(_.get(row, filter.name), filter.text,filter.config)) {
+                            flag = true;
+                        } else {
+                            flag = false;
+                            return false;
+                        }
+                    } else if (filter.type === "multi-select") {
+                        if (self.multiSelectFilter(_.get(row, filter.name), filter.selected_options,filter.config)) {
                             flag = true;
                         } else {
                             flag = false;
@@ -639,6 +642,27 @@ export default {
 
             return value.indexOf(filter_text) > -1;
         },
+        multiSelectFilter(value, selected_options,config) {
+
+            if (typeof value !== "string") {
+                value = value.toString().toLowerCase();
+            } else {
+                value = value.toLowerCase();
+            }
+
+            selected_options = _.map(selected_options, (option) => {
+                                    return (typeof option !== "string") ? option.toString().toLowerCase() : option.toLowerCase();
+                                });
+            return _.includes(selected_options, value);
+            // let is_case_sensitive = (_.has(config,'case_sensitive')) ? config.case_sensitive : false;
+
+            // if (!is_case_sensitive) {
+            //     value = value.toLowerCase();
+            //     filter_text = filter_text.toLowerCase();
+            // }
+
+            // return value.indexOf(filter_text) > -1;
+        },
 
         paginateFilter() {
 
@@ -658,13 +682,6 @@ export default {
                     this.emitQueryParams();
                     // this.$emit('on-change-query',_.cloneDeep(this.query));
                 }
-            }
-        },
-
-        pageHandler(index) {
-            if (index >= 1 && index <= this.totalPages) {
-                this.page = index;
-                // this.$emit('update:page', index);
             }
         },
 
@@ -752,31 +769,6 @@ export default {
         clearGlobalSearch() {
             this.query.global_search = "";
             $(this.$refs.global_search).val("");
-        },
-
-        perPageHandler(option) {
-            this.per_page = option;
-        },
-
-        gotoPage() {
-            if (this.go_to_page >= 1 && this.go_to_page <= this.totalPages) {
-
-                let go_to_page = parseInt(this.go_to_page);
-                this.page = go_to_page;
-
-                if (!_.includes(this.range,go_to_page)) {
-                    if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
-                        this.end = this.totalPages;
-                        this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
-                    } else {
-                        this.start = go_to_page;
-                        this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
-                    }
-                }
-
-            } else {
-                console.log("invalid page number");
-            }
         },
 
         resetQuery() {
@@ -867,30 +859,6 @@ export default {
 
     },
     computed: {
-        // pagination computed properties -start
-        isEmpty() {
-            return this.rowCount == 0;
-        },
-        showLeftDot() {
-            return !(_.includes(this.range, 1));
-        },
-        showRightDot() {
-            return !(this.totalPages - this.end <= 0);
-        },
-        totalPages() {
-            return Math.ceil(this.rowCount / this.per_page);
-        },
-        range() {
-            return _.range(this.start, (this.end + 1));
-        },
-       paginationLimit() {
-           if (this.totalPages < this.num_of_visibile_pagination_buttons) {
-               return this.totalPages;
-            } else {
-                return this.num_of_visibile_pagination_buttons;
-            }
-        },
-        // pagination computed properties -end
         rowCount() {
             if (!this.server_mode) {
                 return this.temp_filtered_results.length;
@@ -1088,45 +1056,7 @@ export default {
         },
 
         page(newVal, oldVal) {
-            if (newVal == this.totalPages) {
-                this.start = newVal - (this.paginationLimit - 1);
-                this.end = newVal;
-            } else if (newVal == 1) {
-                this.start = newVal;
-                this.end = newVal + (this.paginationLimit - 1);
-            } else {
-                if (newVal > oldVal) {
-                    if (this.end - newVal < 1) {
-                        this.start += 1;
-                        this.end += 1;
-                    }
-                } else {
-                    if (this.start - newVal >= 0) {
-                        this.start -= 1;
-                        this.end -= 1;
-                    }
-                }
-
-            }
             this.paginateFilter();
-        },
-        rowCount(newVal, oldVal) {
-            if (this.page == this.totalPages) {
-                this.start = this.page - (this.paginationLimit - 1);
-                this.end = this.page;
-            } else if (this.page == 1) {
-                this.start = this.page;
-                this.end = this.page + (this.paginationLimit - 1);
-            }
-        },
-        totalPages(newVal, oldVal) {
-            if (this.page == this.totalPages) {
-                this.start = this.page - (this.paginationLimit - 1);
-                this.end = this.page;
-            } else if (this.page == 1) {
-                this.start = this.page;
-                this.end = this.page + (this.paginationLimit - 1);
-            }
         },
         'config.multi_column_sort': {
             handler : function(newVal,oldVal) {
@@ -1143,9 +1073,6 @@ export default {
 </script>
 
 <style scoped>
-    ul.pagination {
-        margin-bottom: 0;
-    }
     .vbt-select-all-checkbox {
         margin-bottom: 20px;
     }
@@ -1163,9 +1090,6 @@ export default {
     }
     .input-group-append.vbt-global-search-clear {
         cursor: pointer;
-    }
-    .vbt-per-page-dropdown {
-        margin-left: 8px;
     }
 </style>
 

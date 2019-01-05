@@ -2,9 +2,13 @@
     <div>
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <li class="page-item" @click.prevent="pageHandler(page-1)">
+                <li :class="{'disabled' : disablePreviousButton}" class="page-item" @click.prevent="pageHandler(page-1)">
                     <a class="page-link" href="" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                        <span aria-hidden="true">
+                            <slot name="vbt-paginataion-previous-button">
+
+                            </slot>
+                        </span>
                     </a>
                 </li>
                 <template v-if="!isEmpty">
@@ -24,16 +28,38 @@
                         <a class="page-link" href=""> {{totalPages}} </a>
                     </li>
                 </template>
+
                 <template v-else>
                     <li class="page-item disabled">
                         <a class="page-link" href="">...</a>
                     </li>
                 </template>
-                <li class="page-item" @click.prevent="pageHandler(page+1)">
+                <li :class="{'disabled' : disableNextButton}" class="page-item" @click.prevent="pageHandler(page+1)">
                     <a class="page-link" href="" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                        <span aria-hidden="true">
+                            <slot name="vbt-paginataion-next-button">
+
+                            </slot>
+                        </span>
                     </a>
                 </li>
+                <!-- Number of rows per page starts here -->
+                <div class="dropdown show vbt-per-page-dropdown">
+                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{per_page}}
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a v-for="(option, key, index) in per_page_options" :key="index" class="dropdown-item" href="" @click.prevent="perPageHandler(option)" v-bind:class="{ active:  (option == per_page)}">
+                            {{option}}
+                        </a>
+                    </div>
+                </div>
+                <!-- Number of rows per page ends here -->
+
+                <div class="input-group col-sm-2">
+                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model.number="go_to_page">
+                </div>
             </ul>
         </nav>
     </div>
@@ -57,49 +83,84 @@
                 type: [String, Number],
                 required: true
             },
-            pagiantion_limit: {
+            num_of_visibile_pagination_buttons: {
                 type: [String, Number],
                 default: 7
+            },
+            per_page_options: {
+                type: Array,
+                default: function() {
+                    return [5,10,15]
+                }
             }
         },
         data: function() {
             return {
                 start: (this.page + 0),
-                end: 0
+                end: 0,
+                go_to_page: ""
             }
         },
         mounted() {
             this.end = (this.page + (this.paginationLimit - 1));
         },
         methods: {
+            gotoPage() {
+                if (this.go_to_page === "") {
+                    return;
+                }
+                let go_to_page = this.go_to_page;
+                if (go_to_page >= 1 && go_to_page <= this.totalPages) {
+                    this.pageHandler(go_to_page)
+                    if (!_.includes(this.range,go_to_page)) {
+                        if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
+                            this.end = this.totalPages;
+                            this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
+                        } else {
+                            this.start = go_to_page;
+                            this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
+                        }
+                    }
+
+                } else {
+                    console.log("invalid page number");
+                }
+            },
             pageHandler(index) {
                 if (index >= 1 && index <= this.totalPages) {
                     this.$emit('update:page', index);
                 }
-            }
-
+            },
+            perPageHandler(option) {
+                this.$emit('update:per_page', option);
+            },
         },
         components: {
         },
         computed: {
+            showLeftDot() {
+                return !(_.includes(this.range, 1));
+            },
+            showRightDot() {
+                return !(this.totalPages - this.end <= 0);
+            },
             totalPages() {
                 return Math.ceil(this.total / this.per_page);
+            },
+            disablePreviousButton() {
+                return this.page == this.start;
+            },
+            disableNextButton() {
+                return this.page == this.end;
             },
             range() {
                 return _.range(this.start, (this.end + 1));
             },
-            showRightDot() {
-                // return this.
-                return !(this.totalPages - this.end <= 0);
-            },
-            showLeftDot() {
-                return !(_.includes(this.range, 1));
-            },
             paginationLimit() {
-                if (this.totalPages < this.pagiantion_limit) {
+                if (this.totalPages < this.num_of_visibile_pagination_buttons) {
                     return this.totalPages;
                 } else {
-                    return this.pagiantion_limit;
+                    return this.num_of_visibile_pagination_buttons;
                 }
             },
             isEmpty() {
@@ -130,7 +191,7 @@
 
                 }
             },
-            total(newVal, oldVal) {
+            rowCount(newVal, oldVal) {
                 if (this.page == this.totalPages) {
                     this.start = this.page - (this.paginationLimit - 1);
                     this.end = this.page;
@@ -147,7 +208,7 @@
                     this.start = this.page;
                     this.end = this.page + (this.paginationLimit - 1);
                 }
-            }
+            },
         }
     }
 </script>
@@ -155,5 +216,8 @@
 <style scoped>
     ul.pagination {
         margin-bottom: 0;
+    }
+    .vbt-per-page-dropdown {
+        margin-left: 8px;
     }
 </style>
