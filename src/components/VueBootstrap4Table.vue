@@ -499,15 +499,15 @@ export default {
             let selected_options = payload.selected_options;
             let column = payload.column;
 
-            if (selected_options.length == 0) {
-                return;
-            }
 
             let filter_index = _.findIndex(this.query.filters, {
                 name: column.name
             });
 
             if (filter_index == -1) {
+                if (selected_options.length === 0) {
+                    return;
+                }
                 this.query.filters.push({
                     type: column.filter.type,
                     name: column.name,
