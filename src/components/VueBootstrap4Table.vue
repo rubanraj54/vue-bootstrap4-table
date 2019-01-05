@@ -229,8 +229,6 @@ export default {
                 global_search: ""
             },
             page: 1,
-            start: (this.page + 0),
-            end: 0,
             per_page: 10,
             original_rows: [],
             num_of_visibile_pagination_buttons: 5,
@@ -252,7 +250,6 @@ export default {
                 case_sensitive: false
             },
             per_page_options : [5,10,15],
-            go_to_page: "",
             show_refresh_button: true,
             show_reset_button: true,
             server_mode: false,
@@ -282,10 +279,6 @@ export default {
         this.initialSort();
         this.filter();
         this.paginateFilter();
-
-        // pagination bootstrap - start
-        this.end = (this.page + (this.paginationLimit - 1));
-        // pagination bootstrap - end
 
     },
     components: {
@@ -505,6 +498,10 @@ export default {
         updateMultiSelectFilter(payload) {
             let selected_options = payload.selected_options;
             let column = payload.column;
+
+            if (selected_options.length == 0) {
+                return;
+            }
 
             let filter_index = _.findIndex(this.query.filters, {
                 name: column.name
