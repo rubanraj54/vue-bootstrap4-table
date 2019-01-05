@@ -10,6 +10,12 @@
 <template slot="sort-asc-icon">
     <i class="fas fa-sort-up"></i>
 </template>
+<template slot="paginataion-previous-button">
+    Previous
+</template>
+<template slot="paginataion-next-button">
+    <i class="fas fa-step-forward"></i>
+</template>
 <template slot="sort-desc-icon">
     <i class="fas fa-sort-down"></i>
 </template>

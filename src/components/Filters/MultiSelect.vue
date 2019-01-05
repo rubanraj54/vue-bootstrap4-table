@@ -4,7 +4,7 @@
             <a class="btn btn-secondary dropdown-toggle" href="#" role="button" :id="'multifilter_'+column.name" data-toggle="dropdown"  aria-haspopup="true" aria-expanded="false">
                 {{title}}
             </a>
-            <div class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuLink">
+            <div ref="vbt_dropdown_menu" class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuLink">
                 <multi-select-item v-for="(option, key) in options" :key="key" :index="key" :option="option" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
             </div>
         </div>
@@ -56,13 +56,11 @@
             };
         },
         mounted() {
-            $('.dropdown-menu').on('click', function(e) {
+            $(this.$refs.vbt_dropdown_menu).on('click', function(e) {
                 e.stopPropagation();
             });
             EventBus.$on('reset-query', () => {
                 this.selected_option_indexes = [];
-                // console.log(333);
-
             });
         },
         methods: {
@@ -79,18 +77,7 @@
                 if (res > -1) {
                     this.selected_option_indexes.splice(res,1);
                 }
-            },
-            clearFilter() {
-                $(this.$refs.simple_filter_input).val("");
-                this.$emit('clear-filter',this.column);
-            },
-            // TODO - configurable debouncing
-            updateFilter: _.debounce(function(event) {
-                this.$emit('update-filter', {
-                    "event": event,
-                    "column": this.column
-                });
-            }, 60),
+            }
         },
         components: {
             MultiSelectItem
@@ -115,9 +102,6 @@
         },
         watch: {
             selected_option_indexes(newVal,oldVal) {
-                if (this.newVal.length === 0) {
-                    return;
-                }
                 let filtered_options = _.filter(this.options, (option,index) => {return _.includes(newVal,index)});
                 let payload = {};
                 payload.column = _.cloneDeep(this.column);
@@ -132,9 +116,6 @@
 </script>
 
 <style scoped>
-    /* .input-group-append.vbt-simple-filter-clear {
-        cursor: pointer;
-    } */
     .scrollable-menu {
     height: auto;
     max-height: 200px;
