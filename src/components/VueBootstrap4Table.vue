@@ -127,68 +127,18 @@
                 <!-- pagination starts here -->
                 <div class="col-md-6">
                     <div v-if="pagination">
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination">
-                                <li class="page-item" @click.prevent="pageHandler(page-1)">
-                                    <a class="page-link" href="" aria-label="Previous">
-                                        <span aria-hidden="true">
-                                            <slot name="paginataion-previous-button">
-                                                &laquo;
-                                            </slot>
-                                        </span>
-                                    </a>
-                                </li>
-                                <template v-if="!isEmpty">
-                                    <li class="page-item" v-if="showLeftDot" @click.prevent="pageHandler(1)">
-                                        <a class="page-link" href=""> 1 </a>
-                                    </li>
-                                    <li class="page-item disabled" v-if="showLeftDot">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                    <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click.prevent="pageHandler(index)">
-                                        <a class="page-link" href="">{{index}}</a>
-                                    </li>
-                                    <li class="page-item disabled" v-if="showRightDot">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                    <li class="page-item" v-if="showRightDot" @click.prevent="pageHandler(totalPages)">
-                                        <a class="page-link" href=""> {{totalPages}} </a>
-                                    </li>
-                                </template>
-
-                                <template v-else>
-                                    <li class="page-item disabled">
-                                        <a class="page-link" href="">...</a>
-                                    </li>
-                                </template>
-                                <li class="page-item" @click.prevent="pageHandler(page+1)">
-                                    <a class="page-link" href="" aria-label="Next">
-                                        <span aria-hidden="true">
-                                            <slot name="paginataion-next-button">
-                                                &raquo;
-                                            </slot>
-                                        </span>
-                                    </a>
-                                </li>
-                                <!-- Number of rows per page starts here -->
-                                <div class="dropdown show vbt-per-page-dropdown">
-                                    <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{per_page}}
-                                    </a>
-
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a v-for="(option, key, index) in per_page_options" :key="index" class="dropdown-item" href="" @click.prevent="perPageHandler(option)" v-bind:class="{ active:  (option == per_page)}">
-                                            {{option}}
-                                        </a>
-                                    </div>
-                                </div>
-                                <!-- Number of rows per page ends here -->
-
-                                <div class="input-group col-sm-2">
-                                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model="go_to_page">
-                                </div>
-                            </ul>
-                        </nav>
+                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                            <template slot="vbt-paginataion-previous-button">
+                                <slot name="paginataion-previous-button">
+                                    &laquo;
+                                </slot>
+                            </template>
+                            <template slot="vbt-paginataion-next-button">
+                                <slot name="paginataion-next-button">
+                                    &raquo;
+                                </slot>
+                            </template>
+                        </Pagination>
                     </div>
                 </div>
                 <!-- pagination ends here -->
@@ -233,6 +183,7 @@ import _ from "lodash";
 
 import CheckBox from "./CheckBox.vue";
 import SortIcon from "./SortIcon.vue";
+import Pagination from "./Pagination.vue";
 import Simple from "./Filters/Simple.vue";
 import MultiSelect from "./Filters/MultiSelect.vue";
 
@@ -342,6 +293,7 @@ export default {
         Simple,
         MultiSelect,
         SortIcon,
+        Pagination,
     },
     methods: {
         initConfig() {
@@ -736,13 +688,6 @@ export default {
             }
         },
 
-        pageHandler(index) {
-            if (index >= 1 && index <= this.totalPages) {
-                this.page = index;
-                // this.$emit('update:page', index);
-            }
-        },
-
         selectAllCheckbox() {
             if (this.select_all_rows) {
                 this.unSelectAllItems();
@@ -827,31 +772,6 @@ export default {
         clearGlobalSearch() {
             this.query.global_search = "";
             $(this.$refs.global_search).val("");
-        },
-
-        perPageHandler(option) {
-            this.per_page = option;
-        },
-
-        gotoPage() {
-            if (this.go_to_page >= 1 && this.go_to_page <= this.totalPages) {
-
-                let go_to_page = parseInt(this.go_to_page);
-                this.page = go_to_page;
-
-                if (!_.includes(this.range,go_to_page)) {
-                    if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
-                        this.end = this.totalPages;
-                        this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
-                    } else {
-                        this.start = go_to_page;
-                        this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
-                    }
-                }
-
-            } else {
-                console.log("invalid page number");
-            }
         },
 
         resetQuery() {
@@ -942,30 +862,6 @@ export default {
 
     },
     computed: {
-        // pagination computed properties -start
-        isEmpty() {
-            return this.rowCount == 0;
-        },
-        showLeftDot() {
-            return !(_.includes(this.range, 1));
-        },
-        showRightDot() {
-            return !(this.totalPages - this.end <= 0);
-        },
-        totalPages() {
-            return Math.ceil(this.rowCount / this.per_page);
-        },
-        range() {
-            return _.range(this.start, (this.end + 1));
-        },
-       paginationLimit() {
-           if (this.totalPages < this.num_of_visibile_pagination_buttons) {
-               return this.totalPages;
-            } else {
-                return this.num_of_visibile_pagination_buttons;
-            }
-        },
-        // pagination computed properties -end
         rowCount() {
             if (!this.server_mode) {
                 return this.temp_filtered_results.length;
@@ -1163,45 +1059,7 @@ export default {
         },
 
         page(newVal, oldVal) {
-            if (newVal == this.totalPages) {
-                this.start = newVal - (this.paginationLimit - 1);
-                this.end = newVal;
-            } else if (newVal == 1) {
-                this.start = newVal;
-                this.end = newVal + (this.paginationLimit - 1);
-            } else {
-                if (newVal > oldVal) {
-                    if (this.end - newVal < 1) {
-                        this.start += 1;
-                        this.end += 1;
-                    }
-                } else {
-                    if (this.start - newVal >= 0) {
-                        this.start -= 1;
-                        this.end -= 1;
-                    }
-                }
-
-            }
             this.paginateFilter();
-        },
-        rowCount(newVal, oldVal) {
-            if (this.page == this.totalPages) {
-                this.start = this.page - (this.paginationLimit - 1);
-                this.end = this.page;
-            } else if (this.page == 1) {
-                this.start = this.page;
-                this.end = this.page + (this.paginationLimit - 1);
-            }
-        },
-        totalPages(newVal, oldVal) {
-            if (this.page == this.totalPages) {
-                this.start = this.page - (this.paginationLimit - 1);
-                this.end = this.page;
-            } else if (this.page == 1) {
-                this.start = this.page;
-                this.end = this.page + (this.paginationLimit - 1);
-            }
         },
         'config.multi_column_sort': {
             handler : function(newVal,oldVal) {
@@ -1218,9 +1076,6 @@ export default {
 </script>
 
 <style scoped>
-    ul.pagination {
-        margin-bottom: 0;
-    }
     .vbt-select-all-checkbox {
         margin-bottom: 20px;
     }
@@ -1238,9 +1093,6 @@ export default {
     }
     .input-group-append.vbt-global-search-clear {
         cursor: pointer;
-    }
-    .vbt-per-page-dropdown {
-        margin-left: 8px;
     }
 </style>
 
