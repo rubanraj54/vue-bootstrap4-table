@@ -52,23 +52,21 @@
                     {
                         label: "First Name",
                         name: "name.first_name",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "Enter first name"
-                        // },
+                        filter: {
+                            type: "multi-select",
+                            placeholder: "Enter first name"
+                        },
                         sort: true,
-                        row_text_alignment: "text-left",
-                        column_text_alignment: "text-right",
                         // slot_name: "my_duplicate_id_column"
                     },
                     {
                         label: "Last Name",
                         name: "name.last_name",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "Enter last name",
-                        //     case_sensitive: true
-                        // },
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter last name",
+                            // case_sensitive: true
+                        },
                         sort: true,
                     },
                     {
@@ -115,7 +113,7 @@
                         case_sensitive: false // default false
                     },
                     per_page_options: [5, 10, 20, 30],
-                    show_reset_button: false,
+                    show_reset_button: true,
                     show_refresh_button: false,
                     server_mode: false
                 },

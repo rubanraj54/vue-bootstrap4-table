@@ -96,12 +96,18 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!-- filter row starts here -->
                         <tr class="table-active" v-if="showFilterRow">
                             <td v-show="checkbox_rows"></td>
-                            <td v-for="(column, key, index) in vbt_columns" :key="index">
-                                <Simple v-if="hasFilter(column)" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                            <td v-for="(column, key, index) in vbt_columns" :key="index" align="center">
+                                <template v-if="hasFilter(column)">
+                                    <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                                    <MultiSelect v-if="column.filter.type == 'multi-select'" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
+                                </template>
                             </td>
                         </tr>
+                        <!-- filter row ends here -->
+
                         <!-- data rows stars here -->
                         <tr v-for="(row, key, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
@@ -228,6 +234,7 @@ import _ from "lodash";
 import CheckBox from "./CheckBox.vue";
 import SortIcon from "./SortIcon.vue";
 import Simple from "./Filters/Simple.vue";
+import MultiSelect from "./Filters/MultiSelect.vue";
 
 import {
     EventBus
@@ -333,6 +340,7 @@ export default {
     components: {
         CheckBox,
         Simple,
+        MultiSelect,
         SortIcon,
     },
     methods: {
@@ -542,6 +550,29 @@ export default {
                 }
             }
         },
+        updateMultiSelectFilter(payload) {
+            let selected_options = payload.selected_options;
+            let column = payload.column;
+
+            let filter_index = _.findIndex(this.query.filters, {
+                name: column.name
+            });
+
+            if (filter_index == -1) {
+                this.query.filters.push({
+                    type: column.filter.type,
+                    name: column.name,
+                    selected_options: selected_options,
+                    config: column.filter
+                });
+            } else {
+                if (selected_options.length === 0) {
+                    this.query.filters.splice(filter_index, 1);
+                } else {
+                    this.query.filters[filter_index].selected_options = selected_options;
+                }
+            }
+        },
 
         sort() {
 
@@ -567,13 +598,20 @@ export default {
             let res = _.filter(this.original_rows, function (row) {
                 let flag = true;
                 _.forEach(self.query.filters, function (filter, key) {
-                    if (filter.text === "") {
-                        flag = true;
-                        return false;
-                    }
 
                     if (filter.type === "simple") {
+                        if (filter.text === "") {
+                            flag = true;
+                            return false;
+                        }
                         if (self.simpleFilter(_.get(row, filter.name), filter.text,filter.config)) {
+                            flag = true;
+                        } else {
+                            flag = false;
+                            return false;
+                        }
+                    } else if (filter.type === "multi-select") {
+                        if (self.multiSelectFilter(_.get(row, filter.name), filter.selected_options,filter.config)) {
                             flag = true;
                         } else {
                             flag = false;
@@ -654,6 +692,27 @@ export default {
             }
 
             return value.indexOf(filter_text) > -1;
+        },
+        multiSelectFilter(value, selected_options,config) {
+
+            if (typeof value !== "string") {
+                value = value.toString().toLowerCase();
+            } else {
+                value = value.toLowerCase();
+            }
+
+            selected_options = _.map(selected_options, (option) => {
+                                    return (typeof option !== "string") ? option.toString().toLowerCase() : option.toLowerCase();
+                                });
+            return _.includes(selected_options, value);
+            // let is_case_sensitive = (_.has(config,'case_sensitive')) ? config.case_sensitive : false;
+
+            // if (!is_case_sensitive) {
+            //     value = value.toLowerCase();
+            //     filter_text = filter_text.toLowerCase();
+            // }
+
+            // return value.indexOf(filter_text) > -1;
         },
 
         paginateFilter() {
