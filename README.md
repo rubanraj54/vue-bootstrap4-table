@@ -2,6 +2,7 @@
 
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -445,6 +446,12 @@ You can inject your favorite sort icons via slots.
 </vue-bootstrap4-table>
 ...
 ```
+After applying the above custom template to sort icons , output will look like this.
+
+| ![Custom sort icons](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/sort_icons_slot.png) |
+|:--:|
+| *Custom sort icons* |
+
 # 8. Filtering
 Filtering configuration is added along with the each column config.
 ## 8.1. Simple Filter
@@ -685,6 +692,7 @@ From **`slot-scope="props"`** you can access the following attributes.
 </vue-bootstrap4-table>
 ...
 ```
+
 #### 10.3.3.1. props
 From **`slot-scope="props"`** you can access the following attributes.
 
@@ -775,6 +783,13 @@ You can override the text in the refresh & reset buttons with slots **`refresh-b
 </vue-bootstrap4-table>
 ...
 ```
+
+After applying the above custom template to refresh & reset buttons , output will look like this.
+
+| ![Custom sort icons](https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/img/refresh_reset_slot.png) |
+|:--:|
+| *Custom refresh and reset button texts & icons* |
+
 
 # 12. Custom action buttons
 
