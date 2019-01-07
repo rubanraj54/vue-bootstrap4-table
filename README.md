@@ -421,15 +421,15 @@ If you would like to enable the multi column sorting, set **`multi_column_sort`*
     }
 </script>
 ```
-## Slot
+## 7.5. Slot
 
-### Sort Icon
+### 7.5.1. Sort Icon
 
-You can change the sort icons based on your choice, For example if you're using font-awesome or glyphicon in your application, you can still use them for vue-bootstrap4-table. 
+You can change the sort icons based on your choice, For example if you're using font-awesome or glyphicon in your application, you can still use them for vue-bootstrap4-table.
 
 You can inject your favorite sort icons via slots.
 
-#### Example
+#### 7.5.1.1. Example
 ```vue
 ...
 <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
@@ -473,11 +473,11 @@ columns: [
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
 
-## Multi-Select Filter
+## 8.2. Multi-Select Filter
 
 You can have multi select dropdown filter for each columns. The options in the dropdown will be rendered with bootstrap 4 custom checkboxes.
 
-### Example
+### 8.2.1. Example
 
 ```vue
 ...
@@ -506,7 +506,7 @@ columns: [
 ...
 ```
 
-### Attribute details
+### 8.2.2. Attribute details
 
 | Attributes |Description  | Type |Default  |
 |--|--|--|--|
