@@ -117,7 +117,7 @@
                     },
                 ],
                 config: {
-                    pagination: false,
+                    pagination: true,
                     pagination_info: false,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
@@ -136,18 +136,18 @@
                     show_reset_button: false,
                     show_refresh_button: false,
                     server_mode: false,
-                    card_mode: false,
-                    selected_rows_info: true
+                    card_mode: true,
+                    selected_rows_info: false
                 },
                 msg: "msg from parent",
-                actions: []
-                // actions: [{
-                //     btn_text: "Download",
-                //     event_name: "on-download",
-                //     event_payload: {
-                //         msg: "my custom msg"
-                //     }
-                // }]
+                // actions: []
+                actions: [{
+                    btn_text: "Download",
+                    event_name: "on-download",
+                    event_payload: {
+                        msg: "my custom msg"
+                    }
+                }]
             }
         },
         methods: {

@@ -2,7 +2,7 @@
 <div class="container-fluid">
     <!-- TODO configurable header title position -->
     <div :class="{card:card_mode}">
-        <div class="card-header" v-if="card_mode">
+        <div class="card-header text-center" v-if="card_mode">
             {{card_title}}
         </div>
         <div :class="{'card-body':card_mode}">
@@ -119,6 +119,7 @@
                         </tr>
                         <!-- data rows ends here -->
 
+                        <!-- Pagination row starts here -->
                         <tr v-if="showPaginationRow" class="footer-pagination-row">
                             <td :colspan="headerColSpan">
                                 <div class="row">
@@ -173,6 +174,8 @@
                                 </div>
                             </td>
                         </tr>
+                        <!-- Pagination ends starts here -->
+
                     </tbody>
                 </table>
             </div>
