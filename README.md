@@ -1,6 +1,7 @@
 
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -14,6 +15,8 @@
 
 # 2. Features
 * Multi column filtering (Optimized filtering)
+	*  Simple filter
+	* Multi-select filter
 * Global search
 * Single & Multi column sorting
 * Pagination (True! It works out of the box intelligently)
@@ -50,7 +53,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.12/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.15/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -207,7 +210,7 @@ columns: [{
 |label | Name for the column header | String| " " |
 |name | Name of the attribute that you would like to show from **`"rows"`** object. You can access nested objects properties with "." | String| " " |
 |filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) | Object| Empty |
-|filter.type | Type of filter you want to use for your column (currently **`"simple"`** filter only supported) | String| " " |
+|filter.type | Type of filter you want to use for your column. | String| " " |
 |filter.placeholder | Placeholder is **`hint`** text for filter text box |String |" " |
 |filter.case_sensitive | Enable/Disable case sensitive filtering.| Boolean | false |
 |sort | Enable or disable sorting in column.| Boolean | false |
@@ -418,6 +421,30 @@ If you would like to enable the multi column sorting, set **`multi_column_sort`*
     }
 </script>
 ```
+## Slot
+
+### Sort Icon
+
+You can change the sort icons based on your choice, For example if you're using font-awesome or glyphicon in your application, you can still use them for vue-bootstrap4-table. 
+
+You can inject your favorite sort icons via slots.
+
+#### Example
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+    <template slot="sort-asc-icon">
+        <i class="fas fa-sort-up"></i>
+    </template>
+    <template slot="sort-desc-icon">
+        <i class="fas fa-sort-down"></i>
+    </template>
+    <template slot="no-sort-icon">
+        <i class="fas fa-sort"></i>
+    </template>
+</vue-bootstrap4-table>
+...
+```
 # 8. Filtering
 Filtering configuration is added along with the each column config.
 ## 8.1. Simple Filter
@@ -445,6 +472,48 @@ columns: [
 | filter.type | Defines the type of filter. Currently basic filter is supported. |Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
+
+## Multi-Select Filter
+
+You can have multi select dropdown filter for each columns. The options in the dropdown will be rendered with bootstrap 4 custom checkboxes.
+
+### Example
+
+```vue
+...
+columns: [
+    {
+        label: "First Name",
+        name: "name.first_name", // access nested objects properties with "."
+        filter: {
+            type: "multi-select",
+            placeholder: "Select options",
+            options: [{
+                    "name": "option one",
+                    "value": "option one"
+                },
+                {
+                    "name": "option two",
+                    "value": "option two"
+                },
+                {
+                    "name": "option three",
+                    "value": "option three"
+                }
+        }
+    }
+]
+...
+```
+
+### Attribute details
+
+| Attributes |Description  | Type |Default  |
+|--|--|--|--|
+|  filter.type | Defines the type of filter. | String | Empty string |
+| filter.placeholder | Default text for the dropdown. | String | Empty string |
+| filter.options | You can provide your list of name and value objects to be populated in the multi-select filter dropdown. | Array | Empty array |
+
 
 # 9. Global search
 Global search searches the complete list of rows for the given search keyword.
@@ -605,6 +674,24 @@ From **`slot-scope="props"`** you can access the following attributes.
 | props.filteredRowsLength | Total number of items in the result after filtering |
 |  props.originalRowsLength| Original number of items in the data|
 
+### 10.3.3. Selected rows info
+
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+    <template slot="selected-rows-info" slot-scope="props">
+        Total Number of rows selected : {{props.selectedItemsCount}}
+    </template>
+</vue-bootstrap4-table>
+...
+```
+#### 10.3.3.1. props
+From **`slot-scope="props"`** you can access the following attributes.
+
+| Attributes |  Description|
+|--|--|
+| props.selectedItemsCount | Number of rows currently showing in the pageNumber of rows currently being selected |
+
 # 11. Refresh and Reset button
 
 ## 11.1. Refresh Button
@@ -667,6 +754,27 @@ By default reset button is enabled. If you would like to disable reset button, s
 |--|--|--|--|
 |show_refresh_button  | Show/Hide Refresh button | Boolean | true |
 | show_reset_button | Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. | Boolean | true |
+
+## 11.3. Slots
+
+### 11.3.1. Button text and icons
+
+You can override the text in the refresh & reset buttons with slots **`refresh-button-text`** & **`reset-button-text.`** If you like, you can add icon to the buttons.
+
+#### 11.3.1.1. Example
+
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns" :config="config">
+    <template slot="refresh-button-text">
+        <i class="fas fa-sync-alt"></i> My refresh
+    </template>
+    <template slot="reset-button-text">
+        <i class="fas fa-broom"></i> My reset
+    </template>
+</vue-bootstrap4-table>
+...
+```
 
 # 12. Custom action buttons
 
@@ -761,6 +869,8 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
                 ...
                 ],
                 config: {
+                    card_mode:  true,
+                    selected_rows_info:  false,
                     pagination: true,
                     pagination_info: true,
                     num_of_visibile_pagination_buttons: 7,
@@ -796,8 +906,10 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 
 |Attributes  | Description | type| Default |
 |--|--|--|--|
+| card_mode | You can choose between table surrounded with card layout and plain default table alone.| Boolean | true |
 | pagination | Enable/Disable pagination in the table |Boolean |  true|
 | pagination_info | Enable/Disable pagination info in the table | Boolean|  true|
+|selected_rows_info |Enable/Disable number of rows selected info in the table | Boolean | false |
 | num_of_visibile_pagination_buttons | Limit the number of visible pagination buttons in the pagination bar |Number | 5 |
 | per_page | Number of rows to display per page |Number | 10  |
 | checkbox_rows | Enable/Disable checkbox in each rows |Boolean | false |
