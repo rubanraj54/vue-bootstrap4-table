@@ -118,12 +118,12 @@
                 ],
                 config: {
                     pagination: true,
-                    pagination_info: true,
+                    pagination_info: false,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
-                    checkbox_rows: true,
+                    checkbox_rows: false,
                     highlight_row_hover: true,
-                    rows_selectable: true,
+                    rows_selectable: false,
                     multi_column_sort: false,
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table",
@@ -133,11 +133,14 @@
                         case_sensitive: false // default false
                     },
                     per_page_options: [5, 10, 20, 30],
-                    show_reset_button: true,
+                    show_reset_button: false,
                     show_refresh_button: false,
-                    server_mode: false
+                    server_mode: false,
+                    card_mode: true,
+                    selected_rows_info: false
                 },
                 msg: "msg from parent",
+                // actions: []
                 actions: [{
                     btn_text: "Download",
                     event_name: "on-download",

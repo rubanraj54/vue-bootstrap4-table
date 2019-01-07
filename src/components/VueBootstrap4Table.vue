@@ -1,11 +1,11 @@
 <template>
 <div class="container-fluid">
     <!-- TODO configurable header title position -->
-    <div class="card">
-        <div class="card-header text-center">
+    <div :class="{card:card_mode}">
+        <div class="card-header text-center" v-if="card_mode">
             {{card_title}}
         </div>
-        <div class="card-body">
+        <div :class="{'card-body':card_mode}">
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead>
@@ -118,11 +118,69 @@
                             </td>
                         </tr>
                         <!-- data rows ends here -->
+
+                        <!-- Pagination row starts here -->
+                        <tr v-if="showPaginationRow" class="footer-pagination-row">
+                            <td :colspan="headerColSpan">
+                                <div class="row">
+                                    <!-- pagination starts here -->
+                                    <div class="col-md-6">
+                                        <div v-if="pagination">
+                                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                                                <template slot="vbt-paginataion-previous-button">
+                                                    <slot name="paginataion-previous-button">
+                                                        &laquo;
+                                                    </slot>
+                                                </template>
+                                                <template slot="vbt-paginataion-next-button">
+                                                    <slot name="paginataion-next-button">
+                                                        &raquo;
+                                                    </slot>
+                                                </template>
+                                            </Pagination>
+                                        </div>
+                                    </div>
+                                    <!-- pagination ends here -->
+
+                                    <!-- pagination info start here -->
+                                    <div class="col-md-6">
+                                        <div class="text-right justify-content-center">
+                                            <template v-if="pagination_info">
+                                                <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                                    <template v-if="currentPageRowsLength != 0">
+                                                        From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                                    </template>
+                                                    <template v-else>
+                                                        No results found
+                                                    </template>
+                                                    <template>
+                                                        ({{originalRowsLength}} total records)
+                                                    </template>
+                                                </slot>
+                                            </template>
+                                            <template v-if="pagination_info && selected_rows_info">
+                                                <slot name="pagination-selected-rows-separator">
+                                                    |
+                                                </slot>
+                                            </template>
+                                            <template v-if="selected_rows_info">
+                                                <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
+                                                    {{selectedItemsCount}} rows selected
+                                                </slot>
+                                            </template>
+                                        </div>
+                                    </div>
+                                    <!-- pagination info ends here -->
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- Pagination ends starts here -->
+
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer" v-if="card_mode">
             <div class="row">
                 <!-- pagination starts here -->
                 <div class="col-md-6">
@@ -159,12 +217,12 @@
                                 </template>
                             </slot>
                         </template>
-                        <template v-if="pagination_info && (rows_selectable || checkbox_rows)">
+                        <template v-if="pagination_info && selected_rows_info">
                             <slot name="pagination-selected-rows-separator">
                                 |
                             </slot>
                         </template>
-                        <template v-if="rows_selectable || checkbox_rows">
+                        <template v-if="selected_rows_info">
                             <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
                                 {{selectedItemsCount}} rows selected
                             </slot>
@@ -253,7 +311,9 @@ export default {
             show_refresh_button: true,
             show_reset_button: true,
             server_mode: false,
-            total_rows: 0
+            total_rows: 0,
+            card_mode: true,
+            selected_rows_info: false,
         };
     },
     mounted() {
@@ -328,6 +388,10 @@ export default {
             this.show_reset_button = (_.has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
 
             this.server_mode = (_.has(this.config, 'server_mode')) ? (this.config.server_mode) : false;
+
+            this.card_mode = (_.has(this.config, 'card_mode')) ? (this.config.card_mode) : true;
+
+            this.selected_rows_info = (_.has(this.config, 'card_mode')) ? (this.config.selected_rows_info) : false;
 
         },
 
@@ -942,6 +1006,16 @@ export default {
                 }
             });
             return show_row;
+        },
+
+        showPaginationRow() {
+            let show_pagination_row = false;
+
+            if (this.card_mode == false && (this.pagination == true || this.pagination_info == true || this.selected_rows_info == true)) {
+                show_pagination_row = true;
+            }
+
+            return show_pagination_row;
         }
 
     },
