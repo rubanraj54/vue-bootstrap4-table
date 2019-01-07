@@ -164,7 +164,7 @@
                                                 </slot>
                                             </template>
                                             <template v-if="selected_rows_info">
-                                                <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
+                                                <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                                     {{selectedItemsCount}} rows selected
                                                 </slot>
                                             </template>
@@ -223,7 +223,7 @@
                             </slot>
                         </template>
                         <template v-if="selected_rows_info">
-                            <slot name="rows-selected-info" :selectedItemsCount="selectedItemsCount">
+                            <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                 {{selectedItemsCount}} rows selected
                             </slot>
                         </template>
