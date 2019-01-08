@@ -1,7 +1,7 @@
 <template>
     <div>
         <a class="dropdown-item" href="" @click.prevent="handleSelect()">
-            <div v-if="isSingle" class="custom-control custom-radio">
+            <div v-if="isSingleMode" class="custom-control custom-radio">
                 <input type="radio" class="custom-control-input" v-model="selected_value" :value="option.value">
                 <label class="custom-control-label">{{option.name}}</label>
             </div>
@@ -9,17 +9,12 @@
                 <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="option_selected"/>
                 <label class="custom-control-label">{{option.name}}</label>
             </div>
-
         </a>
     </div>
 </template>
 
 <script>
     import _ from "lodash";
-
-    import {
-        EventBus
-    } from '../../event-bus.js';
 
     export default {
         name: "MultiSelectItem",
@@ -43,9 +38,13 @@
                 type: Number | String,
                 default: 0
             },
-            isSingle: {
+            isSingleMode: {
                 type: Boolean,
                 default: true
+            },
+            isAllOptionsSelected: {
+                type: Boolean,
+                default: false
             },
             selectedOptionIndexes: {
                 type: Array,
@@ -60,33 +59,14 @@
                 selected_value: ""
             };
         },
-        mounted() {
-            // EventBus.$on('reset-query', () => {
-            //     $(this.$refs.simple_filter_input).val("");
-            // });
-        },
         methods: {
             handleSelect() {
-                // this.option_selected = !this.option_selected;
                 if (this.option_selected) {
                     this.$emit('on-deselect-option',this.index);
                 } else {
                     this.$emit('on-select-option',this.index);
                 }
-            },
-            // TODO - configurable debouncing
-            updateFilter: _.debounce(function(event) {
-                this.$emit('update-filter', {
-                    "event": event,
-                    "column": this.column
-                });
-            }, 60),
-        },
-        components: {
-
-        },
-        computed: {
-
+            }
         },
         watch: {
             selectedOptionIndexes: {
@@ -107,14 +87,3 @@
         }
     };
 </script>
-
-<style scoped>
-    /* .input-group-append.vbt-simple-filter-clear {
-        cursor: pointer;
-    } */
-    .scrollable-menu {
-    height: auto;
-    max-height: 200px;
-    overflow-x: hidden;
-}
-</style>

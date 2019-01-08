@@ -60,22 +60,26 @@
                         name: "name.first_name",
                         filter: {
                             type: "multi-select",
-                            placeholder: "Enter first name",
+                            placeholder: "Select first name",
                             options: [
                                 {
-                                    "name" : "Bindya",
-                                    "value" : "Bindya"
+                                    "name" : "Irwin",
+                                    "value" : "Irwin"
                                 },
                                 {
-                                    "name" : "option two",
-                                    "value" : "option two"
+                                    "name" : "Don",
+                                    "value" : "Don"
                                 },
                                 {
-                                    "name" : "option three",
-                                    "value" : "option three"
+                                    "name" : "Lolita",
+                                    "value" : "Lolita"
                                 },
                             ],
-                            mode:"multi"
+                            mode:"multi",
+                            select_all_checkbox : {
+                                visibility: true,
+                                text: "Select all"
+                            }
                         },
                         sort: true,
                         // slot_name: "my_duplicate_id_column"
