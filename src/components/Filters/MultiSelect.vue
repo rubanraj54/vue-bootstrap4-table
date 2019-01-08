@@ -5,7 +5,10 @@
                 {{title}}
             </a>
             <div ref="vbt_dropdown_menu" class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuLink">
-                <multi-select-item v-for="(option, key) in options" :key="key" :index="key" :option="option" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
+                <!-- <template v-if="!isSingle">
+                    <multi-select-item :option="anyOption" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
+                </template> -->
+                <multi-select-item v-for="(option, key) in options" :key="key" :index="key" :option="option" :is-single="isSingle" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
             </div>
         </div>
     </div>
@@ -53,18 +56,29 @@
         },
         methods: {
             addOption(index) {
-
-                let res = _.findIndex(this.selected_option_indexes, function(option_index) { return option_index == index; });
-
-                if (res == -1) {
+                if (this.isSingle) {
+                    this.removeAllOption();
                     this.selected_option_indexes.push(index);
+                } else {
+                    let res = _.findIndex(this.selected_option_indexes, function(option_index) { return option_index == index; });
+                    if (res == -1) {
+                        this.selected_option_indexes.push(index);
+                    }
                 }
             },
             removeOption(index) {
-                let res = _.findIndex(this.selected_option_indexes, function(option_index) { return option_index == index; });
-                if (res > -1) {
-                    this.selected_option_indexes.splice(res,1);
+                if (this.isSingle) {
+                    this.removeAllOption();
+                } else {
+                    let res = _.findIndex(this.selected_option_indexes, function(option_index) { return option_index == index; });
+                    if (res > -1) {
+                        this.selected_option_indexes.splice(res,1);
+                    }
                 }
+            },
+
+            removeAllOption() {
+                this.selected_option_indexes = [];
             }
         },
         components: {
@@ -78,15 +92,28 @@
                         return title;
                     }
 
-                    // if (this.selected_option_indexes.length > 0 && this.selected_option_indexes.length <= 2) {
-                    //     let filtered_options = _.filter(this.options, (option,index) => {return _.includes(this.selected_option_indexes,index)});
-                    //     let names = _.map(filtered_options, (option) => {return option.name});
-                    //     return _.join(names, ",  ");
-                    // } else {
+                    if (this.selected_option_indexes.length > 0 && this.selected_option_indexes.length <= 1) {
+                        let filtered_options = _.filter(this.options, (option,index) => {return _.includes(this.selected_option_indexes,index)});
+                        let names = _.map(filtered_options, (option) => {return option.name});
+                        return _.join(names, ",  ");
+                    } else {
                         return this.selected_option_indexes.length + " selected";
-                    // }
+                    }
 
+                },
+                mode() {
+                    let mode = "single";
+                    if (_.has(this.column.filter, "mode") && this.column.filter.mode == "multi" ) {
+                        mode = "multi";
+                    }
+                    return mode;
+                },
+
+                isSingle() {
+                    return (this.mode == "single");
                 }
+
+
         },
         watch: {
             selected_option_indexes(newVal,oldVal) {

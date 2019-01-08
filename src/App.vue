@@ -74,7 +74,8 @@
                                     "name" : "option three",
                                     "value" : "option three"
                                 },
-                            ]
+                            ],
+                            mode:"multi"
                         },
                         sort: true,
                         // slot_name: "my_duplicate_id_column"

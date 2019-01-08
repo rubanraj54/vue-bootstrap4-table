@@ -1,7 +1,11 @@
 <template>
     <div>
         <a class="dropdown-item" href="" @click.prevent="handleSelect()">
-            <div class="custom-control custom-checkbox">
+            <div v-if="isSingle" class="custom-control custom-radio">
+                <input type="radio" class="custom-control-input" v-model="selected_value" :value="option.value">
+                <label class="custom-control-label">{{option.name}}</label>
+            </div>
+            <div v-else class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="option_selected"/>
                 <label class="custom-control-label">{{option.name}}</label>
             </div>
@@ -39,6 +43,10 @@
                 type: Number | String,
                 default: 0
             },
+            isSingle: {
+                type: Boolean,
+                default: true
+            },
             selectedOptionIndexes: {
                 type: Array,
                 default: function() {
@@ -48,7 +56,8 @@
         },
         data: function() {
             return {
-                option_selected : false
+                option_selected : false,
+                selected_value: ""
             };
         },
         mounted() {
@@ -87,6 +96,13 @@
 
                 },
                 deep: true
+            },
+            option_selected(newVal,oldVal) {
+                if (newVal) {
+                    this.selected_value = this.option.value;
+                } else {
+                    this.selected_value = "";
+                }
             }
         }
     };
