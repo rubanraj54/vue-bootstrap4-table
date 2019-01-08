@@ -102,7 +102,7 @@
                             <td v-for="(column, key, index) in vbt_columns" :key="index" align="center">
                                 <template v-if="hasFilter(column)">
                                     <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
-                                    <MultiSelect v-if="column.filter.type == 'multi-select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
+                                    <MultiSelect v-if="column.filter.type == 'select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
                                 </template>
                             </td>
                         </tr>
@@ -623,7 +623,7 @@ export default {
                             flag = false;
                             return false;
                         }
-                    } else if (filter.type === "multi-select") {
+                    } else if (filter.type === "select") {
                         if (self.multiSelectFilter(_.get(row, filter.name), filter.selected_options,filter.config)) {
                             flag = true;
                         } else {

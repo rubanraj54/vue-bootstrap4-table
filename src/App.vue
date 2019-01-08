@@ -59,7 +59,7 @@
                         label: "First Name",
                         name: "name.first_name",
                         filter: {
-                            type: "multi-select",
+                            type: "select",
                             placeholder: "Select first name",
                             options: [
                                 {
