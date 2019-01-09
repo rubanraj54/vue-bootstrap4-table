@@ -314,6 +314,7 @@ export default {
             total_rows: 0,
             card_mode: true,
             selected_rows_info: false,
+            last_handled_item: null
         };
     },
     mounted() {
@@ -339,6 +340,7 @@ export default {
         this.initialSort();
         this.filter();
         this.paginateFilter();
+        this.handleShiftKey();
 
     },
     components: {
@@ -468,9 +470,22 @@ export default {
                 this.sort();
             }
         },
-        addSelectedItem(item) {
+        addSelectedItem(payload) {
+            let item = payload.row;
 
-            this.selected_items.push(item);
+            if (payload.shift_select == false) {
+                this.selected_items.push(item);
+            } else {
+                let filterRes = [];
+                if (this.server_mode && !this.hasUniqueId) {
+                    // filterRes = _.filter(this.vbt_rows, function(row) { return row. });
+
+                } else {
+                    filterRes = _.filter(this.vbt_rows, (row) => { return (row[this.uniqueId] > this.last_handled_item[this.uniqueId] && row[this.uniqueId] <= item[this.uniqueId]) });
+                    this.selected_items.push(...filterRes);
+                }
+            }
+
 
             this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":item});
 
@@ -489,6 +504,7 @@ export default {
                 this.select_all_rows = false;
                 // EventBus.$emit('unselect-select-all-items-checkbox', "from main");
             }
+            this.last_handled_item = item;
         },
         selectAllItems() {
 
@@ -522,8 +538,14 @@ export default {
             this.$emit('on-all-unselect-rows', {"selected_items":_.cloneDeep(this.selected_items)});
 
         },
-        removeSelectedItem(item) {
+        removeSelectedItem(payload) {
+
+            let item = payload.row;
+
             let self = this;
+
+            this.last_handled_item = item;
+
             _.forEach(this.selected_items, function (selected_item, index) {
                 if (_.isEqual(item, selected_item)) {
                     self.selected_items.splice(index, 1);
@@ -919,8 +941,17 @@ export default {
             // adding classes for sortable column - ends here
 
             return classes;
-        }
+        },
 
+        handleShiftKey() {
+            ["keyup","keydown"].forEach((event) => {
+                window.addEventListener(event, (e) => {
+                    document.onselectstart = function() {
+                        return !(e.key == "Shift" && e.shiftKey);
+                    }
+                });
+            });
+        }
     },
     computed: {
         rowCount() {

@@ -1,7 +1,7 @@
 <template>
-    <td v-show="checkboxRows" class="text-center" v-on="!rowsSelectable ? { click: () => selectCheckbox() } : {}">
+    <td v-show="checkboxRows" class="text-center" v-on="!rowsSelectable ? { click: (event) => selectCheckbox(event)} : {}">
         <div class="custom-control custom-checkbox">
-          <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="row_selected" v-on="!rowsSelectable ? { change: ($event) => handleChange($event) } : {}"/>
+          <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="row_selected"/>
           <label class="custom-control-label"></label>
         </div>
     </td>
@@ -45,21 +45,23 @@
             this.checkInSelecteditems();
         },
         methods: {
-            handleChange(event) {
-                if (event.target.checked) {
-                    this.$emit('add-selected-item', this.row);
-                } else {
-                    this.$emit('remove-selected-item', this.row);
-                }
-            },
-            selectCheckbox() {
+            // handleChange(event) {
+            //     if (event.target.checked) {
+            //         this.$emit('add-selected-item', this.row);
+            //     } else {
+            //         this.$emit('remove-selected-item', this.row);
+            //     }
+            // },
+            selectCheckbox(event) {
+                // let shiftSelect = event.shiftKey;
                 if (this.row_selected) {
-                    this.$emit('remove-selected-item', this.row);
+                    this.$emit('remove-selected-item', {'row':this.row,'shift_select':event.shiftKey});
                 } else {
-                    this.$emit('add-selected-item', this.row);
+                    this.$emit('add-selected-item', {'row':this.row,'shift_select':event.shiftKey});
                 }
                 this.row_selected = !this.row_selected;
             },
+
             checkInSelecteditems() {
                 let difference = _.differenceWith(this.selectedItems, [this.row], _.isEqual);
                 if (difference.length != this.selectedItems.length) {
