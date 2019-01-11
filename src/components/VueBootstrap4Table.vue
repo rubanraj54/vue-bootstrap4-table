@@ -510,7 +510,7 @@ export default {
             } else {
                 this.removeSelectedItem(row);
             }
-            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":rows});
+            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":row});
             // EventBus.$emit('unselect-select-all-items-checkbox');
             this.select_all_rows = false;
             this.lastSelectedItemIndex = payload.rowIndex;
@@ -851,7 +851,6 @@ export default {
             }
         },
         selectCheckboxByRow(event,row,rowIndex) {
-
             let matches = [];
 
             if (!this.hasUniqueId) {
@@ -861,21 +860,10 @@ export default {
             }
 
             if (matches.length == 0) {
-                if (this.isShiftSelection(event.shiftKey,rowIndex)) {
-                    let rows = this.getShiftSelectionRows(rowIndex);
-                    rows.forEach((_row) => {this.addSelectedItem(_row)});
-                } else {
-                    this.addSelectedItem(row);
-                }
+                this.handleAddSelectedItem({'row':row,'shiftKey':event.shiftKey,"rowIndex":rowIndex})
             } else {
-                if (this.isShiftSelection(event.shiftKey,rowIndex)) {
-                    let rows = this.getShiftSelectionRows(rowIndex);
-                    rows.forEach((_row) => {this.removeSelectedItem(_row)});
-                } else {
-                    this.removeSelectedItem(row);
-                }
+                this.handleRemoveSelectedItem({'row':row,'shiftKey':event.shiftKey,"rowIndex":rowIndex})
             }
-            this.lastSelectedItemIndex = rowIndex;
         },
         // row method ends here
         resetSort() {
