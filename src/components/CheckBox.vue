@@ -59,9 +59,9 @@
             selectCheckbox(event) {
                 // let shiftSelect = event.shiftKey;
                 if (this.row_selected) {
-                    this.$emit('remove-selected-item', {'row':_.cloneDeep(this.row),'shift_key':event.shiftKey,"rowIndex":this.rowIndex});
+                    this.$emit('remove-selected-item', {'row':_.cloneDeep(this.row),'shiftKey':event.shiftKey,"rowIndex":this.rowIndex});
                 } else {
-                    this.$emit('add-selected-item', {'row':_.cloneDeep(this.row),'shift_key':event.shiftKey,"rowIndex":this.rowIndex});
+                    this.$emit('add-selected-item', {'row':_.cloneDeep(this.row),'shiftKey':event.shiftKey,"rowIndex":this.rowIndex});
                 }
                 // this.row_selected = !this.row_selected;
             },

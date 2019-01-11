@@ -128,7 +128,7 @@
                     per_page: 10,
                     checkbox_rows: true,
                     highlight_row_hover: true,
-                    rows_selectable: false,
+                    rows_selectable: true,
                     multi_column_sort: false,
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table",

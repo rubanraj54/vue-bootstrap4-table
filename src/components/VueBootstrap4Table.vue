@@ -109,7 +109,7 @@
                         <!-- filter row ends here -->
 
                         <!-- data rows stars here -->
-                        <tr v-for="(row, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
+                        <tr v-for="(row, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: ($event) => selectCheckboxByRow($event,row,index) } : {}">
                             <CheckBox :checkboxRows="checkbox_rows" :rowIndex="index" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="handleAddSelectedItem" @remove-selected-item="handleRemoveSelectedItem"></CheckBox>
                             <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" :class="rowClasses(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
@@ -470,16 +470,19 @@ export default {
                 this.sort();
             }
         },
+        isShiftSelection(shiftKey,rowIndex){
+            return (shiftKey == true) && (this.lastSelectedItemIndex != null) && (this.lastSelectedItemIndex != rowIndex);
+        },
         handleAddSelectedItem(payload) {
-            let item = payload.row;
-            if (payload.shift_key == true && this.lastSelectedItemIndex != null && this.lastSelectedItemIndex != payload.rowIndex) {
-                let items = this.getShiftSelectionRows(payload.rowIndex);
-                items.forEach((item) => {this.addSelectedItem(item)});
+            let row = payload.row;
+            if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
+                let rows = this.getShiftSelectionRows(payload.rowIndex);
+                rows.forEach((_row) => {this.addSelectedItem(_row)});
             } else {
-                this.addSelectedItem(item);
+                this.addSelectedItem(row);
             }
 
-            this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":item});
+            this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":row});
 
             let difference = [];
 
@@ -500,15 +503,14 @@ export default {
             this.lastSelectedItemIndex = payload.rowIndex;
         },
         handleRemoveSelectedItem(payload) {
-            let item = payload.row;
-            if (payload.shift_key == true && this.lastSelectedItemIndex != null && this.lastSelectedItemIndex != payload.rowIndex) {
-                let items = this.getShiftSelectionRows(payload.rowIndex);
-                items.forEach((item) => {this.removeSelectedItem(item)});
+            let row = payload.row;
+            if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
+                let rows = this.getShiftSelectionRows(payload.rowIndex);
+                rows.forEach((_row) => {this.removeSelectedItem(_row)});
             } else {
-                this.removeSelectedItem(item);
+                this.removeSelectedItem(row);
             }
-
-            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":item});
+            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":rows});
             // EventBus.$emit('unselect-select-all-items-checkbox');
             this.select_all_rows = false;
             this.lastSelectedItemIndex = payload.rowIndex;
@@ -848,7 +850,8 @@ export default {
                 return _.get(row,this.uniqueId) == row_hovered;
             }
         },
-        selectCheckboxByRow(row) {
+        selectCheckboxByRow(event,row,rowIndex) {
+
             let matches = [];
 
             if (!this.hasUniqueId) {
@@ -858,10 +861,21 @@ export default {
             }
 
             if (matches.length == 0) {
-                this.addSelectedItem(row);
+                if (this.isShiftSelection(event.shiftKey,rowIndex)) {
+                    let rows = this.getShiftSelectionRows(rowIndex);
+                    rows.forEach((_row) => {this.addSelectedItem(_row)});
+                } else {
+                    this.addSelectedItem(row);
+                }
             } else {
-                this.removeSelectedItem(row);
+                if (this.isShiftSelection(event.shiftKey,rowIndex)) {
+                    let rows = this.getShiftSelectionRows(rowIndex);
+                    rows.forEach((_row) => {this.removeSelectedItem(_row)});
+                } else {
+                    this.removeSelectedItem(row);
+                }
             }
+            this.lastSelectedItemIndex = rowIndex;
         },
         // row method ends here
         resetSort() {
