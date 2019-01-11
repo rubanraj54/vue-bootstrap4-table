@@ -109,8 +109,8 @@
                         <!-- filter row ends here -->
 
                         <!-- data rows stars here -->
-                        <tr v-for="(row, key, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
-                            <CheckBox :checkboxRows="checkbox_rows" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="addSelectedItem" @remove-selected-item="removeSelectedItem"></CheckBox>
+                        <tr v-for="(row, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: () => selectCheckboxByRow(row) } : {}">
+                            <CheckBox :checkboxRows="checkbox_rows" :rowIndex="index" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="handleAddSelectedItem" @remove-selected-item="handleRemoveSelectedItem"></CheckBox>
                             <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" :class="rowClasses(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
                                     {{getValueFromRow(row,column.name)}}
@@ -314,7 +314,7 @@ export default {
             total_rows: 0,
             card_mode: true,
             selected_rows_info: false,
-            last_handled_item: null
+            lastSelectedItemIndex: null
         };
     },
     mounted() {
@@ -470,22 +470,14 @@ export default {
                 this.sort();
             }
         },
-        addSelectedItem(payload) {
+        handleAddSelectedItem(payload) {
             let item = payload.row;
-
-            if (payload.shift_select == false) {
-                this.selected_items.push(item);
+            if (payload.shift_key == true && this.lastSelectedItemIndex != null && this.lastSelectedItemIndex != payload.rowIndex) {
+                let items = this.getShiftSelectionRows(payload.rowIndex);
+                items.forEach((item) => {this.addSelectedItem(item)});
             } else {
-                let filterRes = [];
-                if (this.server_mode && !this.hasUniqueId) {
-                    // filterRes = _.filter(this.vbt_rows, function(row) { return row. });
-
-                } else {
-                    filterRes = _.filter(this.vbt_rows, (row) => { return (row[this.uniqueId] > this.last_handled_item[this.uniqueId] && row[this.uniqueId] <= item[this.uniqueId]) });
-                    this.selected_items.push(...filterRes);
-                }
+                this.addSelectedItem(item);
             }
-
 
             this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":item});
 
@@ -504,7 +496,35 @@ export default {
                 this.select_all_rows = false;
                 // EventBus.$emit('unselect-select-all-items-checkbox', "from main");
             }
-            this.last_handled_item = item;
+
+            this.lastSelectedItemIndex = payload.rowIndex;
+        },
+        handleRemoveSelectedItem(payload) {
+            let item = payload.row;
+            if (payload.shift_key == true && this.lastSelectedItemIndex != null && this.lastSelectedItemIndex != payload.rowIndex) {
+                let items = this.getShiftSelectionRows(payload.rowIndex);
+                items.forEach((item) => {this.removeSelectedItem(item)});
+            } else {
+                this.removeSelectedItem(item);
+            }
+
+            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":item});
+            // EventBus.$emit('unselect-select-all-items-checkbox');
+            this.select_all_rows = false;
+            this.lastSelectedItemIndex = payload.rowIndex;
+        },
+        addSelectedItem(item) {
+
+            let index = -1;
+            if (this.server_mode && !this.hasUniqueId) {
+                index = _.findIndex(this.selected_items, (selected_item) => {return _.isEqual(selected_item, item)});
+            } else {
+                index = _.findIndex(this.selected_items, (selected_item) => {return selected_item[this.uniqueId] == item[this.uniqueId]});
+            }
+
+            if (index == -1) {
+                this.selected_items.push(item);
+            }
         },
         selectAllItems() {
 
@@ -538,25 +558,27 @@ export default {
             this.$emit('on-all-unselect-rows', {"selected_items":_.cloneDeep(this.selected_items)});
 
         },
-        removeSelectedItem(payload) {
-
-            let item = payload.row;
-
+        removeSelectedItem(item) {
             let self = this;
-
-            this.last_handled_item = item;
-
+            // TODO try with findbyId function
             _.forEach(this.selected_items, function (selected_item, index) {
                 if (_.isEqual(item, selected_item)) {
                     self.selected_items.splice(index, 1);
                     return false;
                 }
             });
-
-            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":item});
-
-            // EventBus.$emit('unselect-select-all-items-checkbox');
-            this.select_all_rows = false;
+        },
+        getShiftSelectionRows(rowIndex) {
+            let start = 0;
+            let end = 0;
+            if (this.lastSelectedItemIndex < rowIndex) {
+                start = this.lastSelectedItemIndex;
+                end = rowIndex + 1;
+            } else if (this.lastSelectedItemIndex > rowIndex) {
+                start = rowIndex;
+                end = this.lastSelectedItemIndex + 1;
+            }
+            return this.vbt_rows.slice(start,end);
         },
         updateFilter(payload) {
             let event = payload.event;
@@ -679,8 +701,7 @@ export default {
 
                     let value = _.get(row, vbt_column.name);
                     let global_search_text = self.query.global_search;
-
-                    if (typeof value === "undefined") {
+                    if (!value || isNaN(value) || typeof value === "undefined") {
                         value =  "";
                     }
 
@@ -947,7 +968,7 @@ export default {
             ["keyup","keydown"].forEach((event) => {
                 window.addEventListener(event, (e) => {
                     document.onselectstart = function() {
-                        return !(e.key == "Shift" && e.shiftKey);
+                        return !(e.key == "Shift" && e.shiftKey == true);
                     }
                 });
             });
@@ -1077,6 +1098,7 @@ export default {
         per_page: {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
+                    this.page = 1;
                     this.paginateFilter();
                 }
             }
@@ -1133,6 +1155,8 @@ export default {
 
         vbt_rows: {
             handler: function (newVal, oldVal) {
+                // resetting the shift mode
+                this.lastSelectedItemIndex = null;
 
                 if (this.selected_items.length == 0) {
                     // EventBus.$emit('unselect-select-all-items-checkbox');
@@ -1167,11 +1191,6 @@ export default {
             handler : function(newVal,oldVal) {
                 this.resetSort();
             }
-        },
-        per_page(newVal,oldVal) {
-            // if the current page is greater than possible total pages, then reset the current page to 1
-            this.page = 1;
-            this.paginateFilter();
         }
     }
 };

@@ -21,6 +21,10 @@
                 type: Boolean,
                 default: false
             },
+            rowIndex: {
+                type: Number,
+                required: true
+            },
             row: {
                 type: Object,
                 default: function() {
@@ -55,11 +59,11 @@
             selectCheckbox(event) {
                 // let shiftSelect = event.shiftKey;
                 if (this.row_selected) {
-                    this.$emit('remove-selected-item', {'row':this.row,'shift_select':event.shiftKey});
+                    this.$emit('remove-selected-item', {'row':_.cloneDeep(this.row),'shift_key':event.shiftKey,"rowIndex":this.rowIndex});
                 } else {
-                    this.$emit('add-selected-item', {'row':this.row,'shift_select':event.shiftKey});
+                    this.$emit('add-selected-item', {'row':_.cloneDeep(this.row),'shift_key':event.shiftKey,"rowIndex":this.rowIndex});
                 }
-                this.row_selected = !this.row_selected;
+                // this.row_selected = !this.row_selected;
             },
 
             checkInSelecteditems() {
