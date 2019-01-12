@@ -3,6 +3,7 @@
 
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -16,8 +17,8 @@
 
 # 2. Features
 * Multi column filtering (Optimized filtering)
-	*  Simple filter
-	* Multi-select filter
+	* Simple filter
+	* Select filter (Single & Multiple)
 * Global search
 * Single & Multi column sorting
 * Pagination (True! It works out of the box intelligently)
@@ -54,7 +55,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.16/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.17/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -493,7 +494,8 @@ columns: [
         label: "First Name",
         name: "name.first_name", // access nested objects properties with "."
         filter: {
-            type: "multi-select",
+            type: "select",
+            mode: "multi",
             placeholder: "Select options",
             options: [{
                     "name": "option one",
@@ -518,6 +520,7 @@ columns: [
 | Attributes |Description  | Type |Default  |
 |--|--|--|--|
 |  filter.type | Defines the type of filter. | String | Empty string |
+| filter.mode | Defines the mode of selection in the dropdown. Allowed options are **`single`** and **`multi`**. If the mode is **`single`**, then dropdown will be rendered with **`radio`** buttons, else if the mode is multi, then dropdown will be rendered with **`checkboxes`**. | String | "single" |
 | filter.placeholder | Default text for the dropdown. | String | Empty string |
 | filter.options | You can provide your list of name and value objects to be populated in the multi-select filter dropdown. | Array | Empty array |
 
