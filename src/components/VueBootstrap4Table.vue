@@ -55,16 +55,21 @@
                                     <!-- action buttons button ends here -->
 
                                 </div>
+                                <!-- <a href="" v-if="allRowsSelected">sadfsdf</a> -->
                             </th>
                         </tr>
 
                         <tr>
-                            <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox($event)">
+                            <!-- <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox()">
                                 <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="select_all_rows" value="" @change="selectAllHandleChange($event)"/>
+                                    <input type="checkbox" :indeterminate.prop="showIndeterminateState" class="custom-control-input vbt-checkbox" v-model="allRowsSelected" value=""/>
                                     <label class="custom-control-label"></label>
                                 </div>
-                            </th>
+                            </th> -->
+
+                            <select-all-rows-check-box  :all-rows-selected="allRowsSelected"
+                                                        :current-page-selection-count="currentPageSelectionCount"
+                                                        @select-all-row-checkbox="selectAllCheckbox"/>
 
                             <slot name="columns" :columns="vbt_columns">
                                 <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="vbt-column-header" :class="columnClasses(column)">
@@ -240,6 +245,7 @@
 import _ from "lodash";
 
 import CheckBox from "./CheckBox.vue";
+import SelectAllRowsCheckBox from "./SelectAllRowsCheckBox.vue";
 import SortIcon from "./SortIcon.vue";
 import Pagination from "./Pagination.vue";
 import Simple from "./Filters/Simple.vue";
@@ -298,7 +304,7 @@ export default {
             highlight_row_hover: true,
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
-            select_all_rows: false,
+            allRowsSelected: false,
             row_hovered: null,
             multi_column_sort:false,
             card_title: "",
@@ -345,6 +351,7 @@ export default {
     },
     components: {
         CheckBox,
+        SelectAllRowsCheckBox,
         Simple,
         MultiSelect,
         SortIcon,
@@ -493,10 +500,10 @@ export default {
             }
 
             if (difference.length == 0) {
-                this.select_all_rows = true;
+                this.allRowsSelected = true;
                 // EventBus.$emit('select-select-all-items-checkbox', "from main");
             } else {
-                this.select_all_rows = false;
+                this.allRowsSelected = false;
                 // EventBus.$emit('unselect-select-all-items-checkbox', "from main");
             }
 
@@ -512,7 +519,7 @@ export default {
             }
             this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":row});
             // EventBus.$emit('unselect-select-all-items-checkbox');
-            this.select_all_rows = false;
+            this.allRowsSelected = false;
             this.lastSelectedItemIndex = payload.rowIndex;
         },
         addSelectedItem(item) {
@@ -795,22 +802,12 @@ export default {
         },
 
         selectAllCheckbox() {
-            if (this.select_all_rows) {
+            if (this.allRowsSelected || this.currentPageSelectionCount > 0) {
                 this.unSelectAllItems();
-                // this.$emit('unselect-all-items');
+                this.allRowsSelected = false;
             } else {
                 this.selectAllItems();
-                // this.$emit('select-all-items');
-            }
-            this.select_all_rows = !this.select_all_rows;
-        },
-        selectAllHandleChange(event) {
-            if (event.target.checked) {
-                // this.$emit('select-all-items');
-                this.selectAllItems();
-            } else {
-                this.unSelectAllItems();
-                // this.$emit('unselect-all-items');
+                this.allRowsSelected = true;
             }
         },
 
@@ -1070,6 +1067,16 @@ export default {
             }
 
             return show_pagination_row;
+        },
+
+        currentPageSelectionCount() {
+            let result = [];
+            if (this.server_mode && !this.hasUniqueId) {
+                result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
+            } else {
+                result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
+            }
+            return result.length;
         }
 
     },
@@ -1162,7 +1169,7 @@ export default {
 
                 if (this.selected_items.length == 0) {
                     // EventBus.$emit('unselect-select-all-items-checkbox');
-                    this.select_all_rows = false;
+                    this.allRowsSelected = false;
                     return;
                 }
 
@@ -1176,9 +1183,9 @@ export default {
 
                 if (difference.length == 0) {
                     // EventBus.$emit('select-select-all-items-checkbox');
-                    this.select_all_rows = true;
+                    this.allRowsSelected = true;
                 } else {
-                    this.select_all_rows = false;
+                    this.allRowsSelected = false;
                     // EventBus.$emit('unselect-select-all-items-checkbox');
                 }
 
