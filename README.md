@@ -8,6 +8,8 @@
 
 > Advanced table based on Vue 2 and Bootstrap 4
 
+[![Build Status](https://travis-ci.org/rubanraj54/vue-bootstrap4-table.svg?branch=develop)](https://travis-ci.org/rubanraj54/vue-bootstrap4-table)
+
 [Quick Demo in Codepen](https://codepen.io/rubanraj54/full/zyZdzN).
 
 [Docs in gitbook](https://rubanraj54.gitbook.io/vue-bootstrap4-table/).
