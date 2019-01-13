@@ -20,8 +20,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             query: {
                 esModules: true
             }
-        } : [],
-    )
+        } : [])
   },
   devtool: '#inline-source-map',
   resolveLoader: {
