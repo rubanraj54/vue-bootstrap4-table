@@ -7,6 +7,7 @@
     </td>
 </template>
 
+
 <script>
     export default {
         name: 'CheckBox',
@@ -17,10 +18,6 @@
             },
             rowSelected: {
                 type: Boolean,
-                required: true
-            },
-            row: {
-                type: Object,
                 required: true
             }
         },

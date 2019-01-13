@@ -2,7 +2,6 @@
     <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
         <CheckBox v-if="checkboxRows"
                   :rowsSelectable="rowsSelectable"
-                  :row="row"
                   :row-selected="rowSelected"
                   @add-row="addRow"
                   @remove-row="removeRow"/>
