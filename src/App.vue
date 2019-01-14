@@ -126,7 +126,7 @@
                     pagination_info: true,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
-                    checkbox_rows: true,
+                    checkbox_rows: false,
                     highlight_row_hover: true,
                     rows_selectable: true,
                     multi_column_sort: false,
@@ -141,18 +141,27 @@
                     show_reset_button: false,
                     show_refresh_button: false,
                     server_mode: false,
-                    card_mode: true,
+                    card_mode: false,
                     selected_rows_info: true
                 },
                 msg: "msg from parent",
                 // actions: []
-                actions: [{
+                actions: [
+                    {
                     btn_text: "Download",
                     event_name: "on-download",
                     event_payload: {
                         msg: "my custom msg"
                     }
-                }]
+                },
+                    {
+                    btn_text: "Download",
+                    event_name: "on-download",
+                    event_payload: {
+                        msg: "my custom msg"
+                    }
+                },
+                ]
             }
         },
         methods: {

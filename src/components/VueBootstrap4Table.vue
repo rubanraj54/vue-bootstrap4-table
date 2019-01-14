@@ -47,10 +47,12 @@
                                     </div>
 
                                     <!-- action buttons starts here -->
-                                    <div class="btn-group col-md-8 justify-content-end" role="group" aria-label="Basic example">
-                                        <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
-                                            {{action.btn_text}}
-                                        </button>
+                                    <div class="col-md-8">
+                                        <div class="btn-group float-right" role="group" aria-label="Basic example">
+                                            <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
+                                                {{action.btn_text}}
+                                            </button>
+                                        </div>
                                     </div>
                                     <!-- action buttons button ends here -->
 
@@ -60,14 +62,8 @@
                         </tr>
 
                         <tr>
-                            <!-- <th v-show="checkbox_rows" class="text-center justify-content-center" @click="selectAllCheckbox()">
-                                <div class="custom-control custom-checkbox">
-                                    <input type="checkbox" :indeterminate.prop="showIndeterminateState" class="custom-control-input vbt-checkbox" v-model="allRowsSelected" value=""/>
-                                    <label class="custom-control-label"></label>
-                                </div>
-                            </th> -->
-
-                            <select-all-rows-check-box  :all-rows-selected="allRowsSelected"
+                            <select-all-rows-check-box v-if="checkbox_rows"
+                                                        :all-rows-selected="allRowsSelected"
                                                         :current-page-selection-count="currentPageSelectionCount"
                                                         @select-all-row-checkbox="selectAllCheckbox"/>
 
@@ -114,14 +110,23 @@
                         <!-- filter row ends here -->
 
                         <!-- data rows stars here -->
-                        <tr v-for="(row, index) in vbt_rows" :key="index" ref="vbt_row" v-bind:style='{"background": (canHighlightHover(row,row_hovered)) ? rowHighlightColor : ""}' @mouseover="rowHovered(row)" @mouseleave="rowHoveredOut()" v-on="rows_selectable ? { click: ($event) => selectCheckboxByRow($event,row,index) } : {}">
-                            <CheckBox :checkboxRows="checkbox_rows" :rowIndex="index" :selectedItems="selected_items" :rowsSelectable="rows_selectable" :row="row" @add-selected-item="handleAddSelectedItem" @remove-selected-item="handleRemoveSelectedItem"></CheckBox>
-                            <td v-for="(column, key, hindex) in vbt_columns" :key="hindex" :class="rowClasses(column)">
+                        <row v-for="(row, index) in vbt_rows" :key="index"
+                                                              :row="row"
+                                                              :columns="vbt_columns"
+                                                              :row-index="index"
+                                                              :checkbox-rows="checkbox_rows"
+                                                              :rows-selectable="rows_selectable"
+                                                              :selected-items="selected_items"
+                                                              :highlight-row-hover="highlight_row_hover"
+                                                              :highlight-row-hover-color="rowHighlightColor"
+                                                              @add-row="handleAddRow"
+                                                              @remove-row="handleRemoveRow">
+                            <template v-for="(column) in columns" :slot="'vbt-'+getCellSlotName(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
-                                    {{getValueFromRow(row,column.name)}}
+                                     {{getValueFromRow(row,column.name)}}
                                 </slot>
-                            </td>
-                        </tr>
+                            </template>
+                        </row>
                         <!-- data rows ends here -->
 
                         <!-- Pagination row starts here -->
@@ -129,7 +134,7 @@
                             <td :colspan="headerColSpan">
                                 <div class="row">
                                     <!-- pagination starts here -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-8">
                                         <div v-if="pagination">
                                             <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
                                                 <template slot="vbt-paginataion-previous-button">
@@ -148,7 +153,7 @@
                                     <!-- pagination ends here -->
 
                                     <!-- pagination info start here -->
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="text-right justify-content-center">
                                             <template v-if="pagination_info">
                                                 <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
@@ -244,6 +249,7 @@
 <script>
 import _ from "lodash";
 
+import Row from "./Row.vue";
 import CheckBox from "./CheckBox.vue";
 import SelectAllRowsCheckBox from "./SelectAllRowsCheckBox.vue";
 import SortIcon from "./SortIcon.vue";
@@ -305,7 +311,6 @@ export default {
             highlight_row_hover_color: "#d6d6d6",
             rows_selectable: false,
             allRowsSelected: false,
-            row_hovered: null,
             multi_column_sort:false,
             card_title: "",
             global_search: {
@@ -350,6 +355,7 @@ export default {
 
     },
     components: {
+        Row,
         CheckBox,
         SelectAllRowsCheckBox,
         Simple,
@@ -480,8 +486,8 @@ export default {
         isShiftSelection(shiftKey,rowIndex){
             return (shiftKey == true) && (this.lastSelectedItemIndex != null) && (this.lastSelectedItemIndex != rowIndex);
         },
-        handleAddSelectedItem(payload) {
-            let row = payload.row;
+        handleAddRow(payload) {
+            let row = this.vbt_rows[payload.rowIndex];
             if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
                 let rows = this.getShiftSelectionRows(payload.rowIndex);
                 rows.forEach((_row) => {this.addSelectedItem(_row)});
@@ -509,8 +515,8 @@ export default {
 
             this.lastSelectedItemIndex = payload.rowIndex;
         },
-        handleRemoveSelectedItem(payload) {
-            let row = payload.row;
+        handleRemoveRow(payload) {
+            let row = this.vbt_rows[payload.rowIndex];
             if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
                 let rows = this.getShiftSelectionRows(payload.rowIndex);
                 rows.forEach((_row) => {this.removeSelectedItem(_row)});
@@ -828,40 +834,6 @@ export default {
             }
             return column.name.replace('.','_');
         },
-        rowHovered(row) {
-            // if it is server mode and
-            // doesnt have unique id, then set the complete row object to row_hovered
-            if (this.server_mode && !this.hasUniqueId) {
-                this.row_hovered = row;
-            } else {
-                this.row_hovered = _.get(row,this.uniqueId);
-            }
-        },
-        rowHoveredOut() {
-            this.row_hovered = null;
-        },
-        canHighlightHover(row,row_hovered) {
-            if (this.server_mode && !this.hasUniqueId) {
-                return _.isEqual(row, row_hovered)
-            } else {
-                return _.get(row,this.uniqueId) == row_hovered;
-            }
-        },
-        selectCheckboxByRow(event,row,rowIndex) {
-            let matches = [];
-
-            if (!this.hasUniqueId) {
-                matches = _.intersectionWith(this.selected_items, [row], _.isEqual);
-            } else {
-                matches = _.intersectionBy(this.selected_items, [row], this.uniqueId);
-            }
-
-            if (matches.length == 0) {
-                this.handleAddSelectedItem({'row':row,'shiftKey':event.shiftKey,"rowIndex":rowIndex})
-            } else {
-                this.handleRemoveSelectedItem({'row':row,'shiftKey':event.shiftKey,"rowIndex":rowIndex})
-            }
-        },
         // row method ends here
         resetSort() {
             this.query.sort = [];
@@ -910,30 +882,6 @@ export default {
                 this.$emit('on-change-query',payload);
             }
         },
-
-        rowClasses(column) {
-            let classes = "";
-
-            let default_text_alignment = "text-center";
-
-            //decide text alignment class - starts here
-            let alignments = ["text-justify","text-right","text-left","text-center"];
-            if (_.has(column, "row_text_alignment") && _.includes(alignments, column.row_text_alignment)) {
-                classes = classes + " " + column.row_text_alignment;
-            } else {
-                classes = classes + " " + default_text_alignment;
-            }
-            //decide text alignment class - ends here
-
-            // adding user defined classes to rows - starts here
-            if (_.has(column, "row_classes")) {
-                classes = classes + " " + column.row_classes;
-            }
-            // adding user defined classes to rows - ends here
-
-            return classes;
-        },
-
         columnClasses(column) {
             let classes = "";
 
