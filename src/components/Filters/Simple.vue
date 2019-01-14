@@ -33,12 +33,12 @@
         },
         mounted() {
             EventBus.$on('reset-query', () => {
-                $(this.$refs.simple_filter_input).val("");
+                this.$refs.simple_filter_input.value = "";
             });
         },
         methods: {
             clearFilter() {
-                $(this.$refs.simple_filter_input).val("");
+                this.$refs.simple_filter_input.value = "";
                 this.$emit('clear-filter',this.column);
             },
             // TODO - configurable debouncing

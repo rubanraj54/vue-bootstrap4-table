@@ -3,7 +3,6 @@
 
 import './assets/scss/custom.scss';
 
-window.$ = window.jQuery = require('jquery');
 window.axios = require('axios');
 
 import Vue from 'vue'
