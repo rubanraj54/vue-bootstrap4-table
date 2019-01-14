@@ -47,10 +47,12 @@
                                     </div>
 
                                     <!-- action buttons starts here -->
-                                    <div class="btn-group col-md-8 justify-content-end" role="group" aria-label="Basic example">
-                                        <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
-                                            {{action.btn_text}}
-                                        </button>
+                                    <div class="col-md-8">
+                                        <div class="btn-group float-right" role="group" aria-label="Basic example">
+                                            <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
+                                                {{action.btn_text}}
+                                            </button>
+                                        </div>
                                     </div>
                                     <!-- action buttons button ends here -->
 
