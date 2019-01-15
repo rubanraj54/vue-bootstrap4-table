@@ -506,8 +506,8 @@ export default {
         },
         handleShiftSelection(payload) {
             let lastSelectedItemIndex = (this.lastSelectedItemIndex != null) ? this.lastSelectedItemIndex : payload.rowIndex;
-            let start = Math.min(this.lastSelectedItemIndex, payload.rowIndex);
-            let end = Math.max(this.lastSelectedItemIndex, payload.rowIndex);
+            let start = Math.min(lastSelectedItemIndex, payload.rowIndex);
+            let end = Math.max(lastSelectedItemIndex, payload.rowIndex);
             let rows = this.vbt_rows.slice(start,end + 1);
             this.unSelectAllItems();
             rows.forEach((_row) => {this.addSelectedItem(_row)});
