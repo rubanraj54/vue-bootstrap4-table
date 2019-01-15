@@ -12,7 +12,8 @@
 </template>
 
 <script>
-    import _ from "lodash";
+    import debounce from "lodash/debounce";
+
 
     import {
         EventBus
@@ -42,7 +43,7 @@
                 this.$emit('clear-filter',this.column);
             },
             // TODO - configurable debouncing
-            updateFilter: _.debounce(function(event) {
+            updateFilter: debounce(function(event) {
                 this.$emit('update-filter', {
                     "event": event,
                     "column": this.column

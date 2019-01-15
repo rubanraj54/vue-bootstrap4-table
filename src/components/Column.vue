@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import _ from "lodash";
+import has from "lodash/has";
 
 export default {
     name: "Column",
@@ -78,7 +78,7 @@ export default {
         },
 
         isSortableColumn() {
-            if (!_.has(this.column,'sort')) {
+            if (!has(this.column,'sort')) {
                 return false;
             } else {
                 return this.column.sort;

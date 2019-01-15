@@ -17,3 +17,7 @@ yarn-error.log*
 \.nyc_output/
 
 coverage/
+
+bundle_statistics\.html
+
+bundle_analysis/

@@ -2,6 +2,10 @@ import vue from 'rollup-plugin-vue'; // Handle .vue SFC files
 import buble from 'rollup-plugin-buble'; // Transpile/polyfill with reasonable browser support
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
+import visualizer from 'rollup-plugin-visualizer';
+import babel from 'rollup-plugin-babel';
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 
 import {
     terser
@@ -25,9 +29,15 @@ export default {
             jsnext: true,
             main: true
         }),
-        commonjs({
-            include: 'node_modules/**'
+        babel({
+            include: 'node_modules/**',
+            runtimeHelpers: true
         }),
-        terser()
+        commonjs(),
+        terser(),
+        visualizer({
+            filename: './bundle_statistics.html',
+            title: 'VueBootstrap4Table bundle analyzer'
+        }),
     ],
 };

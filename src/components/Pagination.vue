@@ -66,7 +66,8 @@
 </template>
 
 <script>
-    import _ from 'lodash';
+    import range from "lodash/range";
+    import includes from "lodash/includes";
 
     export default {
         name: 'Pagination',
@@ -112,7 +113,7 @@
                 let go_to_page = this.go_to_page;
                 if (go_to_page >= 1 && go_to_page <= this.totalPages) {
                     this.pageHandler(go_to_page)
-                    if (!_.includes(this.range,go_to_page)) {
+                    if (!includes(this.range,go_to_page)) {
                         if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
                             this.end = this.totalPages;
                             this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
@@ -139,7 +140,7 @@
         },
         computed: {
             showLeftDot() {
-                return !(_.includes(this.range, 1));
+                return !(includes(this.range, 1));
             },
             showRightDot() {
                 return !(this.totalPages - this.end <= 0);
@@ -154,7 +155,7 @@
                 return this.page == this.end;
             },
             range() {
-                return _.range(this.start, (this.end + 1));
+                return range(this.start, (this.end + 1));
             },
             paginationLimit() {
                 if (this.totalPages < this.num_of_visibile_pagination_buttons) {

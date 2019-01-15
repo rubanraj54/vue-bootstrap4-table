@@ -13,7 +13,15 @@
 </template>
 
 <script>
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+import range from "lodash/range";
+import filter from "lodash/filter";
+import includes from "lodash/includes";
+import map from "lodash/map";
+import join from "lodash/join";
+import has from "lodash/has";
+import cloneDeep from "lodash/cloneDeep";
+
 import MultiSelectItem from "./MultiSelectItem.vue";
 import MultiSelectAllItem from "./MultiSelectAllItem.vue";
 
@@ -58,7 +66,7 @@ export default {
                 this.resetSelectedOptions();
                 this.selected_option_indexes.push(index);
             } else {
-                let res = _.findIndex(this.selected_option_indexes, function (option_index) {
+                let res = findIndex(this.selected_option_indexes, function (option_index) {
                     return option_index == index;
                 });
                 if (res == -1) {
@@ -68,13 +76,13 @@ export default {
         },
         selectAllOptions() {
             this.resetSelectedOptions();
-            this.selected_option_indexes = _.range(this.options.length);
+            this.selected_option_indexes = range(this.options.length);
         },
         removeOption(index) {
             if (this.isSingleMode) {
                 this.resetSelectedOptions();
             } else {
-                let res = _.findIndex(this.selected_option_indexes, function (option_index) {
+                let res = findIndex(this.selected_option_indexes, function (option_index) {
                     return option_index == index;
                 });
                 if (res > -1) {
@@ -101,13 +109,13 @@ export default {
 
             if (this.selected_option_indexes.length > 0 && this.selected_option_indexes.length <= 1) {
                 return this.options[this.selected_option_indexes[0]].name;
-                // let filtered_options = _.filter(this.options, (option, index) => {
-                //     return _.includes(this.selected_option_indexes, index)
+                // let filtered_options = filter(this.options, (option, index) => {
+                //     return includes(this.selected_option_indexes, index)
                 // });
-                // let names = _.map(filtered_options, (option) => {
+                // let names = map(filtered_options, (option) => {
                 //     return option.name
                 // });
-                // return _.join(names, ",  ");
+                // return join(names, ",  ");
             } else {
                 return this.selected_option_indexes.length + " selected";
             }
@@ -116,7 +124,7 @@ export default {
 
         mode() {
             let mode = "single";
-            if (_.has(this.column.filter, "mode") && this.column.filter.mode == "multi") {
+            if (has(this.column.filter, "mode") && this.column.filter.mode == "multi") {
                 mode = "multi";
             }
             return mode;
@@ -131,7 +139,7 @@ export default {
         },
 
         showSelectAllCheckbox() {
-            if (!_.has(this.column.filter,"select_all_checkbox")) {
+            if (!has(this.column.filter,"select_all_checkbox")) {
                 return true;
             } else {
                 return this.column.filter.select_all_checkbox.visibility;
@@ -139,24 +147,26 @@ export default {
         },
 
         selectAllCheckboxText() {
-            if (!_.has(this.column.filter,"select_all_checkbox")) {
+            if (!has(this.column.filter,"select_all_checkbox")) {
                 return "Select All";
             } else {
-                return (_.has(this.column.filter.select_all_checkbox,"text")) ? this.column.filter.select_all_checkbox.text : "Select All"
+                return (has(this.column.filter.select_all_checkbox,"text")) ? this.column.filter.select_all_checkbox.text : "Select All"
             }
         }
     },
     watch: {
         selected_option_indexes(newVal, oldVal) {
-            let filtered_options = _.filter(this.options, (option, index) => {
-                return _.includes(newVal, index)
+            let filtered_options = filter(this.options, (option, index) => {
+                return includes(newVal, index)
             });
             let payload = {};
-            payload.column = _.cloneDeep(this.column);
+            payload.column = cloneDeep(this.column);
             payload.selected_options = [];
-            _.forEach(filtered_options, function (option, key) {
+
+            filtered_options.forEach(option => {
                 payload.selected_options.push(option.value);
             });
+
             this.$emit('update-multi-select-filter', payload);
         }
     },
