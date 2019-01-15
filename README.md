@@ -13,8 +13,8 @@
   <a href="https://travis-ci.org/rubanraj54/vue-bootstrap4-table"><img src="https://img.shields.io/travis/rubanraj54/vue-bootstrap4-table.svg?style=popout-square" alt="Build Status"></a>
   <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/npm/dt/vue-bootstrap4-table.svg?style=popout-square" alt="Total downloads"></a>
   <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/npm/v/vue-bootstrap4-table.svg?style=popout-square" alt="Latest version"></a>
-  <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/bundlephobia/minzip/vue-bootstrap4-table.svg?style=popout-square" alt="Latest version"></a>  
-  <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/npm/l/vue-bootstrap4-table.svg?style=popout-square" alt="Latest version"></a>    
+  <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/bundlephobia/minzip/vue-bootstrap4-table.svg?style=popout-square" alt="Latest version"></a>
+  <a href="https://www.npmjs.com/package/vue-bootstrap4-table"><img src="https://img.shields.io/npm/l/vue-bootstrap4-table.svg?style=popout-square" alt="Latest version"></a>
 </p>
 
 [Quick Demo in Codepen](https://codepen.io/rubanraj54/full/zyZdzN).
@@ -62,7 +62,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.19/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.20/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
