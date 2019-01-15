@@ -846,7 +846,7 @@ export default {
 
         clearGlobalSearch() {
             this.query.global_search = "";
-            $(this.$refs.global_search).val("");
+            this.$refs.global_search.value = "";
         },
 
         resetQuery() {
@@ -857,7 +857,7 @@ export default {
                 global_search: ""
             }
 
-            $(this.$refs.global_search).val("");
+            this.$refs.global_search.value = "";
             EventBus.$emit('reset-query');
 
         },
