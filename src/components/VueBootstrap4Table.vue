@@ -173,7 +173,7 @@
                                                     |
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info">
+                                            <template v-if="selected_rows_info && checkbox_rows">
                                                 <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                                     {{selectedItemsCount}} rows selected
                                                 </slot>
