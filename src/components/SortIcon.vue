@@ -21,7 +21,8 @@
 </template>
 
 <script>
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+
 
 export default {
     name: 'SortIcon',
@@ -53,7 +54,7 @@ export default {
     },
     computed: {
         order() {
-            let index = _.findIndex(this.sort, {
+            let index = findIndex(this.sort, {
                 'vbt_col_id': this.column.vbt_col_id
             });
             if (index == -1) {

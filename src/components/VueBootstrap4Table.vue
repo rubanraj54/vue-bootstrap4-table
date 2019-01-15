@@ -247,7 +247,26 @@
 </template>
 
 <script>
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+import range from "lodash/range";
+import filter from "lodash/filter";
+import includes from "lodash/includes";
+import map from "lodash/map";
+import join from "lodash/join";
+import has from "lodash/has";
+import extend from "lodash/extend";
+import isEmpty from "lodash/isEmpty";
+import isEqual from "lodash/isEqual";
+import debounce from "lodash/debounce";
+import cloneDeep from "lodash/cloneDeep";
+import differenceWith from "lodash/differenceWith";
+import differenceBy from "lodash/differenceBy";
+import intersectionWith from "lodash/intersectionWith";
+import intersectionBy from "lodash/intersectionBy";
+import orderBy from "lodash/orderBy";
+import get from "lodash/get";
+import omit from "lodash/omit";
+import clone from "lodash/clone";
 
 import Row from "./Row.vue";
 import CheckBox from "./CheckBox.vue";
@@ -329,22 +348,22 @@ export default {
         };
     },
     mounted() {
-        this.vbt_rows = _.cloneDeep(this.rows);
-        this.vbt_columns = _.cloneDeep(this.columns);
+        this.vbt_rows = cloneDeep(this.rows);
+        this.vbt_columns = cloneDeep(this.columns);
         let self = this;
         // check if user mentioned unique id for a column, if not set unique id for all items
-        this.original_rows = _.map(this.vbt_rows, function (element, index) {
+        this.original_rows = map(this.vbt_rows, function (element, index) {
             let extra = {};
             if (!self.hasUniqueId) {
                 extra.vbt_id = index + 1;
             }
-            return _.extend({}, element, extra);
+            return extend({}, element, extra);
         });
 
-        this.vbt_columns = _.map(this.vbt_columns, function (element, index) {
+        this.vbt_columns = map(this.vbt_columns, function (element, index) {
             let extra = {};
             extra.vbt_col_id = index + 1;
-            return _.extend({}, element, extra);
+            return extend({}, element, extra);
         });
 
         this.initConfig();
@@ -366,61 +385,62 @@ export default {
     methods: {
         initConfig() {
 
-            if (_.isEmpty(this.config)) {
+            if (isEmpty(this.config)) {
                 return;
             }
 
-            this.pagination = (_.has(this.config, 'pagination')) ? this.config.pagination : true;
+            this.pagination = (has(this.config, 'pagination')) ? this.config.pagination : true;
 
-            this.num_of_visibile_pagination_buttons = (_.has(this.config, 'num_of_visibile_pagination_buttons')) ? this.config.num_of_visibile_pagination_buttons : 5;
+            this.num_of_visibile_pagination_buttons = (has(this.config, 'num_of_visibile_pagination_buttons')) ? this.config.num_of_visibile_pagination_buttons : 5;
 
-            this.per_page_options = (_.has(this.config, 'per_page_options')) ? this.config.per_page_options : [5,10,15];
+            this.per_page_options = (has(this.config, 'per_page_options')) ? this.config.per_page_options : [5,10,15];
 
-            this.per_page = (_.has(this.config, 'per_page')) ? this.config.per_page : 10;
+            this.per_page = (has(this.config, 'per_page')) ? this.config.per_page : 10;
 
-            this.checkbox_rows = (_.has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
+            this.checkbox_rows = (has(this.config, 'checkbox_rows')) ? this.config.checkbox_rows : false;
 
-            this.highlight_row_hover = (_.has(this.config, 'highlight_row_hover')) ? this.config.highlight_row_hover : true;
+            this.highlight_row_hover = (has(this.config, 'highlight_row_hover')) ? this.config.highlight_row_hover : true;
 
-            this.highlight_row_hover_color =  (_.has(this.config, 'highlight_row_hover_color')) ? this.config.highlight_row_hover_color : "#d6d6d6";
+            this.highlight_row_hover_color =  (has(this.config, 'highlight_row_hover_color')) ? this.config.highlight_row_hover_color : "#d6d6d6";
 
-            this.rows_selectable = (_.has(this.config, 'rows_selectable')) ? this.config.rows_selectable : false;
+            this.rows_selectable = (has(this.config, 'rows_selectable')) ? this.config.rows_selectable : false;
 
-            this.multi_column_sort = (_.has(this.config, 'multi_column_sort')) ? (this.config.multi_column_sort) : false;
+            this.multi_column_sort = (has(this.config, 'multi_column_sort')) ? (this.config.multi_column_sort) : false;
 
-            this.pagination_info = (_.has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
+            this.pagination_info = (has(this.config, 'pagination_info')) ? this.config.pagination_info : true;
 
-            this.card_title = (_.has(this.config, 'card_title')) ? this.config.card_title : "";
+            this.card_title = (has(this.config, 'card_title')) ? this.config.card_title : "";
 
-            if (_.has(this.config, 'global_search')) {
-                this.global_search.placeholder = (_.has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
-                this.global_search.visibility = (_.has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
-                this.global_search.case_sensitive = (_.has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
+            if (has(this.config, 'global_search')) {
+                this.global_search.placeholder = (has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
+                this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
+                this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
             }
 
-            this.show_refresh_button = (_.has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
+            this.show_refresh_button = (has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
 
-            this.show_reset_button = (_.has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
+            this.show_reset_button = (has(this.config, 'show_reset_button')) ? (this.config.show_reset_button) : true;
 
-            this.server_mode = (_.has(this.config, 'server_mode')) ? (this.config.server_mode) : false;
+            this.server_mode = (has(this.config, 'server_mode')) ? (this.config.server_mode) : false;
 
-            this.card_mode = (_.has(this.config, 'card_mode')) ? (this.config.card_mode) : true;
+            this.card_mode = (has(this.config, 'card_mode')) ? (this.config.card_mode) : true;
 
-            this.selected_rows_info = (_.has(this.config, 'card_mode')) ? (this.config.selected_rows_info) : false;
+            this.selected_rows_info = (has(this.config, 'card_mode')) ? (this.config.selected_rows_info) : false;
 
         },
 
         initialSort() {
-            let initial_sort_columns =  _.filter(this.vbt_columns, function(column) { return _.has(column,'initial_sort') });
+            // TODO optimze this with removing this filter
+            let initial_sort_columns =  filter(this.vbt_columns, function(column) { return has(column,'initial_sort') && column.initial_sort == true });
 
-            _.forEach(initial_sort_columns,function(initial_sort_column,key) {
-                let result = _.findIndex(this.query.sort, { 'vbt_col_id': initial_sort_column.vbt_col_id });
+            initial_sort_columns.some(initial_sort_column => {
+                let result = findIndex(this.query.sort, { 'vbt_col_id': initial_sort_column.vbt_col_id });
 
                 if(result == -1) {
                     // initial sort order validation starts here
                     let initial_sort_order = "asc";
-                    if (_.has(initial_sort_column,"initial_sort_order")) {
-                        if (_.includes(["asc","desc"], initial_sort_column.initial_sort_order)) {
+                    if (has(initial_sort_column,"initial_sort_order")) {
+                        if (includes(["asc","desc"], initial_sort_column.initial_sort_order)) {
                             initial_sort_order = initial_sort_column.initial_sort_order;
                         } else {
                             console.log("invalid initial_sort_order, so setting it to default");
@@ -439,13 +459,13 @@ export default {
 
                 // if multicolum sort sort is false, then consider only first initial sort column
                 if (!this.multi_column_sort) {
-                    return false;
+                    return true;
                 }
-            }.bind(this));
+            });
         },
 
         hasFilter(column) {
-            return _.has(column, "filter.type");
+            return has(column, "filter.type");
         },
 
         clearFilter(column) {
@@ -456,14 +476,14 @@ export default {
         },
 
         getFilterIndex(column) {
-            return _.findIndex(this.query.filters, {
+            return findIndex(this.query.filters, {
                 name: column.name
             });
         },
 
         updateSortQuery(column) {
 
-            let result = _.findIndex(this.query.sort, { 'vbt_col_id': column.vbt_col_id });
+            let result = findIndex(this.query.sort, { 'vbt_col_id': column.vbt_col_id });
 
             if(result == -1) {
 
@@ -495,14 +515,14 @@ export default {
                 this.addSelectedItem(row);
             }
 
-            this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":row});
+            this.$emit('on-select-row', {"selected_items":cloneDeep(this.selected_items) ,"selected_item":row});
 
             let difference = [];
 
             if (this.server_mode && !this.hasUniqueId) {
-                difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
+                difference = differenceWith(this.vbt_rows, this.selected_items, isEqual);
             } else {
-                difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                difference = differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
 
             if (difference.length == 0) {
@@ -523,7 +543,7 @@ export default {
             } else {
                 this.removeSelectedItem(row);
             }
-            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":row});
+            this.$emit('on-unselect-row', {"selected_items":cloneDeep(this.selected_items),"unselected_item":row});
             // EventBus.$emit('unselect-select-all-items-checkbox');
             this.allRowsSelected = false;
             this.lastSelectedItemIndex = payload.rowIndex;
@@ -532,9 +552,9 @@ export default {
 
             let index = -1;
             if (this.server_mode && !this.hasUniqueId) {
-                index = _.findIndex(this.selected_items, (selected_item) => {return _.isEqual(selected_item, item)});
+                index = findIndex(this.selected_items, (selected_item) => {return isEqual(selected_item, item)});
             } else {
-                index = _.findIndex(this.selected_items, (selected_item) => {return selected_item[this.uniqueId] == item[this.uniqueId]});
+                index = findIndex(this.selected_items, (selected_item) => {return selected_item[this.uniqueId] == item[this.uniqueId]});
             }
 
             if (index == -1) {
@@ -546,14 +566,14 @@ export default {
             let difference = [];
 
             if (this.server_mode && !this.hasUniqueId) {
-                difference = _.differenceWith(this.vbt_rows, this.selected_items, _.isEqual);
+                difference = differenceWith(this.vbt_rows, this.selected_items, isEqual);
             } else {
-                difference = _.differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                difference = differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
 
             this.selected_items.push(...difference);
 
-            this.$emit('on-all-select-rows', {"selected_items":_.cloneDeep(this.selected_items) });
+            this.$emit('on-all-select-rows', {"selected_items":cloneDeep(this.selected_items) });
 
         },
         unSelectAllItems() {
@@ -561,25 +581,24 @@ export default {
             let difference = [];
 
             if (this.server_mode && !this.hasUniqueId) {
-                let result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
-                difference = _.differenceWith(this.selected_items, result, _.isEqual);
+                let result = intersectionWith(this.vbt_rows, this.selected_items, isEqual);
+                difference = differenceWith(this.selected_items, result, isEqual);
             } else {
-                let result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
-                difference = _.differenceBy(this.selected_items, result, this.uniqueId);
+                let result = intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                difference = differenceBy(this.selected_items, result, this.uniqueId);
             }
 
             this.selected_items = difference;
 
-            this.$emit('on-all-unselect-rows', {"selected_items":_.cloneDeep(this.selected_items)});
+            this.$emit('on-all-unselect-rows', {"selected_items":cloneDeep(this.selected_items)});
 
         },
         removeSelectedItem(item) {
-            let self = this;
             // TODO try with findbyId function
-            _.forEach(this.selected_items, function (selected_item, index) {
-                if (_.isEqual(item, selected_item)) {
-                    self.selected_items.splice(index, 1);
-                    return false;
+            this.selected_items.some((selected_item,index) => {
+                if (isEqual(item, selected_item)) {
+                    this.selected_items.splice(index, 1);
+                    return true;
                 }
             });
         },
@@ -598,7 +617,7 @@ export default {
         updateFilter(payload) {
             let event = payload.event;
             let column = payload.column;
-            let filter_index = _.findIndex(this.query.filters, {
+            let filter_index = findIndex(this.query.filters, {
                 name: column.name
             });
             if (filter_index == -1) {
@@ -623,7 +642,7 @@ export default {
             let column = payload.column;
 
 
-            let filter_index = _.findIndex(this.query.filters, {
+            let filter_index = findIndex(this.query.filters, {
                 name: column.name
             });
 
@@ -651,12 +670,12 @@ export default {
             let names = [];
             let orders = [];
 
-            _.forEach(this.query.sort,function(value,key) {
+            this.query.sort.forEach((value,key) => {
                 names.push(value.name);
                 orders.push(value.order);
             });
 
-            this.temp_filtered_results = _.orderBy(
+            this.temp_filtered_results = orderBy(
                 this.temp_filtered_results, names, orders
             );
 
@@ -664,34 +683,29 @@ export default {
         },
 
         filter() {
-
-            let self = this;
-
-            let res = _.filter(this.original_rows, function (row) {
+            let res = filter(this.original_rows, (row) => {
                 let flag = true;
-                _.forEach(self.query.filters, function (filter, key) {
-
+                this.query.filters.some((filter, key) => {
                     if (filter.type === "simple") {
                         if (filter.text === "") {
                             flag = true;
-                            return false;
+                            return true;
                         }
-                        if (self.simpleFilter(_.get(row, filter.name), filter.text,filter.config)) {
+                        if (this.simpleFilter(get(row, filter.name), filter.text,filter.config)) {
                             flag = true;
                         } else {
                             flag = false;
-                            return false;
+                            return true;
                         }
                     } else if (filter.type === "select") {
-                        if (self.multiSelectFilter(_.get(row, filter.name), filter.selected_options,filter.config)) {
+                        if (this.multiSelectFilter(get(row, filter.name), filter.selected_options,filter.config)) {
                             flag = true;
                         } else {
                             flag = false;
-                            return false;
+                            return true;
                         }
                     }
                 });
-
                 return flag;
             });
 
@@ -708,15 +722,15 @@ export default {
         },
 
         globalSearch(temp_filtered_results) {
-            let self = this;
+            let global_search_results = filter(temp_filtered_results, (row) =>{
 
-            let global_search_results = _.filter(temp_filtered_results, function (row) {
                 let flag = false;
-                _.forEach(self.vbt_columns, function (vbt_column, key) {
 
-                    let value = _.get(row, vbt_column.name);
-                    let global_search_text = self.query.global_search;
-                    if (!value || isNaN(value) || typeof value === "undefined") {
+                this.vbt_columns.some((vbt_column, key) => {
+                    let value = get(row, vbt_column.name);
+                    let global_search_text = this.query.global_search;
+
+                    if (value == null || typeof value === "undefined") {
                         value =  "";
                     }
 
@@ -728,15 +742,16 @@ export default {
                         global_search_text = global_search_text.toString();
                     }
 
-                    if (!self.global_search.case_sensitive) {
+                    if (!this.global_search.case_sensitive) {
                         value = value.toLowerCase();
                         global_search_text = global_search_text.toLowerCase();
                     }
 
                     if (value.indexOf(global_search_text) > -1) {
                         flag = true;
-                        return false;
+                        return;
                     }
+
                 });
 
                 return flag;
@@ -755,7 +770,7 @@ export default {
                 value = filter_text.toString();
             }
 
-            let is_case_sensitive = (_.has(config,'case_sensitive')) ? config.case_sensitive : false;
+            let is_case_sensitive = (has(config,'case_sensitive')) ? config.case_sensitive : false;
 
             if (!is_case_sensitive) {
                 value = value.toLowerCase();
@@ -772,11 +787,11 @@ export default {
                 value = value.toLowerCase();
             }
 
-            selected_options = _.map(selected_options, (option) => {
+            selected_options = map(selected_options, (option) => {
                                     return (typeof option !== "string") ? option.toString().toLowerCase() : option.toLowerCase();
                                 });
-            return _.includes(selected_options, value);
-            // let is_case_sensitive = (_.has(config,'case_sensitive')) ? config.case_sensitive : false;
+            return includes(selected_options, value);
+            // let is_case_sensitive = (has(config,'case_sensitive')) ? config.case_sensitive : false;
 
             // if (!is_case_sensitive) {
             //     value = value.toLowerCase();
@@ -795,14 +810,14 @@ export default {
                     this.vbt_rows = this.temp_filtered_results.slice(start, end);
                 } else {
                     this.emitQueryParams();
-                    // this.$emit('on-change-query',_.cloneDeep(this.query));
+                    // this.$emit('on-change-query',cloneDeep(this.query));
                 }
             } else {
                 if (!this.server_mode) {
-                    this.vbt_rows = _.cloneDeep(this.temp_filtered_results);
+                    this.vbt_rows = cloneDeep(this.temp_filtered_results);
                 } else {
                     this.emitQueryParams();
-                    // this.$emit('on-change-query',_.cloneDeep(this.query));
+                    // this.$emit('on-change-query',cloneDeep(this.query));
                 }
             }
         },
@@ -818,7 +833,7 @@ export default {
         },
 
         isSortableColumn(column) {
-            if (!_.has(column,'sort')) {
+            if (!has(column,'sort')) {
                 return false;
             } else {
                 return column.sort;
@@ -826,10 +841,10 @@ export default {
         },
         // row method starts here
         getValueFromRow(row, name) {
-            return _.get(row, name);
+            return get(row, name);
         },
         getCellSlotName(column) {
-            if (_.has(column,"slot_name")) {
+            if (has(column,"slot_name")) {
                 return column.slot_name;
             }
             return column.name.replace('.','_');
@@ -840,7 +855,7 @@ export default {
             this.filter();
         },
 
-        updateGlobalSearch: _.debounce(function(event) {
+        updateGlobalSearch: debounce(function(event) {
             this.query.global_search = event.target.value;
         }, 60),
 
@@ -864,12 +879,12 @@ export default {
 
         emitQueryParams() {
             if (this.server_mode) {
-                let queryParams = _.cloneDeep(this.query);
-                let sort = _.map(queryParams.sort, o => _.omit(o, 'vbt_col_id'));
-                let filters = _.map(queryParams.filters, o => _.omit(o, 'config'));
+                let queryParams = cloneDeep(this.query);
+                let sort = map(queryParams.sort, o => omit(o, 'vbt_col_id'));
+                let filters = map(queryParams.filters, o => omit(o, 'config'));
                 let global_search = queryParams.global_search;
-                let per_page = _.clone(this.per_page);
-                let page = _.clone(this.page);
+                let per_page = clone(this.per_page);
+                let page = clone(this.page);
 
                 let payload = {
                     sort : sort,
@@ -889,7 +904,7 @@ export default {
 
             //decide text alignment class - starts here
             let alignments = ["text-justify","text-right","text-left","text-center"];
-            if (_.has(column, "column_text_alignment") && _.includes(alignments, column.column_text_alignment)) {
+            if (has(column, "column_text_alignment") && includes(alignments, column.column_text_alignment)) {
                 classes = classes + " " + column.column_text_alignment;
             } else {
                 classes = classes + " " + default_text_alignment;
@@ -897,7 +912,7 @@ export default {
             //decide text alignment class - ends here
 
             // adding user defined classes to rows - starts here
-            if (_.has(column, "column_classes")) {
+            if (has(column, "column_classes")) {
                 classes = classes + " " + column.column_classes;
             }
             // adding user defined classes to rows - ends here
@@ -942,11 +957,10 @@ export default {
                 unique_id = "vbt_id";
                 return unique_id;
             }
-
-            _.forEach(this.vbt_columns, function (column, key) {
-                if (_.has(column, 'uniqueId') && column.uniqueId === true) {
+            this.vbt_columns.some((column, key) => {
+                if (has(column, 'uniqueId') && column.uniqueId === true) {
                     unique_id = column.name;
-                    return false;
+                    return true;
                 }
             });
 
@@ -955,10 +969,10 @@ export default {
         hasUniqueId() {
             let has_unique_id = false;
 
-            _.forEach(this.vbt_columns, function (column, key) {
-                if (_.has(column, 'uniqueId') && column.uniqueId === true) {
+            this.vbt_columns.some((column, key) => {
+                if (has(column, 'uniqueId') && column.uniqueId === true) {
                     has_unique_id = true;
-                    return false;
+                    return true;
                 }
             });
 
@@ -998,12 +1012,13 @@ export default {
 
         showFilterRow() {
             let show_row = false;
-            _.forEach(this.columns,function(column,key) {
-                if (_.has(column, "filter")) {
+
+            this.columns.some((column,key) => {
+                if (has(column, "filter")) {
                     show_row = true;
-                    return false;
+                    return true;
                 }
-            });
+            })
             return show_row;
         },
 
@@ -1020,9 +1035,9 @@ export default {
         currentPageSelectionCount() {
             let result = [];
             if (this.server_mode && !this.hasUniqueId) {
-                result = _.intersectionWith(this.vbt_rows, this.selected_items, _.isEqual);
+                result = intersectionWith(this.vbt_rows, this.selected_items, isEqual);
             } else {
-                result = _.intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
+                result = intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
             return result.length;
         }
@@ -1070,17 +1085,17 @@ export default {
         rows: {
             handler: function (newVal, oldVal) {
 
-                this.vbt_rows = _.cloneDeep(this.rows);
+                this.vbt_rows = cloneDeep(this.rows);
 
                 if (!this.server_mode) {
                     // check if user mentioned unique id for a column, if not set unique id for all items
                     let self = this;
-                    this.original_rows = _.map(this.vbt_rows, function (element, index) {
+                    this.original_rows = map(this.vbt_rows, function (element, index) {
                         let extra = {};
                         if (!self.hasUniqueId) {
                             extra.vbt_id = index + 1;
                         }
-                        return _.extend({}, element, extra);
+                        return extend({}, element, extra);
                     });
                     this.filter();
                 }
@@ -1091,12 +1106,12 @@ export default {
         columns: {
             handler: function (newVal, oldVal) {
 
-                this.vbt_columns = _.cloneDeep(this.columns);
+                this.vbt_columns = cloneDeep(this.columns);
 
-                this.vbt_columns = _.map(this.vbt_columns, function (element, index) {
+                this.vbt_columns = map(this.vbt_columns, function (element, index) {
                     let extra = {};
                     extra.vbt_col_id = index + 1;
-                    return _.extend({}, element, extra);
+                    return extend({}, element, extra);
                 });
 
                 this.filter();
@@ -1124,9 +1139,9 @@ export default {
                 let difference = [];
 
                 if (this.server_mode && !this.hasUniqueId) {
-                    difference = _.differenceWith(newVal, this.selected_items, _.isEqual);
+                    difference = differenceWith(newVal, this.selected_items, isEqual);
                 } else {
-                    difference = _.differenceBy(newVal, this.selected_items, this.uniqueId);
+                    difference = differenceBy(newVal, this.selected_items, this.uniqueId);
                 }
 
                 if (difference.length == 0) {

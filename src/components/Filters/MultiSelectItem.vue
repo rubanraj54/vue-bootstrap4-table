@@ -14,7 +14,8 @@
 </template>
 
 <script>
-    import _ from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import includes from "lodash/includes";
 
     export default {
         name: "MultiSelectItem",
@@ -71,8 +72,8 @@
         watch: {
             selectedOptionIndexes: {
                 handler: function(newVal, oldVal) {
-                    let new_selected_option_indices = _.cloneDeep(newVal);
-                    this.option_selected = _.includes(new_selected_option_indices,this.index);
+                    let new_selected_option_indices = cloneDeep(newVal);
+                    this.option_selected = includes(new_selected_option_indices,this.index);
 
                 },
                 deep: true

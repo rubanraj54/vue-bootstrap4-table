@@ -15,7 +15,10 @@
 </template>
 
 <script>
-    import _ from 'lodash';
+    import has from "lodash/has";
+    import differenceWith from "lodash/differenceWith";
+    import isEqual from "lodash/isEqual";
+    import includes from "lodash/includes";
 
     import CheckBox from "./CheckBox.vue";
 
@@ -95,7 +98,8 @@
             },
             // compare the selected items list with curretn row item and update checkbox accordingly
             checkInSelecteditems() {
-                let difference = _.differenceWith(this.selectedItems, [this.row], _.isEqual);
+                // TODO replace with find index
+                let difference = differenceWith(this.selectedItems, [this.row], isEqual);
                 if (difference.length != this.selectedItems.length) {
                     this.rowSelected = true;
                 } else {
@@ -112,7 +116,7 @@
 
                 //decide text alignment class - starts here
                 let alignments = ["text-justify","text-right","text-left","text-center"];
-                if (_.has(column, "row_text_alignment") && _.includes(alignments, column.row_text_alignment)) {
+                if (has(column, "row_text_alignment") && includes(alignments, column.row_text_alignment)) {
                     classes = classes + " " + column.row_text_alignment;
                 } else {
                     classes = classes + " " + default_text_alignment;
@@ -120,7 +124,7 @@
                 //decide text alignment class - ends here
 
                 // adding user defined classes to rows - starts here
-                if (_.has(column, "row_classes")) {
+                if (has(column, "row_classes")) {
                     classes = classes + " " + column.row_classes;
                 }
                 // adding user defined classes to rows - ends here
@@ -128,7 +132,7 @@
                 return classes;
             },
             getCellSlotName(column) {
-                if (_.has(column,"slot_name")) {
+                if (has(column,"slot_name")) {
                     return column.slot_name;
                 }
                 return column.name.replace('.','_');
@@ -137,7 +141,8 @@
         watch: {
             row: {
                 handler: function(newVal, oldVal) {
-                    let difference = _.differenceWith(this.selectedItems, [newVal], _.isEqual);
+                // TODO replace with find index
+                    let difference = differenceWith(this.selectedItems, [newVal], isEqual);
                     if (difference.length != this.selectedItems.length) {
                         this.rowSelected = true;
                     } else {
@@ -148,7 +153,8 @@
             },
             selectedItems: {
                 handler: function(newVal, oldVal) {
-                    let difference = _.differenceWith(newVal, [this.row], _.isEqual);
+                // TODO replace with find index
+                    let difference = differenceWith(newVal, [this.row], isEqual);
                     if (difference.length != this.selectedItems.length) {
                         this.rowSelected = true;
                     } else {

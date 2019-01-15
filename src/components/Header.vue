@@ -51,7 +51,8 @@
 </template>
 
 <script>
-    import _ from 'lodash';
+    import has from "lodash/has";
+
     import {
         EventBus
     } from '../event-bus.js';
@@ -115,7 +116,7 @@
             },
 
             isSortableColumn(column) {
-                if (!_.has(column,'sort')) {
+                if (!has(column,'sort')) {
                     return false;
                 } else {
                     return column.sort;
