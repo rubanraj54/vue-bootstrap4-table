@@ -78,7 +78,7 @@
                 this.$refs.vbt_row.addEventListener('mouseover', () => {this.rowHiglighted = true;});
                 this.$refs.vbt_row.addEventListener('mouseleave', () => {this.rowHiglighted = false;});
             }
-            this.checkInSelecteditems();
+            this.checkInSelecteditems(this.selectedItems,this.row);
         },
         methods: {
 
@@ -97,10 +97,14 @@
                 this.rowSelected = !this.rowSelected;
             },
             // compare the selected items list with curretn row item and update checkbox accordingly
-            checkInSelecteditems() {
+            checkInSelecteditems(selectedItems,row) {
+                if (!this.checkboxRows && !this.rowsSelectable) {
+                    return;
+                }
+
                 // TODO replace with find index
-                let difference = differenceWith(this.selectedItems, [this.row], isEqual);
-                if (difference.length != this.selectedItems.length) {
+                let difference = differenceWith(selectedItems, [row], isEqual);
+                if (difference.length != selectedItems.length) {
                     this.rowSelected = true;
                 } else {
                     this.rowSelected = false;
@@ -141,25 +145,13 @@
         watch: {
             row: {
                 handler: function(newVal, oldVal) {
-                // TODO replace with find index
-                    let difference = differenceWith(this.selectedItems, [newVal], isEqual);
-                    if (difference.length != this.selectedItems.length) {
-                        this.rowSelected = true;
-                    } else {
-                        this.rowSelected = false;
-                    }
+                    this.checkInSelecteditems(this.selectedItems,newVal);
                 },
                 deep: true
             },
             selectedItems: {
                 handler: function(newVal, oldVal) {
-                // TODO replace with find index
-                    let difference = differenceWith(newVal, [this.row], isEqual);
-                    if (difference.length != this.selectedItems.length) {
-                        this.rowSelected = true;
-                    } else {
-                        this.rowSelected = false;
-                    }
+                    this.checkInSelecteditems(newVal,this.row);
                 },
                 deep: true
             }
