@@ -1,5 +1,5 @@
 <template>
-    <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
+    <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='{"vbt-row-selected":rowSelected}' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
         <CheckBox v-if="checkboxRows"
                   :rowsSelectable="rowsSelectable"
                   :row-selected="rowSelected"

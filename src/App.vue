@@ -262,5 +262,8 @@
 </script>
 
 <style>
+.vbt-row-selected {
+    background-color: rgb(131, 102, 102) !important
+}
 
 </style>
