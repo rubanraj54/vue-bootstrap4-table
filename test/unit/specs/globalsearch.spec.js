@@ -1,9 +1,8 @@
-import {
-    mount
-} from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import VueBootstrap4Table from "../../../src/components/VueBootstrap4Table.vue";
-import has from "lodash/has";
 import data from "../../../src/assets/toy_data/users_500.json"
+var should = require('chai').should()
+var expect = require('chai').expect
 describe('Global Search', () => {
 
     it('show global search text box & placeholder should be "Enter search text" if no global search config was provided', (done) => {
@@ -19,8 +18,8 @@ describe('Global Search', () => {
             }
         });
         wrapper.vm.$nextTick(() => {
-            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
-            expect(globalSearchInput(wrapper,'placeholder')).toBe("Enter search text");
+            globalSearchInputGroup(wrapper).exists().should.be.true;
+            globalSearchInput(wrapper, 'placeholder').should.be.equal("Enter search text");
             done();
         });
     });
@@ -42,8 +41,8 @@ describe('Global Search', () => {
             }
         });
         wrapper.vm.$nextTick(() => {
-            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
-            expect(globalSearchInput(wrapper, 'placeholder')).toBe("Enter search text");
+            globalSearchInputGroup(wrapper).exists().should.be.true;
+            globalSearchInput(wrapper, 'placeholder').should.be.equal("Enter search text");
             done();
         });
     });
@@ -67,8 +66,8 @@ describe('Global Search', () => {
             }
         });
         wrapper.vm.$nextTick(() => {
-            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
-            expect(globalSearchInput(wrapper, 'placeholder')).toBe("Enter custom Search text");
+            globalSearchInputGroup(wrapper).exists().should.be.true;
+            globalSearchInput(wrapper, 'placeholder').should.be.equal("Enter custom Search text");
             done();
         });
     });
@@ -92,7 +91,7 @@ describe('Global Search', () => {
             }
         });
         wrapper.vm.$nextTick(() => {
-            expect(globalSearchInputGroup(wrapper).exists()).toBe(false);
+            globalSearchInputGroup(wrapper).exists().should.be.false;
             done();
         });
     });
@@ -110,9 +109,9 @@ describe('Global Search', () => {
             }
         });
         globalSearchInput(wrapper).setValue('ruban')
-        expect(globalSearchInput(wrapper).element.value).toBe('ruban');
+        globalSearchInput(wrapper).element.value.should.be.equal("ruban")
         globalSearchInputGroup(wrapper).find('.vbt-global-search-clear').trigger('click')
-        expect(globalSearchInput(wrapper).element.value).toBe('');
+        globalSearchInput(wrapper).element.value.should.be.equal("")
     })
 
 })

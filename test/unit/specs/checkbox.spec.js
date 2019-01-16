@@ -1,7 +1,7 @@
-import {
-    mount
-} from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 import CheckBox from "../../../src/components/CheckBox.vue";
+var should = require('chai').should()
+var expect = require('chai').expect
 
 describe('Checkbox', () => {
 
@@ -17,20 +17,26 @@ describe('Checkbox', () => {
     })
 
     it('default checkbox to be deselected', () => {
-        expect(wrapper.vm.checkboxSelected).toBe(false);
-        wrapper.vm.selectCheckbox({shiftKey:false});
+        wrapper.vm.checkboxSelected.should.be.false;
+    });
+
+    it('set true to "rowSelected" prop should change the "checkboxselected" to true', () => {
+        wrapper.setProps({rowSelected:true});
+        wrapper.vm.checkboxSelected.should.be.true;
     });
 
     it('emits add-row if rowSelected is false ', () => {
         wrapper.vm.checkboxSelected = false;
         wrapper.vm.selectCheckbox({shiftKey:false});
-        expect(wrapper.emitted('add-row')).toBeTruthy();
+        let addRowEvent = wrapper.emitted('add-row');
+        expect(addRowEvent).not.to.be.undefined;
     });
 
     it('emits remove-row if rowSelected is true ', () => {
         wrapper.vm.checkboxSelected = true;
         wrapper.vm.selectCheckbox({shiftKey:false});
-        expect(wrapper.emitted('remove-row')).toBeTruthy();
+        let removeRowEvent = wrapper.emitted('remove-row');
+        expect(removeRowEvent).not.to.be.undefined;
     });
 
 })
