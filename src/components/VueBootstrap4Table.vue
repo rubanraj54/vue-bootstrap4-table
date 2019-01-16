@@ -15,8 +15,8 @@
                                     <div class="col-md-4">
                                         <div class=row>
                                             <!-- global search text starts here -->
-                                            <div class="col-md-6 input-group" v-if="global_search.visibility">
-                                                <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
+                                            <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
+                                                <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)" value="">
                                                 <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
                                                     <span class="input-group-text">
                                                         <slot name="clear-global-search-icon">
@@ -412,7 +412,7 @@ export default {
             this.card_title = (has(this.config, 'card_title')) ? this.config.card_title : "";
 
             if (has(this.config, 'global_search')) {
-                this.global_search.placeholder = (has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter Search text";
+                this.global_search.placeholder = (has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter search text";
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
             }
