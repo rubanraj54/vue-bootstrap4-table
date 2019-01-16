@@ -3,81 +3,125 @@ import {
 } from '@vue/test-utils'
 import VueBootstrap4Table from "../../../src/components/VueBootstrap4Table.vue";
 import has from "lodash/has";
+import data from "../../../src/assets/toy_data/users_500.json"
 describe('Global Search', () => {
 
-    let wrapper;
-
-    beforeEach(() => {
-        wrapper = mount(VueBootstrap4Table, {
+    it('show global search text box & placeholder should be "Enter search text" if no global search config was provided', (done) => {
+        let wrapper = mount(VueBootstrap4Table, {
             propsData: {
-                rows: [
-                    {
-                        "name": {
-                            "first_name": "Vladimir",
-                            "last_name": "Nitzsche"
-                        },
-                        "id": 1,
-                        "age": 27,
-                        "address": {
-                            "city": "Port Pinkton",
-                            "street": "311 Marlen Skyway Suite 457",
-                            "postcode": "59419",
-                            "country": "Mayotte"
-                        },
-                        "salary": 2574,
-                        "email": "franecki.anastasia@gmail.com",
-                        "website": "reichert.info",
-                        "mobile": "+1-704-796-2565"
-                    }
-                ],
-                columns: [
-                    {
-                        label: "id",
-                        name: "id",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "id"
-                        // },
-                        sort: true,
-                        // row_classes: "myrowclassone myrowclasstwo",
-                        // column_classes: "column-class-one column-class-two"
-                        // uniqueId: true
+                rows: data,
+                columns: [{
+                    label: "id",
+                    name: "id",
+                    sort: true
+                }, ],
+                config: {}
+            }
+        });
+        wrapper.vm.$nextTick(() => {
+            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
+            expect(globalSearchInput(wrapper,'placeholder')).toBe("Enter search text");
+            done();
+        });
+    });
+
+    it('show global search text box & placeholder should be "Enter search text" if visibility & placeholder property is not given', (done) => {
+        let wrapper = mount(VueBootstrap4Table, {
+            propsData: {
+                rows: data,
+                columns: [{
+                    label: "id",
+                    name: "id",
+                    sort: true
+                }, ],
+                config: {
+                    global_search: {
+                        case_sensitive: false
                     },
-                ],
+                }
+            }
+        });
+        wrapper.vm.$nextTick(() => {
+            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
+            expect(globalSearchInput(wrapper, 'placeholder')).toBe("Enter search text");
+            done();
+        });
+    });
+
+    it('show global search text box & placeholder should be "Enter custom Search text" if visibility property is true & custom placeholder given', (done) => {
+        let wrapper = mount(VueBootstrap4Table, {
+            propsData: {
+                rows: data,
+                columns: [{
+                    label: "id",
+                    name: "id",
+                    sort: true
+                }, ],
+                config: {
+                    global_search: {
+                        placeholder: "Enter custom Search text",
+                        visibility: true,
+                        case_sensitive: false
+                    },
+                }
+            }
+        });
+        wrapper.vm.$nextTick(() => {
+            expect(globalSearchInputGroup(wrapper).exists()).toBe(true);
+            expect(globalSearchInput(wrapper, 'placeholder')).toBe("Enter custom Search text");
+            done();
+        });
+    });
+
+    it('hide global search text box if visibility property is false', (done) => {
+        let wrapper = mount(VueBootstrap4Table, {
+            propsData: {
+                rows: data,
+                columns: [{
+                    label: "id",
+                    name: "id",
+                    sort: true
+                }, ],
                 config: {
                     global_search: {
                         placeholder: "Enter custom Search text",
                         visibility: false,
-                        case_sensitive: false // default false
+                        case_sensitive: false
                     },
                 }
             }
         });
+        wrapper.vm.$nextTick(() => {
+            expect(globalSearchInputGroup(wrapper).exists()).toBe(false);
+            done();
+        });
+    });
+
+
+    it('Clicking clear button should remove the text in the global search input textbox', () => {
+        let wrapper = mount(VueBootstrap4Table, {
+            propsData: {
+                rows: data,
+                columns: [{
+                    label: "id",
+                    name: "id",
+                    sort: true
+                }, ]
+            }
+        });
+        globalSearchInput(wrapper).setValue('ruban')
+        expect(globalSearchInput(wrapper).element.value).toBe('ruban');
+        globalSearchInputGroup(wrapper).find('.vbt-global-search-clear').trigger('click')
+        expect(globalSearchInput(wrapper).element.value).toBe('');
     })
 
-    it('show global search text box if no global search config was provided', (done) => {
-        let config = wrapper.vm.config;
-        wrapper.vm.$nextTick(() => {
-            if (!config.global_search) {
-                expect(wrapper.find(".vbt-global-search").exists()).toBe(true);
-            }
-            done();
-        });
-    });
-    it('show/hide global search text box if visibility is true/false', (done) => {
-        let config = wrapper.vm.config;
-        wrapper.vm.$nextTick(() => {
-            if (has(config, 'global_search')) {
-                if (!has(config, 'global_search.visibility')) {
-                    expect(wrapper.find(".vbt-global-search").exists()).toBe(true);
-                } else if (config.global_search.visibility == true) {
-                    expect(wrapper.find(".vbt-global-search").exists()).toBe(true);
-                } else {
-                    expect(wrapper.find(".vbt-global-search").exists()).toBe(false);
-                }
-            }
-            done();
-        });
-    });
-
 })
+
+function globalSearchInputGroup(wrapper) {
+    return wrapper.find(".vbt-global-search");
+}
+
+function globalSearchInput(wrapper,attribute) {
+    return (attribute) ? globalSearchInputGroup(wrapper).find('input').attributes(attribute) : globalSearchInputGroup(wrapper).find('input');
+}
+

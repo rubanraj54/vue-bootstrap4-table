@@ -136,7 +136,7 @@
                     card_title: "Vue Bootsrap 4 advanced table",
                     global_search: {
                         placeholder: "Enter custom Search text",
-                        visibility: false,
+                        visibility: true,
                         case_sensitive: false // default false
                     },
                     per_page_options: [5, 10, 20, 30],
