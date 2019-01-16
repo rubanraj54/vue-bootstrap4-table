@@ -15,7 +15,7 @@
                                     <div class="col-md-4">
                                         <div class=row>
                                             <!-- global search text starts here -->
-                                            <div class="col-md-6 input-group" v-if="global_search.visibility">
+                                            <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
                                                 <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
                                                 <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
                                                     <span class="input-group-text">
