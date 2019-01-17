@@ -168,12 +168,12 @@
                                                     </template>
                                                 </slot>
                                             </template>
-                                            <template v-if="pagination_info && selected_rows_info">
+                                            <template v-if="selected_rows_info && pagination_info && (checkbox_rows || rows_selectable)">
                                                 <slot name="pagination-selected-rows-separator">
                                                     |
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info && checkbox_rows">
+                                            <template v-if="selected_rows_info && (checkbox_rows || rows_selectable)">
                                                 <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                                     {{selectedItemsCount}} rows selected
                                                 </slot>
@@ -503,37 +503,20 @@ export default {
                 this.sort();
             }
         },
+        isShiftSelection(shiftKey,rowIndex){
+            return (shiftKey == true) && (this.lastSelectedItemIndex != null) && (this.lastSelectedItemIndex != rowIndex);
+        },
         handleAddRow(payload) {
-            if (payload.shiftKey) {
-                this.handleShiftSelection(payload);
-                return;
+            let row = this.vbt_rows[payload.rowIndex];
+            if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
+                let rows = this.getShiftSelectionRows(payload.rowIndex);
+                rows.forEach((_row) => {this.addSelectedItem(_row)});
+            } else {
+                this.addSelectedItem(row);
             }
 
-            let row = this.vbt_rows[payload.rowIndex];
-            this.lastSelectedItemIndex = payload.rowIndex;
-            this.addSelectedItem(row);
-            this.checkAllRowsSelected();
-        },
-        handleRemoveRow(payload) {
-            if (payload.shiftKey) {
-                this.handleShiftSelection(payload);
-                return;
-            }
+            this.$emit('on-select-row', {"selected_items":cloneDeep(this.selected_items) ,"selected_item":row});
 
-            let row = this.vbt_rows[payload.rowIndex];
-            this.removeSelectedItem(row);
-            this.allRowsSelected = false;
-        },
-        handleShiftSelection(payload) {
-            let lastSelectedItemIndex = (this.lastSelectedItemIndex != null) ? this.lastSelectedItemIndex : payload.rowIndex;
-            let start = Math.min(lastSelectedItemIndex, payload.rowIndex);
-            let end = Math.max(lastSelectedItemIndex, payload.rowIndex);
-            let rows = this.vbt_rows.slice(start,end + 1);
-            this.unSelectAllItems();
-            rows.forEach((_row) => {this.addSelectedItem(_row)});
-            this.checkAllRowsSelected();
-        },
-        checkAllRowsSelected() {
             let difference = [];
 
             if (this.server_mode && !this.hasUniqueId) {
@@ -542,10 +525,31 @@ export default {
                 difference = differenceBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
 
-            this.allRowsSelected = difference.length == 0;
-        },
+            if (difference.length == 0) {
+                this.allRowsSelected = true;
+                // EventBus.$emit('select-select-all-items-checkbox', "from main");
+            } else {
+                this.allRowsSelected = false;
+                // EventBus.$emit('unselect-select-all-items-checkbox', "from main");
+            }
 
+            this.lastSelectedItemIndex = payload.rowIndex;
+        },
+        handleRemoveRow(payload) {
+            let row = this.vbt_rows[payload.rowIndex];
+            if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
+                let rows = this.getShiftSelectionRows(payload.rowIndex);
+                rows.forEach((_row) => {this.removeSelectedItem(_row)});
+            } else {
+                this.removeSelectedItem(row);
+            }
+            this.$emit('on-unselect-row', {"selected_items":cloneDeep(this.selected_items),"unselected_item":row});
+            // EventBus.$emit('unselect-select-all-items-checkbox');
+            this.allRowsSelected = false;
+            this.lastSelectedItemIndex = payload.rowIndex;
+        },
         addSelectedItem(item) {
+
             let index = -1;
             if (this.server_mode && !this.hasUniqueId) {
                 index = findIndex(this.selected_items, (selected_item) => {return isEqual(selected_item, item)});
@@ -556,8 +560,6 @@ export default {
             if (index == -1) {
                 this.selected_items.push(item);
             }
-
-            this.$emit('on-select-row', {"selected_items":_.cloneDeep(this.selected_items) ,"selected_item":item});
         },
         selectAllItems() {
 
@@ -599,7 +601,18 @@ export default {
                     return true;
                 }
             });
-            this.$emit('on-unselect-row', {"selected_items":_.cloneDeep(this.selected_items),"unselected_item":item});
+        },
+        getShiftSelectionRows(rowIndex) {
+            let start = 0;
+            let end = 0;
+            if (this.lastSelectedItemIndex < rowIndex) {
+                start = this.lastSelectedItemIndex;
+                end = rowIndex + 1;
+            } else if (this.lastSelectedItemIndex > rowIndex) {
+                start = rowIndex;
+                end = this.lastSelectedItemIndex + 1;
+            }
+            return this.vbt_rows.slice(start,end);
         },
         updateFilter(payload) {
             let event = payload.event;
