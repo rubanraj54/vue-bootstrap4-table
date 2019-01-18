@@ -1,5 +1,4 @@
 <template>
-<div class="container-fluid">
     <!-- TODO configurable header title position -->
     <div :class="{card:card_mode}">
         <div class="card-header text-center" v-if="card_mode">
@@ -7,7 +6,7 @@
         </div>
         <div :class="{'card-body':card_mode}">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
+                <table class="table" :class="tableClases">
                     <thead>
                         <tr v-if="showToolsRow">
                             <th :colspan="headerColSpan">
@@ -111,19 +110,19 @@
 
                         <!-- data rows stars here -->
                         <row v-for="(row, index) in vbt_rows" :key="index"
-                                                              :row="row"
-                                                              :columns="vbt_columns"
-                                                              :row-index="index"
-                                                              :checkbox-rows="checkbox_rows"
-                                                              :rows-selectable="rows_selectable"
-                                                              :selected-items="selected_items"
-                                                              :highlight-row-hover="highlight_row_hover"
-                                                              :highlight-row-hover-color="rowHighlightColor"
-                                                              @add-row="handleAddRow"
-                                                              @remove-row="handleRemoveRow">
+                                                                :row="row"
+                                                                :columns="vbt_columns"
+                                                                :row-index="index"
+                                                                :checkbox-rows="checkbox_rows"
+                                                                :rows-selectable="rows_selectable"
+                                                                :selected-items="selected_items"
+                                                                :highlight-row-hover="highlight_row_hover"
+                                                                :highlight-row-hover-color="rowHighlightColor"
+                                                                @add-row="handleAddRow"
+                                                                @remove-row="handleRemoveRow">
                             <template v-for="(column) in columns" :slot="'vbt-'+getCellSlotName(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
-                                     {{getValueFromRow(row,column.name)}}
+                                        {{getValueFromRow(row,column.name)}}
                                 </slot>
                             </template>
                         </row>
@@ -243,7 +242,6 @@
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -296,6 +294,12 @@ export default {
             default: 0
         },
         config: {
+            type: Object,
+            default: function () {
+                return {};
+            }
+        },
+        classes: {
             type: Object,
             default: function () {
                 return {};
@@ -1040,6 +1044,25 @@ export default {
                 result = intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
             return result.length;
+        },
+        tableClases() {
+            let classes = "";
+            if (typeof this.classes.table == "string") {
+                return this.classes.table;
+            } else if (typeof this.classes.table == "object") {
+                Object.entries(this.classes.table).forEach(([key, value]) => {
+                    if (typeof value == "boolean" && value) {
+                        classes += key;
+                    } else if (typeof value == "function") {
+                        let truth = value(this.rows);
+                        if (typeof truth == "boolean" && truth) {
+                            classes += " ";
+                            classes += key;
+                        }
+                    }
+                });
+            }
+            return classes;
         }
 
     },

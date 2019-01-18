@@ -1,6 +1,6 @@
 <template>
-    <div id="app">
-        <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-row="onSelectRows" @refresh-data="onRefreshData" @on-download="onDownload">
+    <div id="app" class="container-fluid mb-10">
+        <vue-bootstrap4-table :classes="classes" :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-row="onSelectRows" @refresh-data="onRefreshData" @on-download="onDownload">
             <template slot="pagination-info" slot-scope="props">
                         This page total is {{props.currentPageRowsLength}} |
                         Filterd results total is {{props.filteredRowsLength}} |
@@ -146,7 +146,16 @@
                     card_mode: false,
                     selected_rows_info: true
                 },
-                msg: "msg from parent",
+                classes: {
+                    // table : {
+                    //     "table-striped my-class" : true,
+                    //     "table-bordered my-class-two" : function(rows) {
+                    //         return true
+                    //     }
+                    // }
+                    // table : "table-striped table-bordered my-class",
+
+                },
                 // actions: []
                 actions: [
                     {
