@@ -1,5 +1,4 @@
 <template>
-<div class="container-fluid">
     <!-- TODO configurable header title position -->
     <div :class="{card:card_mode}">
         <div class="card-header text-center" v-if="card_mode">
@@ -7,7 +6,7 @@
         </div>
         <div :class="{'card-body':card_mode}">
             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
+                <table class="table" :class="tableClases">
                     <thead>
                         <tr v-if="showToolsRow">
                             <th :colspan="headerColSpan">
@@ -111,19 +110,19 @@
 
                         <!-- data rows stars here -->
                         <row v-for="(row, index) in vbt_rows" :key="index"
-                                                              :row="row"
-                                                              :columns="vbt_columns"
-                                                              :row-index="index"
-                                                              :checkbox-rows="checkbox_rows"
-                                                              :rows-selectable="rows_selectable"
-                                                              :selected-items="selected_items"
-                                                              :highlight-row-hover="highlight_row_hover"
-                                                              :highlight-row-hover-color="rowHighlightColor"
-                                                              @add-row="handleAddRow"
-                                                              @remove-row="handleRemoveRow">
+                                                                :row="row"
+                                                                :columns="vbt_columns"
+                                                                :row-index="index"
+                                                                :checkbox-rows="checkbox_rows"
+                                                                :rows-selectable="rows_selectable"
+                                                                :selected-items="selected_items"
+                                                                :highlight-row-hover="highlight_row_hover"
+                                                                :highlight-row-hover-color="rowHighlightColor"
+                                                                @add-row="handleAddRow"
+                                                                @remove-row="handleRemoveRow">
                             <template v-for="(column) in columns" :slot="'vbt-'+getCellSlotName(column)">
                                 <slot :name="getCellSlotName(column)" :row="row" :column="column" :cell_value="getValueFromRow(row,column.name)">
-                                     {{getValueFromRow(row,column.name)}}
+                                        {{getValueFromRow(row,column.name)}}
                                 </slot>
                             </template>
                         </row>
@@ -243,7 +242,6 @@
             </div>
         </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -296,6 +294,12 @@ export default {
             default: 0
         },
         config: {
+            type: Object,
+            default: function () {
+                return {};
+            }
+        },
+        classes: {
             type: Object,
             default: function () {
                 return {};
@@ -368,8 +372,9 @@ export default {
 
         this.initConfig();
         this.initialSort();
-        this.filter();
-        this.paginateFilter();
+        if (!this.server_mode) {
+            this.filter();
+        }
         this.handleShiftKey();
 
     },
@@ -498,9 +503,6 @@ export default {
 
             } else {
                 this.query.sort[result].order = this.query.sort[result].order == "asc" ? "desc" : "asc";
-            }
-            if (!this.server_mode) {
-                this.sort();
             }
         },
         isShiftSelection(shiftKey,rowIndex){
@@ -802,23 +804,12 @@ export default {
         },
 
         paginateFilter() {
-
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
-                if (!this.server_mode) {
-                    this.vbt_rows = this.temp_filtered_results.slice(start, end);
-                } else {
-                    this.emitQueryParams();
-                    // this.$emit('on-change-query',cloneDeep(this.query));
-                }
+                this.vbt_rows = this.temp_filtered_results.slice(start, end);
             } else {
-                if (!this.server_mode) {
-                    this.vbt_rows = cloneDeep(this.temp_filtered_results);
-                } else {
-                    this.emitQueryParams();
-                    // this.$emit('on-change-query',cloneDeep(this.query));
-                }
+                this.vbt_rows = cloneDeep(this.temp_filtered_results);
             }
         },
 
@@ -1040,6 +1031,25 @@ export default {
                 result = intersectionBy(this.vbt_rows, this.selected_items, this.uniqueId);
             }
             return result.length;
+        },
+        tableClases() {
+            let classes = "";
+            if (typeof this.classes.table == "string") {
+                return this.classes.table;
+            } else if (typeof this.classes.table == "object") {
+                Object.entries(this.classes.table).forEach(([key, value]) => {
+                    if (typeof value == "boolean" && value) {
+                        classes += key;
+                    } else if (typeof value == "function") {
+                        let truth = value(this.rows);
+                        if (typeof truth == "boolean" && truth) {
+                            classes += " ";
+                            classes += key;
+                        }
+                    }
+                });
+            }
+            return classes;
         }
 
     },
@@ -1048,6 +1058,14 @@ export default {
             handler: function (after, before) {
                 if (!this.server_mode) {
                     this.filter();
+                }
+            },
+            deep: true
+        },
+        "query.sort": {
+            handler: function (after, before) {
+                if (!this.server_mode) {
+                    this.sort();
                 }
             },
             deep: true
@@ -1070,8 +1088,13 @@ export default {
         per_page: {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
+                    let doPaginateFilter = (this.page == 1);
                     this.page = 1;
-                    this.paginateFilter();
+                    if (doPaginateFilter) {
+                        this.paginateFilter();
+                    }
+                } else {
+                    this.emitQueryParams();
                 }
             }
         },
@@ -1079,6 +1102,8 @@ export default {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
                     this.paginateFilter();
+                } else {
+                    this.emitQueryParams();
                 }
             }
         },
@@ -1114,7 +1139,11 @@ export default {
                     return extend({}, element, extra);
                 });
 
-                this.filter();
+                if (!this.server_mode) {
+                    this.filter();
+                }  else {
+                    this.emitQueryParams();
+                }
             },
             deep: true
         },
@@ -1157,7 +1186,11 @@ export default {
         },
 
         page(newVal, oldVal) {
-            this.paginateFilter();
+            if (!this.server_mode) {
+                this.paginateFilter();
+            } else {
+                this.emitQueryParams();
+            }
         },
         'config.multi_column_sort': {
             handler : function(newVal,oldVal) {
