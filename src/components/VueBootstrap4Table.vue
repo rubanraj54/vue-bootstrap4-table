@@ -372,8 +372,9 @@ export default {
 
         this.initConfig();
         this.initialSort();
-        this.filter();
-        this.paginateFilter();
+        if (!this.server_mode) {
+            this.filter();
+        }
         this.handleShiftKey();
 
     },
@@ -502,9 +503,6 @@ export default {
 
             } else {
                 this.query.sort[result].order = this.query.sort[result].order == "asc" ? "desc" : "asc";
-            }
-            if (!this.server_mode) {
-                this.sort();
             }
         },
         isShiftSelection(shiftKey,rowIndex){
@@ -806,23 +804,12 @@ export default {
         },
 
         paginateFilter() {
-
             if (this.pagination) {
                 let start = (this.page - 1) * this.per_page;
                 let end = start + this.per_page;
-                if (!this.server_mode) {
-                    this.vbt_rows = this.temp_filtered_results.slice(start, end);
-                } else {
-                    this.emitQueryParams();
-                    // this.$emit('on-change-query',cloneDeep(this.query));
-                }
+                this.vbt_rows = this.temp_filtered_results.slice(start, end);
             } else {
-                if (!this.server_mode) {
-                    this.vbt_rows = cloneDeep(this.temp_filtered_results);
-                } else {
-                    this.emitQueryParams();
-                    // this.$emit('on-change-query',cloneDeep(this.query));
-                }
+                this.vbt_rows = cloneDeep(this.temp_filtered_results);
             }
         },
 
@@ -1075,6 +1062,14 @@ export default {
             },
             deep: true
         },
+        "query.sort": {
+            handler: function (after, before) {
+                if (!this.server_mode) {
+                    this.sort();
+                }
+            },
+            deep: true
+        },
         "query.global_search": {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
@@ -1093,8 +1088,13 @@ export default {
         per_page: {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
+                    let doPaginateFilter = (this.page == 1);
                     this.page = 1;
-                    this.paginateFilter();
+                    if (doPaginateFilter) {
+                        this.paginateFilter();
+                    }
+                } else {
+                    this.emitQueryParams();
                 }
             }
         },
@@ -1102,6 +1102,8 @@ export default {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
                     this.paginateFilter();
+                } else {
+                    this.emitQueryParams();
                 }
             }
         },
@@ -1137,7 +1139,11 @@ export default {
                     return extend({}, element, extra);
                 });
 
-                this.filter();
+                if (!this.server_mode) {
+                    this.filter();
+                }  else {
+                    this.emitQueryParams();
+                }
             },
             deep: true
         },
@@ -1180,7 +1186,11 @@ export default {
         },
 
         page(newVal, oldVal) {
-            this.paginateFilter();
+            if (!this.server_mode) {
+                this.paginateFilter();
+            } else {
+                this.emitQueryParams();
+            }
         },
         'config.multi_column_sort': {
             handler : function(newVal,oldVal) {
