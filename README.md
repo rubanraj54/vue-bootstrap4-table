@@ -37,9 +37,10 @@
 * Highly customizable
 
 # 3. Installation
-## 3.1. Install via npm/yarn
+## 3.1. Install via npm or yarn
 
 **`$ npm i vue-bootstrap4-table --save`**
+
 **`$ yarn add vue-bootstrap4-table`**
 
 Currently this package will install only the vue-bootstrap4-table component, not their dependencies. So make sure to install the following dependencies.
