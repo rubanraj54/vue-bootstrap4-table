@@ -12,19 +12,19 @@
                     </a>
                 </li>
                 <template v-if="!isEmpty">
-                    <li class="page-item" v-if="showLeftDot" @click.prevent="pageHandler(1)">
+                    <li class="page-item" v-if="start > 3" @click.prevent="pageHandler(1)">
                         <a class="page-link" href=""> 1 </a>
                     </li>
-                    <li class="page-item disabled" v-if="showLeftDot">
+                    <li class="page-item disabled" v-if="start > 3">
                         <a class="page-link" href="">...</a>
                     </li>
                     <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click.prevent="pageHandler(index)">
                         <a class="page-link" href="">{{index}}</a>
                     </li>
-                    <li class="page-item disabled" v-if="showRightDot">
+                    <li class="page-item disabled" v-if="end < totalPages - 2">
                         <a class="page-link" href="">...</a>
                     </li>
-                    <li class="page-item" v-if="showRightDot" @click.prevent="pageHandler(totalPages)">
+                    <li class="page-item" v-if="end < totalPages - 2" @click.prevent="pageHandler(totalPages)">
                         <a class="page-link" href=""> {{totalPages}} </a>
                     </li>
                 </template>
@@ -103,29 +103,26 @@
             }
         },
         mounted() {
-            this.end = (this.page + (this.paginationLimit - 1));
+            this.calculatePageRange(true);
         },
         methods: {
             gotoPage() {
                 if (this.go_to_page === "") {
                     return;
                 }
-                let go_to_page = this.go_to_page;
-                if (go_to_page >= 1 && go_to_page <= this.totalPages) {
-                    this.pageHandler(go_to_page)
-                    if (!includes(this.range,go_to_page)) {
-                        if (this.totalPages - go_to_page < this.num_of_visibile_pagination_buttons) {
-                            this.end = this.totalPages;
-                            this.start = this.end - (this.num_of_visibile_pagination_buttons-1);;
-                        } else {
-                            this.start = go_to_page;
-                            this.end = go_to_page + (this.num_of_visibile_pagination_buttons-1);
-                        }
-                    }
 
-                } else {
+                if(this.go_to_page < 1 || this.go_to_page > this.totalPages) {
                     console.log("invalid page number");
+                    return;
                 }
+
+                //Handle the new page
+                this.pageHandler(this.go_to_page)
+                
+                //Check if updating pagination can be skipped
+                // if (includes(this.range,this.go_to_page)) {
+                //     return;
+                // }                
             },
             pageHandler(index) {
                 if (index >= 1 && index <= this.totalPages) {
@@ -135,16 +132,35 @@
             perPageHandler(option) {
                 this.$emit('update:per_page', option);
             },
+            calculatePageRange(force = false) {
+                //Current page is the start page plus 1
+                this.start = (this.page == 1) ? 1 : this.page - 1;
+
+                //Reserved entries: firstpage, ellipsis (2x), prev. page, last page, current page
+                this.end = this.start + this.num_of_visibile_pagination_buttons - 5;
+
+                //If the user navigates on page one or two, we set start to one (ellipsis pointless)
+                //and can potentially shift up end
+                if (this.start <= 3) {
+                    this.end += 3 - this.start;
+                    this.start = 1;
+                }
+
+                //If the user navigates on the last two pages or out of bounds, we can shift down start
+                //This will also handle end overflow, substract 2 for ellipsis and last page
+                console.log(this.end);
+                if (this.end >= this.totalPages - 2) {
+                    this.start -= this.end - (this.totalPages - 2);
+                    this.end = this.totalPages;
+                }
+
+                //Handle start underflow
+                this.start = Math.max(this.start, 1);
+            }
         },
         components: {
         },
         computed: {
-            showLeftDot() {
-                return !(includes(this.range, 1));
-            },
-            showRightDot() {
-                return !(this.totalPages - this.end <= 0);
-            },
             totalPages() {
                 return Math.ceil(this.total / this.per_page);
             },
@@ -155,14 +171,7 @@
                 return this.page == this.end;
             },
             range() {
-                return range(this.start, (this.end + 1));
-            },
-            paginationLimit() {
-                if (this.totalPages < this.num_of_visibile_pagination_buttons) {
-                    return this.totalPages;
-                } else {
-                    return this.num_of_visibile_pagination_buttons;
-                }
+                return range(this.start, this.end + 1);
             },
             isEmpty() {
                 return this.total == 0;
@@ -171,44 +180,13 @@
         },
         watch: {
             page(newVal, oldVal) {
-                if (newVal == this.totalPages) {
-                    this.start = newVal - (this.paginationLimit - 1);
-                    this.end = newVal;
-                } else if (newVal == 1) {
-                    this.start = newVal;
-                    this.end = newVal + (this.paginationLimit - 1);
-                } else {
-                    if (newVal > oldVal) {
-                        if (this.end - newVal < 1) {
-                            this.start += 1;
-                            this.end += 1;
-                        }
-                    } else {
-                        if (this.start - newVal >= 0) {
-                            this.start -= 1;
-                            this.end -= 1;
-                        }
-                    }
-
-                }
+                this.calculatePageRange();
             },
             rowCount(newVal, oldVal) {
-                if (this.page == this.totalPages) {
-                    this.start = this.page - (this.paginationLimit - 1);
-                    this.end = this.page;
-                } else if (this.page == 1) {
-                    this.start = this.page;
-                    this.end = this.page + (this.paginationLimit - 1);
-                }
+                this.calculatePageRange();
             },
             totalPages(newVal, oldVal) {
-                if (this.page == this.totalPages) {
-                    this.start = this.page - (this.paginationLimit - 1);
-                    this.end = this.page;
-                } else if (this.page == 1) {
-                    this.start = this.page;
-                    this.end = this.page + (this.paginationLimit - 1);
-                }
+                this.calculatePageRange();
             },
         }
     }
