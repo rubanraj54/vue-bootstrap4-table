@@ -117,12 +117,7 @@
                 }
 
                 //Handle the new page
-                this.pageHandler(this.go_to_page)
-                
-                //Check if updating pagination can be skipped
-                // if (includes(this.range,this.go_to_page)) {
-                //     return;
-                // }                
+                this.pageHandler(this.go_to_page)           
             },
             pageHandler(index) {
                 if (index >= 1 && index <= this.totalPages) {
