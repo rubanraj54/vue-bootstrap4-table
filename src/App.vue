@@ -213,7 +213,7 @@
                             city: chance.city(),
                             street: chance.address(),
                             postcode: chance.postcode(),
-                            country: chance.country()
+                            country: chance.country({ full: true })
                         },
                         salary: chance.integer({ min: 1500, max: 3000 }),
                         email: chance.email(),
