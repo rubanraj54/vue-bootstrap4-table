@@ -110,6 +110,17 @@
                         column_classes: "my-column-class1 my-column-class2"
                     },
                     {
+                        label: "Salary",
+                        name: "salary",
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter email"
+                        // },
+                        sort: true,
+                        row_text_alignment: "text-left",
+                        column_text_alignment: "text-left"
+                    },
+                    {
                         label: "City",
                         name: "address.city",
                         sort: true,
@@ -147,14 +158,25 @@
                     selected_rows_info: true
                 },
                 classes: {
-                    // table : {
-                    //     "table-striped my-class" : true,
-                    //     "table-bordered my-class-two" : function(rows) {
-                    //         return true
-                    //     }
-                    // }
+                    table : {
+                        "table-striped my-class" : true,
+                        "table-bordered my-class-two" : function(rows) {
+                            return true
+                        }
+                    },
+                    row : {
+                        "my-row my-row2" : true,
+                        "function-class" : function(row) {
+                            return row.id == 1
+                        }
+                    },
+                    cell : {
+                        "my-cell my-cell2" : true,
+                        "text-danger" : function(row,column,cellValue) {
+                            return column.name == "salary" && row.salary > 2500
+                        }
+                    },
                     // table : "table-striped table-bordered my-class",
-
                 },
                 // actions: []
                 actions: [

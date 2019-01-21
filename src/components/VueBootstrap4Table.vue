@@ -6,7 +6,7 @@
         </div>
         <div :class="{'card-body':card_mode}">
             <div class="table-responsive">
-                <table class="table" :class="tableClases">
+                <table class="table" :class="tableClasses">
                     <thead>
                         <tr v-if="showToolsRow">
                             <th :colspan="headerColSpan">
@@ -118,6 +118,8 @@
                                                                 :selected-items="selected_items"
                                                                 :highlight-row-hover="highlight_row_hover"
                                                                 :highlight-row-hover-color="rowHighlightColor"
+                                                                :prop-row-classes="classes.row"
+                                                                :prop-cell-classes="classes.cell"
                                                                 @add-row="handleAddRow"
                                                                 @remove-row="handleRemoveRow">
                             <template v-for="(column) in columns" :slot="'vbt-'+getCellSlotName(column)">
@@ -1032,7 +1034,7 @@ export default {
             }
             return result.length;
         },
-        tableClases() {
+        tableClasses() {
             let classes = "";
             if (typeof this.classes.table == "string") {
                 return this.classes.table;
