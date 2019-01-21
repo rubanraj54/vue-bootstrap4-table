@@ -36,7 +36,7 @@
 
 <script>
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
-
+    var chance = require('chance').Chance(88);
     export default {
         name: 'App',
         data: function() {
@@ -199,14 +199,30 @@
         },
         methods: {
             fetchData() {
-                let self = this;
-                axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/toy_data/users_500.json')
-                    .then(function(response) {
-                        self.rows = response.data;
-                    })
-                    .catch(function(error) {
-                        console.log(error);
-                    });
+                let user;
+                let users = [];
+                for (let i = 1; i <=500; i++) {
+                    user = {
+                        id : i,
+                        name: {
+                            first_name: chance.first(),
+                            last_name: chance.last(),
+                        },
+                        age: chance.age(),
+                        address: {
+                            city: chance.city(),
+                            street: chance.address(),
+                            postcode: chance.postcode(),
+                            country: chance.country()
+                        },
+                        salary: chance.integer({ min: 1500, max: 3000 }),
+                        email: chance.email(),
+                        website: chance.domain(),
+                        mobile: chance.phone()
+                    }
+                    users.push(user);
+                }
+                this.rows = users;
             },
             onSelectRows(payload) {
                 console.log(payload);
@@ -278,7 +294,6 @@
         mounted() {
             let self = this;
             this.fetchData();
-
             // let test = [1,2,3,4,5,6,7]
 
             // test.some((val,index) => {
