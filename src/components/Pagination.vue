@@ -16,13 +16,13 @@
                         <a class="page-link" href=""> 1 </a>
                     </li>
                     <li class="page-item disabled" v-if="start > 3">
-                        <a class="page-link" href="">...</a>
+                        <a class="page-link" href="">…</a>
                     </li>
                     <li class="page-item" v-for="index in range" :key="index" v-bind:class="{ active:  (index == page)}" @click.prevent="pageHandler(index)">
                         <a class="page-link" href="">{{index}}</a>
                     </li>
                     <li class="page-item disabled" v-if="end < totalPages - 2">
-                        <a class="page-link" href="">...</a>
+                        <a class="page-link" href="">…</a>
                     </li>
                     <li class="page-item" v-if="end < totalPages - 2" @click.prevent="pageHandler(totalPages)">
                         <a class="page-link" href=""> {{totalPages}} </a>
@@ -31,7 +31,7 @@
 
                 <template v-else>
                     <li class="page-item disabled">
-                        <a class="page-link" href="">...</a>
+                        <a class="page-link" href="">…</a>
                     </li>
                 </template>
                 <li :class="{'disabled' : disableNextButton}" class="page-item" @click.prevent="pageHandler(page+1)">
@@ -58,7 +58,7 @@
                 <!-- Number of rows per page ends here -->
 
                 <div class="input-group col-sm-2">
-                    <input type="number" class="form-control" :min="start" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model.number="go_to_page">
+                    <input type="number" class="form-control" min="1" step="1" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model.number="go_to_page">
                 </div>
             </ul>
         </nav>
@@ -107,12 +107,7 @@
         },
         methods: {
             gotoPage() {
-                if (this.go_to_page === "") {
-                    return;
-                }
-
-                if(this.go_to_page < 1 || this.go_to_page > this.totalPages) {
-                    console.log("invalid page number");
+                if (this.go_to_page === "" || !this.isPositiveInteger(this.go_to_page)) {
                     return;
                 }
 
@@ -128,6 +123,13 @@
                 this.$emit('update:per_page', option);
             },
             calculatePageRange(force = false) {
+                //Skip calculating if all pages can be shown
+                if (this.totalPages <= this.num_of_visibile_pagination_buttons) {
+                    this.start = 1;
+                    this.end = this.totalPages;
+                    return;
+                }
+
                 //Skip recalculating if the previous and next pages are already visible
                 if (!force && 
                     (includes(this.range, this.page - 1) || this.page == 1) &&
@@ -156,6 +158,9 @@
 
                 //Handle start underflow
                 this.start = Math.max(this.start, 1);
+            },
+            isPositiveInteger(str) {
+                return /^\+?(0|[1-9]\d*)$/.test(str);
             }
         },
         components: {
