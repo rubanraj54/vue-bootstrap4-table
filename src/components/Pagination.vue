@@ -128,7 +128,13 @@
                 this.$emit('update:per_page', option);
             },
             calculatePageRange(force = false) {
-                //Current page is the start page plus 1
+                //Skip recalculating if the previous and next pages are already visible
+                if (!force && 
+                    (includes(this.range, this.page - 1) || this.page == 1) &&
+                    (includes(this.range, this.page + 1) || this.page == this.totalPages) 
+                ) { return; }
+
+                //Current page is the start page minus one
                 this.start = (this.page == 1) ? 1 : this.page - 1;
 
                 //Reserved entries: firstpage, ellipsis (2x), prev. page, last page, current page
@@ -143,7 +149,6 @@
 
                 //If the user navigates on the last two pages or out of bounds, we can shift down start
                 //This will also handle end overflow, substract 2 for ellipsis and last page
-                console.log(this.end);
                 if (this.end >= this.totalPages - 2) {
                     this.start -= this.end - (this.totalPages - 2);
                     this.end = this.totalPages;
