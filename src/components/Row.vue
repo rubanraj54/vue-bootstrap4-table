@@ -1,12 +1,12 @@
 <template>
-    <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='{"vbt-row-selected":rowSelected}' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
+    <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='rowClasses' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
         <CheckBox v-if="checkboxRows"
                   :rowsSelectable="rowsSelectable"
                   :row-selected="rowSelected"
                   @add-row="addRow"
                   @remove-row="removeRow"/>
 
-        <td v-for="(column, key, hindex) in columns" :key="hindex" :class="rowClasses(column)">
+        <td v-for="(column, key, hindex) in columns" :key="hindex" :class="cellClasses(column)">
             <slot :name="'vbt-'+getCellSlotName(column)">
 
             </slot>
@@ -16,6 +16,7 @@
 
 <script>
     import has from "lodash/has";
+    import get from "lodash/get";
     import differenceWith from "lodash/differenceWith";
     import isEqual from "lodash/isEqual";
     import includes from "lodash/includes";
@@ -32,6 +33,14 @@
             row: {
                 type: Object,
                 required:true
+            },
+            propRowClasses: {
+                type: Object | String,
+                required:false
+            },
+            propCellClasses: {
+                type: Object | String,
+                required:false
             },
             columns: {
                 type: Array,
@@ -113,7 +122,10 @@
             rowHover(state) {
                 this.rowHiglighted = state;
             },
-            rowClasses(column) {
+            getValueFromRow(row, name) {
+                return get(row, name);
+            },
+            cellClasses(column) {
                 let classes = "";
 
                 let default_text_alignment = "text-center";
@@ -128,10 +140,27 @@
                 //decide text alignment class - ends here
 
                 // adding user defined classes to rows - starts here
-                if (has(column, "row_classes")) {
-                    classes = classes + " " + column.row_classes;
-                }
+                // if (has(column, "row_classes")) {
+                //     classes = classes + " " + column.row_classes;
+                // }
                 // adding user defined classes to rows - ends here
+
+
+                if (typeof this.propCellClasses == "string") {
+                    return this.propCellClasses;
+                } else if (typeof this.propCellClasses == "object") {
+                    Object.entries(this.propCellClasses).forEach(([key, value]) => {
+                        if (typeof value == "boolean" && value) {
+                            classes += (" " + key);
+                        } else if (typeof value == "function") {
+                            let truth = value(this.row,column,this.getValueFromRow(this.row,column.name));
+                            if (typeof truth == "boolean" && truth) {
+                                classes += " ";
+                                classes += key;
+                            }
+                        }
+                    });
+                }
 
                 return classes;
             },
@@ -139,8 +168,41 @@
                 if (has(column,"slot_name")) {
                     return column.slot_name;
                 }
-                return column.name.replace('.','_');
+                return column.name.replace(/\./g,'_');
+            }
+        },
+        computed: {
+            rowClasses() {
+                let classes = this.userRowClasses;
+
+                if (this.rowSelected) {
+                    classes += " ";
+                    classes += "vbt-row-selected";
+                }
+
+                return classes;
+
             },
+            userRowClasses() {
+                let classes = "";
+                if (typeof this.propRowClasses == "string") {
+                    return this.propRowClasses;
+                } else if (typeof this.propRowClasses == "object") {
+                    Object.entries(this.propRowClasses).forEach(([key, value]) => {
+                        if (typeof value == "boolean" && value) {
+                            classes += key;
+                        } else if (typeof value == "function") {
+                            let truth = value(this.row);
+                            if (typeof truth == "boolean" && truth) {
+                                classes += " ";
+                                classes += key;
+                            }
+                        }
+                    });
+                }
+
+                return classes;
+            }
         },
         watch: {
             row: {

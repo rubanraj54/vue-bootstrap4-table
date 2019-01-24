@@ -1,8 +1,10 @@
 import { mount } from '@vue/test-utils'
 import VueBootstrap4Table from "../../../src/components/VueBootstrap4Table.vue";
-import data from "../../../src/assets/toy_data/users_500.json"
 var should = require('chai').should()
 var expect = require('chai').expect
+import { testdata } from "../utils"
+var data = testdata();
+
 describe('Global Search', () => {
 
     it('show global search text box & placeholder should be "Enter search text" if no global search config was provided', (done) => {

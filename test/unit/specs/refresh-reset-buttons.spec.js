@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils'
 import VueBootstrap4Table from "../../../src/components/VueBootstrap4Table.vue";
-import data from "../../../src/assets/toy_data/users_500.json"
+import { testdata } from "../utils"
+var data = testdata();
 describe('Refresh and Reset Buttons ', () => {
 
     it('hide refresh and reset button if the config is false', (done) => {

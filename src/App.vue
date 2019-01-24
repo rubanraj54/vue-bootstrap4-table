@@ -36,7 +36,7 @@
 
 <script>
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
-
+    var chance = require('chance').Chance(88);
     export default {
         name: 'App',
         data: function() {
@@ -110,6 +110,17 @@
                         column_classes: "my-column-class1 my-column-class2"
                     },
                     {
+                        label: "Salary",
+                        name: "salary",
+                        // filter: {
+                        //     type: "simple",
+                        //     placeholder: "Enter email"
+                        // },
+                        sort: true,
+                        row_text_alignment: "text-left",
+                        column_text_alignment: "text-left"
+                    },
+                    {
                         label: "City",
                         name: "address.city",
                         sort: true,
@@ -147,14 +158,25 @@
                     selected_rows_info: true
                 },
                 classes: {
-                    // table : {
-                    //     "table-striped my-class" : true,
-                    //     "table-bordered my-class-two" : function(rows) {
-                    //         return true
-                    //     }
-                    // }
+                    table : {
+                        "table-striped my-class" : true,
+                        "table-bordered my-class-two" : function(rows) {
+                            return true
+                        }
+                    },
+                    row : {
+                        "my-row my-row2" : true,
+                        "function-class" : function(row) {
+                            return row.id == 1
+                        }
+                    },
+                    cell : {
+                        "my-cell my-cell2" : true,
+                        "text-danger" : function(row,column,cellValue) {
+                            return column.name == "salary" && row.salary > 2500
+                        }
+                    },
                     // table : "table-striped table-bordered my-class",
-
                 },
                 // actions: []
                 actions: [
@@ -177,14 +199,30 @@
         },
         methods: {
             fetchData() {
-                let self = this;
-                axios.get('https://raw.githubusercontent.com/rubanraj54/vue-bootstrap4-table/develop/src/assets/toy_data/users_500.json')
-                    .then(function(response) {
-                        self.rows = response.data;
-                    })
-                    .catch(function(error) {
-                        console.log(error);
-                    });
+                let user;
+                let users = [];
+                for (let i = 1; i <=500; i++) {
+                    user = {
+                        id : i,
+                        name: {
+                            first_name: chance.first(),
+                            last_name: chance.last(),
+                        },
+                        age: chance.age(),
+                        address: {
+                            city: chance.city(),
+                            street: chance.address(),
+                            postcode: chance.postcode(),
+                            country: chance.country({ full: true })
+                        },
+                        salary: chance.integer({ min: 1500, max: 3000 }),
+                        email: chance.email(),
+                        website: chance.domain(),
+                        mobile: chance.phone()
+                    }
+                    users.push(user);
+                }
+                this.rows = users;
             },
             onSelectRows(payload) {
                 console.log(payload);
@@ -256,7 +294,6 @@
         mounted() {
             let self = this;
             this.fetchData();
-
             // let test = [1,2,3,4,5,6,7]
 
             // test.some((val,index) => {
