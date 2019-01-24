@@ -4,6 +4,7 @@
 
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -184,6 +185,7 @@ columns: [{
             placeholder: "Enter id"
         },
         sort: true,
+        uniqueId: true
     },
     {
         label: "First Name",
@@ -221,6 +223,8 @@ columns: [{
 |--|--|--|--|
 |label | Name for the column header | String| " " |
 |name | Name of the attribute that you would like to show from **`"rows"`** object. You can access nested objects properties with "." | String| " " |
+|slot_name | Overrides default slot name assignment. For more details refer "Rows" section | String| " " |
+|uniqueId | You can teach table which column has unique values. It helps table to do faster operations and it is really useful in "server_mode". | Boolean| false |
 |filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) | Object| Empty |
 |filter.type | Type of filter you want to use for your column. | String| " " |
 |filter.placeholder | Placeholder is **`hint`** text for filter text box |String |" " |
@@ -336,19 +340,28 @@ At some point, you might want to override or format the values in the row cells.
             {{props.cell_value}}
         </b>
     </template>
+    <template slot="lastname" slot-scope="props">
+        <b>
+            {{props.cell_value}}
+        </b>
+    </template>
 </vue-bootstrap4-table>
 ...
 <script>
 ...
 columns: [{
             label: "First Name",
-            name: "name.first_name", // access nested objects properties with "."
-            sort: false,
+            name: "name.first_name" // access nested objects properties with "."
+        },
+        {
+            label: "Last Name",
+            name: "name.last_name", // access nested objects properties with "."
+            slot_name: "lastname" // optional, if you don't provide slot name 
+                                  //then default slot name will be name_last_name
         },
         {
             label: "Email",
-            name: "email",
-            sort: true,
+            name: "email"
         }],
 ...
 </script>
@@ -358,6 +371,8 @@ Slot name will be same as the name which you provided in the columns configurati
 You might have some columns getting the values from nested objects from **`rows`**. In that case, the slot name will be column **`name`** and dots(.) in the column **`name`** will be replaced by underscore(_).
 
 You can see the above example, slot name for **`name.first_name`** column is **`name_first_name`**.
+
+If you don't like this default "slot name" assignment, then you can set names to row slots as shown in the above example.
 
 ### 6.2.3. props
 From **`slot-scope="props"`** you can access the following attributes.
@@ -1099,6 +1114,24 @@ fetchData() {
         });
 }
 ```
+### 14.1.5. Note
+To get best performance, it is recommended to mention in column config that which column have unique values. You can refer the below example.
+```javascript
+columns: [
+    ...
+    {
+        label: "id",
+        name: "id",
+        filter: {
+            type: "simple",
+            placeholder: "Enter id"
+        },
+        sort: true,
+        uniqueId: true // like this
+    }
+    ... 
+]
+```
 # 15. Events
 
 ## 15.1. on-select-row
@@ -1153,7 +1186,7 @@ Triggers after clicking refresh button. This event doesn't carry any payload.
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
+# serve with hot reload at localhost:8080 (if it is not running in 8080, then check console for right port)
 npm run dev
 
 # build for production with minification
