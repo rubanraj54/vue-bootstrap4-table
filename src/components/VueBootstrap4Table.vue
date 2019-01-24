@@ -840,7 +840,7 @@ export default {
             if (has(column,"slot_name")) {
                 return column.slot_name;
             }
-            return column.name.replace('.','_');
+            return column.name.replace(/\./g,'_');
         },
         // row method ends here
         resetSort() {

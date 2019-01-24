@@ -168,7 +168,7 @@
                 if (has(column,"slot_name")) {
                     return column.slot_name;
                 }
-                return column.name.replace('.','_');
+                return column.name.replace(/\./g,'_');
             }
         },
         computed: {
