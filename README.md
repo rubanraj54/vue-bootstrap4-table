@@ -66,7 +66,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.21/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.22/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -356,7 +356,7 @@ columns: [{
         {
             label: "Last Name",
             name: "name.last_name", // access nested objects properties with "."
-            slot_name: "lastname" // optional, if you don't provide slot name 
+            slot_name: "lastname" // optional, if you don't provide slot name
                                   //then default slot name will be name_last_name
         },
         {
@@ -1129,7 +1129,7 @@ columns: [
         sort: true,
         uniqueId: true // like this
     }
-    ... 
+    ...
 ]
 ```
 # 15. Events
