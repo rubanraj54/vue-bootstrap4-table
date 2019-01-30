@@ -500,7 +500,7 @@ export default {
                 this.query.sort.push({
                     vbt_col_id: column.vbt_col_id,
                     name: column.name,
-                    order: "desc",
+                    order: "asc",
                 });
 
             } else {
