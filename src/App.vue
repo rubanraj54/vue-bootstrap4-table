@@ -1,6 +1,14 @@
 <template>
     <div id="app" class="container-fluid mb-10">
-        <vue-bootstrap4-table :classes="classes" :rows="rows" :columns="columns" :config="config" :actions="actions" @on-select-row="onSelectRows" @refresh-data="onRefreshData" @on-download="onDownload">
+        <vue-bootstrap4-table :classes="classes"
+                              :rows="rows"
+                              :columns="columns"
+                              :config="config"
+                              :custom-filters="customFilters"
+                              :actions="actions"
+                              @on-select-row="onSelectRows"
+                              @refresh-data="onRefreshData"
+                              @on-download="onDownload">
             <template slot="pagination-info" slot-scope="props">
                         This page total is {{props.currentPageRowsLength}} |
                         Filterd results total is {{props.filteredRowsLength}} |
@@ -30,6 +38,12 @@
 <template slot="reset-button-text">
      ⟳ my reset
 </template>
+<template slot="email-filter" slot-scope="props">
+    <input type="text" class="form-control" placeholder="Enter email" @keyup.stop="updateEmailfilter($event)">
+</template>
+<template slot="lastname-filter" slot-scope="props">
+    <input type="text" class="form-control" placeholder="Enter lastname" @keyup.stop="updateLastNamefilter($event)">
+</template>
         </vue-bootstrap4-table>
     </div>
 </template>
@@ -42,6 +56,7 @@
         data: function() {
             return {
                 rows: [],
+                customFilters: [],
                 total_rows: 0,
                 columns: [{
                         label: "id",
@@ -89,9 +104,11 @@
                         label: "Last Name",
                         name: "name.last_name",
                         filter: {
-                            type: "simple",
-                            placeholder: "Enter last name",
-                            // case_sensitive: true
+                            type: "custom",
+                            slot_name: "lastname-filter",
+                            validator: function(rowValue,filterText) {
+                                return rowValue.indexOf(filterText) > -1;
+                            }
                         },
                         sort: true,
                         initial_sort: true, // "false" by default
@@ -99,10 +116,13 @@
                     {
                         label: "Email",
                         name: "email",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "Enter email"
-                        // },
+                        filter: {
+                            type: "custom",
+                            slot_name: "email-filter",
+                            validator: function(rowValue,filterText) {
+                                return rowValue.indexOf(filterText) > -1;
+                            }
+                        },
                         sort: true,
                         row_text_alignment: "text-left",
                         column_text_alignment: "text-left",
@@ -198,10 +218,34 @@
             }
         },
         methods: {
+            updateEmailfilter(event) {
+                let index = this.customFilters.findIndex( customFilter => customFilter.name === 'email' );
+                if (index == -1) {
+                    this.customFilters.push({
+                        name: "email",
+                        text: event.target.value,
+                        type: "custom"
+                    });
+                } else {
+                    this.customFilters[index].text = event.target.value;
+                }
+            },
+            updateLastNamefilter(event) {
+                let index = this.customFilters.findIndex( customFilter => customFilter.name === 'name.last_name' );
+                if (index == -1) {
+                    this.customFilters.push({
+                        name: "name.last_name",
+                        text: event.target.value,
+                        type: "custom"
+                    });
+                } else {
+                    this.customFilters[index].text = event.target.value;
+                }
+            },
             fetchData() {
                 let user;
                 let users = [];
-                for (let i = 1; i <=500; i++) {
+                for (let i = 1; i <=2; i++) {
                     user = {
                         id : i,
                         name: {
