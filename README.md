@@ -5,6 +5,7 @@
 
 
 
+
 # 1. vue-bootstrap4-table
 
 > Advanced table based on Vue 2 and Bootstrap 4
@@ -885,11 +886,81 @@ Each action object should contain the below attributes.
 | event_name |  Name of the event that you want to listen back (Mandatory)| String | undefined |
 | event_payload | Payload you want to send with the event | Any | undefined |
 
+# 13. Custom classes
 
-# 13. Config
-You can optionally pass config as a prop to **`vue-bootstrap4-table`** component to override the table configuration defaults.
+You can pass your classes for the table, row, cell, etc.. via **`classes`**  prop. And interesting thing is you can pass a validator function to apply custom classes conditionally.
 
 ## 13.1. Example
+```vue
+<template>
+    <div id="app">
+        <vue-bootstrap4-table :classes="classes"
+                              :rows="rows"
+                              :columns="columns">
+        </vue-bootstrap4-table>
+    </div>
+</template>
+
+<script>
+    import VueBootstrap4Table from 'vue-bootstrap4-table'
+    export default {
+        name: 'App',
+        data: function() {
+            return {
+                rows: [
+                    ...
+                ],
+                columns: [
+                    ...
+                ],
+                classes: {
+                    table : {
+                        "table-striped my-class" : true,
+                        "table-bordered my-class-two" : function(rows) {
+                            return true
+                        }
+                    },
+                    row : {
+                        "my-row my-row2" : true,
+                        "function-class" : function(row) {
+                            return row.id == 1
+                        }
+                    },
+                    cell : {
+                        "my-cell my-cell2" : true,
+                        "text-danger" : function(row,column,cellValue) {
+                            return column.name == "salary" && row.salary > 2500
+                        }
+                    }
+                }
+            }
+        },
+        components: {
+            VueBootstrap4Table
+        }
+    }
+</script>
+```
+Currently you can add custom classes to **`<table>, <tr> and <td>`** elements using table, row, and cell properties respectively.
+
+You can either pass the custom classes directly or pass a function with your condition check to decide whether to apply to class or not.
+
+For example, in the above example, look at the property **`cell`**. There we are applying classes **"my-cell my-cell2"** directly to **`<td>`** element and **"text-danger"** class only to the "salary" column & also the salary value should be above 2500.
+
+# 14. vbt-classes
+By default, vue-bootstrap-table add classes to table elements which allows users to override the default styles.
+## 14.1. vbt-row-selected
+If a row is being selected with checkbox or row, then the selected row <tr> element will have "vbt-row-selected" class attached to it.
+
+```html
+<tr class="vbt-row-selected">
+    ...
+</tr>
+```
+# 15. Config
+You can optionally pass config as a prop to **`vue-bootstrap4-table`** component to override the table configuration defaults.
+
+## 15.1. Example
 ```vue
 <template>
     <div id="app">
@@ -945,7 +1016,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 
 > If you don't provide an attribute in the config, then default value will be assigned to that attribute.
 
-## 13.2. Attributes details
+## 15.2. Attributes details
 
 |Attributes  | Description | type| Default |
 |--|--|--|--|
@@ -969,11 +1040,11 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
 | server_mode  |  Enable/Disable server side processing (Sorting, Filtering, Global search & pagination) |Boolean   | false  |
 
-# 14. Server mode
+# 16. Server mode
 
 In server mode, client side filtering, sorting, global search and pagination will be disabled. Instead your server will do all this and returns only the processed response. New response will update the rows in the table.
 
-## 14.1. Example
+## 16.1. Example
 
 ```vue
 <template>
@@ -1049,7 +1120,7 @@ In server mode, client side filtering, sorting, global search and pagination wil
 </style>
 ```
 
-### 14.1.1. Step 1
+### 16.1.1. Step 1
 
 In your application you should have the below information in **`data.`**
 
@@ -1064,7 +1135,7 @@ queryParams: {
 total_rows: 0,
 ```
 
-### 14.1.2. Step 2
+### 16.1.2. Step 2
 
 If you want to work with pagination, then don't forget to set **`total_rows`** as prop to **`totalRows`**.
 
@@ -1079,7 +1150,7 @@ Then listen for the event **`on-change-query`**.
 </vue-bootstrap4-table>
 ```
 
-### 14.1.3. Step 3
+### 16.1.3. Step 3
 
 Wherever there is a change in table query params, you will get your new query params in your **`onChangeQuery`** function. With the new values update your **`queryParams`** and fetch new data from server.
 
@@ -1090,7 +1161,7 @@ onChangeQuery(queryParams) {
 },
 ```
 
-### 14.1.4. Step 4
+### 16.1.4. Step 4
 
 I assume you are using **`axios`** library for handling ajax requests.
 
@@ -1114,7 +1185,7 @@ fetchData() {
         });
 }
 ```
-### 14.1.5. Note
+### 16.1.5. Note
 To get best performance, it is recommended to mention in column config that which column have unique values. You can refer the below example.
 ```javascript
 columns: [
@@ -1132,55 +1203,55 @@ columns: [
     ...
 ]
 ```
-# 15. Events
+# 17. Events
 
-## 15.1. on-select-row
+## 17.1. on-select-row
 
 Triggered after selecting a row.
 
-### 15.1.1. Payload (Object)
+### 17.1.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 | selected_item | Currently selected item |
 
-## 15.2. on-all-select-rows
+## 17.2. on-all-select-rows
 
 Triggers after clicking select all check box.
 
-### 15.2.1. Payload (Object)
+### 17.2.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 
-## 15.3. on-unselect-row
+## 17.3. on-unselect-row
 
 Triggered after deselecting a row.
 
-### 15.3.1. Payload (Object)
+### 17.3.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 | unselected_item |Currently deselected item |
 
-## 15.4. on-all-unselect-rows
+## 17.4. on-all-unselect-rows
 
 Triggers after clicking deselect all check box.
 
-### 15.4.1. Payload (Object)
+### 17.4.1. Payload (Object)
 
 |  Attribute| Description |
 |--|--|
 |selected_items  | List of currently selected rows |
 
-## 15.5. refresh-data
+## 17.5. refresh-data
 
 Triggers after clicking refresh button. This event doesn't carry any payload.
 
-# 16. Build Setup
+# 18. Build Setup
 
 ``` bash
 # install dependencies
