@@ -1,6 +1,6 @@
 {
     "name": "vue-bootstrap4-table",
-    "version": "1.0.23",
+    "version": "1.0.24",
     "main": "dist/vue-bootstrap4-table.umd.js",
     "module": "dist/vue-bootstrap4-table.esm.js",
     "unpkg": "dist/vue-bootstrap4-table.min.js",

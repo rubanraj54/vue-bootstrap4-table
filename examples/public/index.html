@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.8.2/firebase-app.js"></script>
+
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous">
+
+  </head>
+  <body>
+        <div id="app">
+                <vue-bootstrap4-table :rows="rows" :columns="columns">
+                </vue-bootstrap4-table>
+        </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.22/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-bootstrap4-table@1.0.21/dist/vue-bootstrap4-table.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.18/chance.min.js" crossorigin="anonymous"></script>
+    <script>
+        var chance = new Chance(88);
+
+        new Vue({
+            el: "#app",
+            data: {
+                rows: [],
+                columns: [{
+                        label: "id",
+                        name: "id",
+                        filter: {
+                            type: "simple",
+                            placeholder: "id"
+                        },
+                        sort: true,
+                        uniqueId: true
+                    },
+                    {
+                        label: "First Name",
+                        name: "name.first_name",
+                        filter: {
+                            type: "select",
+                            placeholder: "Enter first name",
+                            mode: "multi",
+                            options: [{
+                                    "name": "Irwin",
+                                    "value": "Irwin"
+                                },
+                                {
+                                    "name": "Don",
+                                    "value": "Don"
+                                },
+                                {
+                                    "name": "Lolita Paris",
+                                    "value": "Lolita"
+                                }
+                            ]
+                        },
+                        sort: true,
+                    },
+                    {
+                        label: "Last Name",
+                        name: "name.last_name",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter last name",
+                            case_sensitive: true
+                        },
+                        sort: true,
+                    },
+                    {
+                        label: "Email",
+                        name: "email",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter email"
+                        },
+                        sort: true,
+                        row_text_alignment: "text-left",
+                        column_text_alignment: "text-left",
+                    },
+                    {
+                        label: "City",
+                        name: "address.city",
+                        sort: true
+                    },
+                    {
+                        label: "Country",
+                        name: "address.country",
+                        filter: {
+                            type: "simple",
+                            placeholder: "Enter country"
+                        },
+                    },
+                ]
+            },
+
+            mounted() {
+                let user;
+                let users = [];
+                for (let i = 1; i <=500; i++) {
+                    user = {
+                    id : i,
+                    name: {
+                        first_name: chance.first(),
+                        last_name: chance.last(),
+                    },
+                    age: chance.age(),
+                    address: {
+                        city: chance.city(),
+                        street: chance.address(),
+                        country: chance.country({ full: true })
+                    },
+                    salary: chance.integer({ min: 1500, max: 3000 }),
+                    email: chance.email(),
+                    website: chance.domain(),
+                    mobile: chance.phone()
+                    }
+                    users.push(user);
+                }
+                this.rows = users;
+            },
+        })
+    </script>
+  </body>
+</html>
