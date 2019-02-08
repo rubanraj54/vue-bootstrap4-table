@@ -103,6 +103,7 @@ Table of Contents
       * [13.1. Example](#131-example)
    * [14. vbt-classes](#14-vbt-classes)
       * [14.1. vbt-row-selected](#141-vbt-row-selected)
+      * [14.2. vbt-table-wrapper](#142-vbt-table-wrapper)
    * [15. Config](#15-config)
       * [15.1. Example](#151-example)
       * [15.2. Attributes details](#152-attributes-details)
@@ -154,7 +155,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.22/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.0.27/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -1001,6 +1002,7 @@ You can pass your classes for the table, row, cell, etc.. via **`classes`**  pro
                     ...
                 ],
                 classes: {
+                    tableWrapper: "outer-table-div-class wrapper-class-two",
                     table : {
                         "table-striped my-class" : true,
                         "table-bordered my-class-two" : function(rows) {
@@ -1028,7 +1030,7 @@ You can pass your classes for the table, row, cell, etc.. via **`classes`**  pro
     }
 </script>
 ```
-Currently you can add custom classes to **`<table>, <tr> and <td>`** elements using table, row, and cell properties respectively.
+Currently you can add custom classes to **`<div>, <table>, <tr> and <td>`** elements for table outer div element, table, row, and cell properties respectively.
 
 You can either pass the custom classes directly or pass a function with your condition check to decide whether to apply to class or not.
 
@@ -1044,6 +1046,17 @@ If a row is being selected with checkbox or row, then the selected row <tr> elem
     ...
 </tr>
 ```
+## 14.2. vbt-table-wrapper
+This class is being applied to outer <div> element of <table> element.
+
+```html
+<div class="vbt-table-wrapper">
+    <table>
+        ...
+    </table>
+</div>
+```
+
 # 15. Config
 You can optionally pass config as a prop to **`vue-bootstrap4-table`** component to override the table configuration defaults.
 

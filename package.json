@@ -1,6 +1,6 @@
 {
     "name": "vue-bootstrap4-table",
-    "version": "1.0.24",
+    "version": "1.0.27",
     "main": "dist/vue-bootstrap4-table.umd.js",
     "module": "dist/vue-bootstrap4-table.esm.js",
     "unpkg": "dist/vue-bootstrap4-table.min.js",
@@ -85,6 +85,7 @@
         "vue-loader": "^13.3.0",
         "vue-style-loader": "^3.0.1",
         "vue-template-compiler": "^2.5.22",
+        "vue2-daterange-picker": "^0.1.6",
         "webpack": "^3.6.0",
         "webpack-bundle-analyzer": "^2.13.1",
         "webpack-dev-server": "^2.9.1",

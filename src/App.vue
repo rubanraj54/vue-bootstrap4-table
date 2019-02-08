@@ -39,17 +39,62 @@
      ⟳ my reset
 </template>
 <template slot="email-filter" slot-scope="props">
-    <input type="text" class="form-control" placeholder="Enter email" @keyup.stop="updateEmailfilter($event)">
+    <div>
+
+        <date-range-picker
+            :startDate="startDate"
+            :endDate="endDate"
+            @update="console.log(value)"
+            :locale-data="locale"
+        />
+    </div>
 </template>
 <template slot="lastname-filter" slot-scope="props">
     <input type="text" class="form-control" placeholder="Enter lastname" @keyup.stop="updateLastNamefilter($event)">
 </template>
         </vue-bootstrap4-table>
+<table class="">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Handle</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>            <date-range-picker
+        :startDate="startDate"
+        :endDate="endDate"
+        @update="console.log(value)"
+        :locale-data="locale"
+    /></td>
+      <td>Otto</td>
+      <td>@mdo</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+      <td>@fat</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+      <td>@twitter</td>
+    </tr>
+  </tbody>
+</table>
     </div>
 </template>
 
 <script>
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
+    import DateRangePicker from 'vue2-daterange-picker'
+
     var chance = require('chance').Chance(88);
     export default {
         name: 'App',
@@ -179,6 +224,7 @@
                     selected_rows_info: true
                 },
                 classes: {
+                    tableWrapper: "",
                     table : {
                         "table-striped my-class" : true,
                         "table-bordered my-class-two" : function(rows) {
@@ -215,7 +261,18 @@
                         msg: "my custom msg"
                     }
                 },
-                ]
+                ],
+                startDate: '2017-09-05',
+                endDate: '2017-09-15',
+                locale: {
+                    direction: 'ltr', //direction of text
+                    format: 'DD-MM-YYYY', //fomart of the dates displayed
+                    separator: ' - ', //separator between the two ranges
+                    applyLabel: 'Apply',
+                    cancelLabel: 'Cancel',
+                    weekLabel: 'W',
+                    customRangeLabel: 'Custom Range'
+                    }
             }
         },
         methods: {
@@ -334,7 +391,8 @@
             }
         },
         components: {
-            VueBootstrap4Table
+            VueBootstrap4Table,
+            DateRangePicker
         },
         mounted() {
             let self = this;

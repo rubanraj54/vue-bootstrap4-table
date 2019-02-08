@@ -1,1 +1,30 @@
 @import "../../../node_modules/bootstrap/scss/bootstrap";
+@import '../../../node_modules/vue2-daterange-picker/dist/lib/vue-daterange-picker.min.css';
+
+.pagination>li>a {
+    background-color: white;
+    // text color
+    color: #5A4181;
+}
+
+.pagination>li>a:focus,
+.pagination>li>a:hover,
+.pagination>li>span:focus,
+.pagination>li>span:hover {
+    // text color
+    color: #5a5a5a;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+.pagination>.active>a {
+    // text color
+    color: white;
+    background-color: #5A4181 !important;
+    border: solid 1px #5A4181 !important;
+}
+
+.pagination>.active>a:hover {
+    background-color: #5A4181 !important;
+    border: solid 1px #5A4181;
+}

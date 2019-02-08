@@ -5,7 +5,7 @@
             {{card_title}}
         </div>
         <div :class="{'card-body':card_mode}">
-            <div class="table-responsive">
+            <div :class='tableWrapperClasses' class="vbt-table-wrapper">
                 <table class="table" :class="tableClasses">
                     <thead>
                         <tr v-if="showToolsRow">
@@ -372,7 +372,8 @@ export default {
             card_mode: true,
             selected_rows_info: false,
             lastSelectedItemIndex: null,
-            isFirstTime : true,
+            isFirstTime: true,
+            isResponsive: true
         };
     },
     mounted() {
@@ -1094,7 +1095,17 @@ export default {
                 });
             }
             return classes;
-        }
+        },
+        tableWrapperClasses() {
+            let classes = "";
+            let defaultClasses = "table-responsive";
+
+            if (!this.classes.tableWrapper && this.classes.tableWrapper != "") {
+                return defaultClasses;
+            }
+
+            return (typeof this.classes.tableWrapper == "string") ? this.classes.tableWrapper : defaultClasses;
+        },
 
     },
     watch: {
