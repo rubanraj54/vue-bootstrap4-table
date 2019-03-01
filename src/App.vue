@@ -18,6 +18,12 @@
 <template slot="sort-asc-icon">
     <i class="fas fa-sort-up"></i>
 </template>
+<template slot="global-search-clear-icon">
+    <i class="fas fa-times-circle"></i>
+</template>
+<template slot="simple-filter-clear-icon">
+    <i class="fas fa-times-circle"></i>
+</template>
 <template slot="paginataion-previous-button">
     Previous
 </template>
@@ -53,6 +59,12 @@
     <input type="text" class="form-control" placeholder="Enter lastname" @keyup.stop="updateLastNamefilter($event)">
 </template>
         </vue-bootstrap4-table>
+
+        <div class="d-flex justify-content-center">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
 <table class="">
   <thead>
     <tr>
@@ -106,10 +118,11 @@
                 columns: [{
                         label: "id",
                         name: "id",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "id"
-                        // },
+                        filter: {
+                            type: "simple",
+                            placeholder: "id",
+                            showClearButton: true
+                        },
                         sort: true,
                         // row_classes: "myrowclassone myrowclasstwo",
                         // column_classes: "column-class-one column-class-two"
@@ -149,8 +162,10 @@
                         label: "Last Name",
                         name: "name.last_name",
                         filter: {
-                            type: "custom",
+                            type: "simple",
+                            showClearButton: false,
                             slot_name: "lastname-filter",
+                            placeholder: "Enter last name",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
                             }
@@ -162,8 +177,9 @@
                         label: "Email",
                         name: "email",
                         filter: {
-                            type: "custom",
+                            type: "simple",
                             slot_name: "email-filter",
+                            placeholder:"Enter email",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
                             }
@@ -214,7 +230,8 @@
                     global_search: {
                         placeholder: "Enter custom Search text",
                         visibility: true,
-                        case_sensitive: false // default false
+                        case_sensitive: false, // default false
+                        showClearButton: true
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
