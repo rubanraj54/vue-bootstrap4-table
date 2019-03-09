@@ -1,8 +1,12 @@
 <template>
     <!-- TODO configurable header title position -->
     <div :class="{card:card_mode}">
-        <div class="card-header text-center" v-if="card_mode">
-            {{card_title}}
+        <div class="card-header" v-if="card_mode">
+            <slot name="card-header">
+                <template>
+                    {{card_title}}
+                </template>
+            </slot>
         </div>
         <div :class="{'card-body':card_mode}">
             <div :class='tableWrapperClasses' class="vbt-table-wrapper">
@@ -213,56 +217,58 @@
             </div>
         </div>
         <div class="card-footer" v-if="card_mode">
-            <div class="row">
-                <!-- pagination starts here -->
-                <div class="col-md-6">
-                    <div v-if="pagination">
-                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
-                            <template slot="vbt-paginataion-previous-button">
-                                <slot name="paginataion-previous-button">
-                                    &laquo;
-                                </slot>
-                            </template>
-                            <template slot="vbt-paginataion-next-button">
-                                <slot name="paginataion-next-button">
-                                    &raquo;
-                                </slot>
-                            </template>
-                        </Pagination>
+            <slot name="card-footer">
+                <div class="row">
+                    <!-- pagination starts here -->
+                    <div class="col-md-6">
+                        <div v-if="pagination">
+                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                                <template slot="vbt-paginataion-previous-button">
+                                    <slot name="paginataion-previous-button">
+                                        &laquo;
+                                    </slot>
+                                </template>
+                                <template slot="vbt-paginataion-next-button">
+                                    <slot name="paginataion-next-button">
+                                        &raquo;
+                                    </slot>
+                                </template>
+                            </Pagination>
+                        </div>
                     </div>
-                </div>
-                <!-- pagination ends here -->
+                    <!-- pagination ends here -->
 
-                <!-- pagination info start here -->
-                <div class="col-md-6">
-                    <div class="text-right justify-content-center">
-                        <template v-if="pagination_info">
-                            <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
-                                <template v-if="currentPageRowsLength != 0">
-                                    From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
-                                </template>
-                                <template v-else>
-                                    No results found
-                                </template>
-                                <template>
-                                    ({{originalRowsLength}} total records)
-                                </template>
-                            </slot>
-                        </template>
-                        <template v-if="pagination_info && selected_rows_info">
-                            <slot name="pagination-selected-rows-separator">
-                                |
-                            </slot>
-                        </template>
-                        <template v-if="selected_rows_info">
-                            <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
-                                {{selectedItemsCount}} rows selected
-                            </slot>
-                        </template>
+                    <!-- pagination info start here -->
+                    <div class="col-md-6">
+                        <div class="text-right justify-content-center">
+                            <template v-if="pagination_info">
+                                <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                    <template v-if="currentPageRowsLength != 0">
+                                        From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                    </template>
+                                    <template v-else>
+                                        No results found
+                                    </template>
+                                    <template>
+                                        ({{originalRowsLength}} total records)
+                                    </template>
+                                </slot>
+                            </template>
+                            <template v-if="pagination_info && selected_rows_info">
+                                <slot name="pagination-selected-rows-separator">
+                                    |
+                                </slot>
+                            </template>
+                            <template v-if="selected_rows_info">
+                                <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
+                                    {{selectedItemsCount}} rows selected
+                                </slot>
+                            </template>
+                        </div>
                     </div>
+                    <!-- pagination info ends here -->
                 </div>
-                <!-- pagination info ends here -->
-            </div>
+            </slot>
         </div>
     </div>
 </template>
@@ -380,7 +386,8 @@ export default {
             selected_rows_info: false,
             lastSelectedItemIndex: null,
             isFirstTime: true,
-            isResponsive: true
+            isResponsive: true,
+            preservePageOnDataChange: false
         };
     },
     mounted() {
@@ -405,7 +412,7 @@ export default {
         this.initConfig();
         this.initialSort();
         if (!this.server_mode) {
-            this.filter(false);
+            this.filter(false,true);
         }
         this.handleShiftKey();
 
@@ -466,6 +473,8 @@ export default {
             this.card_mode = (has(this.config, 'card_mode')) ? (this.config.card_mode) : true;
 
             this.selected_rows_info = (has(this.config, 'card_mode')) ? (this.config.selected_rows_info) : false;
+
+            this.preservePageOnDataChange = (has(this.config, 'preservePageOnDataChange')) ? (this.config.preservePageOnDataChange) : false;
 
         },
 
@@ -719,7 +728,7 @@ export default {
             this.paginateFilter();
         },
 
-        filter(resetPage = true) {
+        filter(resetPage = true, isInit = false) {
             let res = filter(this.original_rows, (row) => {
                 let flag = true;
                 this.query.filters.some((filter, key) => {
@@ -771,8 +780,11 @@ export default {
             }
 
             this.sort();
-            if (resetPage) {
+            if (resetPage || this.rowCount == 0) {
                 this.page = 1;
+            } else if (!isInit) {
+                let newTotalPage = Math.ceil(this.rowCount/this.per_page);
+                this.page = (this.page <= newTotalPage) ? this.page : newTotalPage;
             }
         },
 
@@ -896,7 +908,7 @@ export default {
         // row method ends here
         resetSort() {
             this.query.sort = [];
-            this.filter();
+            this.filter(!this.preservePageOnDataChange);
         },
 
         updateGlobalSearch: debounce(function(event) {
@@ -921,14 +933,22 @@ export default {
 
         },
 
-        emitQueryParams() {
+        emitQueryParams(page = null) {
             if (this.server_mode) {
                 let queryParams = cloneDeep(this.query);
                 let sort = map(queryParams.sort, o => omit(o, 'vbt_col_id'));
                 let filters = map(queryParams.filters, o => omit(o, 'config'));
                 let global_search = queryParams.global_search;
                 let per_page = clone(this.per_page);
-                let page = clone(this.page);
+
+                if (page == null) {
+                    if (this.preservePageOnDataChange) {
+                        page = this.page;
+                    } else {
+                        this.page = 1;
+                        page = 1;
+                    }
+                }
 
                 let payload = {
                     sort : sort,
@@ -1119,7 +1139,7 @@ export default {
         "query.filters": {
             handler: function (after, before) {
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }
             },
             deep: true
@@ -1135,7 +1155,7 @@ export default {
         "query.global_search": {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }
             }
         },
@@ -1151,7 +1171,7 @@ export default {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
                     let doPaginateFilter = (this.page == 1);
-                    this.page = 1;
+                    if (!this.preservePageOnDataChange) this.page = 1;
                     if (doPaginateFilter) {
                         this.paginateFilter();
                     }
@@ -1184,10 +1204,19 @@ export default {
                         }
                         return extend({}, element, extra);
                     });
-                    this.filter(!this.isFirstTime);
-                    this.isFirstTime = false;
+                    this.filter(!this.preservePageOnDataChange,!this.isFirstTime);
+                } else {
+                    if (this.preservePageOnDataChange) {
+                        let predictedTotalPage = Math.ceil(this.rowCount/this.per_page);
+                        if (predictedTotalPage != 0) {
+                            this.page = (this.page <= predictedTotalPage) ? this.page : predictedTotalPage;
+                        } else {
+                            this.page = 1;
+                        }
+                    }
                 }
 
+                this.isFirstTime = false;
             },
             deep: true
         },
@@ -1222,7 +1251,7 @@ export default {
                 });
 
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }  else {
                     this.emitQueryParams();
                 }
@@ -1271,7 +1300,7 @@ export default {
             if (!this.server_mode) {
                 this.paginateFilter();
             } else {
-                this.emitQueryParams();
+                this.emitQueryParams(newVal);
             }
         },
         'config.multi_column_sort': {
