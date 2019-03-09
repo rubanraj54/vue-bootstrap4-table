@@ -29,20 +29,20 @@
                         uniqueId: true
                     },
                     {
-                        label: "Payment Amount",
-                        name: "prepayment_amount",
+                        label: "Address",
+                        name: "city",
                         filter: {
                             type: "simple",
-                            placeholder: "Enter payment amount"
+                            placeholder: "Enter Address"
                         },
                         sort: true
                     },
                     {
-                        label: "Address",
-                        name: "address",
+                        label: "Firstname",
+                        name: "firstname",
                         filter: {
                             type: "simple",
-                            placeholder: "Enter Address"
+                            placeholder: "Enter firstname"
                         },
                         sort: true
                     },
@@ -56,6 +56,7 @@
                     highlight_row_hover: true,
                     rows_selectable: true,
                     multi_column_sort: false,
+                    page:1,
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table",
                     global_search: {
@@ -66,7 +67,8 @@
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
                     show_refresh_button: true,
-                    server_mode: true
+                    server_mode: true,
+                    preservePageOnDataChange: true
                 },
                 msg: "msg from parent",
                 actions: [{
@@ -82,25 +84,62 @@
                     global_search: "",
                     per_page: 10,
                     page: 1,
-                }
+                },
+            isfirst: true,
             }
         },
         methods: {
             onChangeQuery(queryParams) {
                 this.queryParams = queryParams;
                 this.fetchData();
+                // if (this.isfirst) {
+
+                //     this.fetchFakeData(10,20,1);
+                //     this.isfirst = false;
+                // } else {
+                //     this.fetchFakeData(10,20,2);
+
+                // }
+
+            },
+            fetchFakeData(count,total) {
+                let user;
+                let users = [];
+                for (let i = 1; i <=count; i++) {
+                    user = {
+                        id : i,
+                        name: {
+                            first_name: chance.first(),
+                            last_name: chance.last(),
+                        },
+                        age: chance.age(),
+                        address: {
+                            city: chance.city(),
+                            street: chance.address(),
+                            postcode: chance.postcode(),
+                            country: chance.country({ full: true })
+                        },
+                        salary: chance.integer({ min: 1500, max: 3000 }),
+                        email: chance.email(),
+                        website: chance.domain(),
+                        mobile: chance.phone()
+                    }
+                    users.push(user);
+                }
+                this.rows = users;
+                this.total_rows = total;
             },
             fetchData() {
                 let self = this;
-                axios.get('http://localhost:8090/test/search', {
+                axios.get('http://localhost:8090/test/searchcustomer', {
                         params: {
                             "q": this.queryParams,
                             "page": this.queryParams.page
                         }
                     })
                     .then(function(response) {
-                        self.rows = response.data.data;
-                        self.total_rows = response.data.total;
+                        self.rows = response.data.data.data;
+                        self.total_rows = response.data.data.total;
                     })
                     .catch(function(error) {
                         console.log(error);
@@ -113,6 +152,7 @@
         },
         mounted() {
             this.fetchData();
+            // this.fetchFakeData(10,20,1);
         },
     }
 </script>

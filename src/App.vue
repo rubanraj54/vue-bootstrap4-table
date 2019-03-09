@@ -18,6 +18,18 @@
 <template slot="sort-asc-icon">
     <i class="fas fa-sort-up"></i>
 </template>
+<template slot="card-header">
+    <div class="text-center">
+        my title
+    </div>
+</template>
+
+<template slot="global-search-clear-icon">
+    <i class="fas fa-times-circle"></i>
+</template>
+<template slot="simple-filter-clear-icon">
+    <i class="fas fa-times-circle"></i>
+</template>
 <template slot="paginataion-previous-button">
     Previous
 </template>
@@ -38,62 +50,18 @@
 <template slot="reset-button-text">
      ⟳ my reset
 </template>
-<template slot="email-filter" slot-scope="props">
-    <div>
-
-        <date-range-picker
-            :startDate="startDate"
-            :endDate="endDate"
-            @update="console.log(value)"
-            :locale-data="locale"
-        />
-    </div>
+<template slot="empty-results">
+    your custom message
 </template>
 <template slot="lastname-filter" slot-scope="props">
     <input type="text" class="form-control" placeholder="Enter lastname" @keyup.stop="updateLastNamefilter($event)">
 </template>
         </vue-bootstrap4-table>
-<table class="">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">First</th>
-      <th scope="col">Last</th>
-      <th scope="col">Handle</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-      <td>            <date-range-picker
-        :startDate="startDate"
-        :endDate="endDate"
-        @update="console.log(value)"
-        :locale-data="locale"
-    /></td>
-      <td>Otto</td>
-      <td>@mdo</td>
-    </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Jacob</td>
-      <td>Thornton</td>
-      <td>@fat</td>
-    </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Larry</td>
-      <td>the Bird</td>
-      <td>@twitter</td>
-    </tr>
-  </tbody>
-</table>
     </div>
 </template>
 
 <script>
     import VueBootstrap4Table from './components/VueBootstrap4Table.vue'
-    import DateRangePicker from 'vue2-daterange-picker'
 
     var chance = require('chance').Chance(88);
     export default {
@@ -103,13 +71,28 @@
                 rows: [],
                 customFilters: [],
                 total_rows: 0,
+                list: [
+                                {
+                                    "name" : "Irwin",
+                                    "value" : "Irwin"
+                                },
+                                {
+                                    "name" : "Don",
+                                    "value" : "Don"
+                                },
+                                {
+                                    "name" : "Bessie",
+                                    "value" : "Bessie"
+                                },
+                            ],
                 columns: [{
                         label: "id",
                         name: "id",
-                        // filter: {
-                        //     type: "simple",
-                        //     placeholder: "id"
-                        // },
+                        filter: {
+                            type: "simple",
+                            placeholder: "id",
+                            showClearButton: true
+                        },
                         sort: true,
                         // row_classes: "myrowclassone myrowclasstwo",
                         // column_classes: "column-class-one column-class-two"
@@ -121,20 +104,7 @@
                         filter: {
                             type: "select",
                             placeholder: "Select first name",
-                            options: [
-                                {
-                                    "name" : "Irwin",
-                                    "value" : "Irwin"
-                                },
-                                {
-                                    "name" : "Don",
-                                    "value" : "Don"
-                                },
-                                {
-                                    "name" : "Lolita",
-                                    "value" : "Lolita"
-                                },
-                            ],
+                            options: [],
                             mode:"multi",
                             select_all_checkbox : {
                                 visibility: true,
@@ -149,8 +119,10 @@
                         label: "Last Name",
                         name: "name.last_name",
                         filter: {
-                            type: "custom",
+                            type: "simple",
+                            showClearButton: false,
                             slot_name: "lastname-filter",
+                            placeholder: "Enter last name",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
                             }
@@ -162,8 +134,9 @@
                         label: "Email",
                         name: "email",
                         filter: {
-                            type: "custom",
+                            type: "simple",
                             slot_name: "email-filter",
+                            placeholder:"Enter email",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
                             }
@@ -204,7 +177,7 @@
                     pagination_info: true,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
-                    page:2,
+                    page:1,
                     checkbox_rows: true,
                     highlight_row_hover: true,
                     rows_selectable: true,
@@ -214,14 +187,16 @@
                     global_search: {
                         placeholder: "Enter custom Search text",
                         visibility: true,
-                        case_sensitive: false // default false
+                        case_sensitive: false, // default false
+                        showClearButton: true
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
                     show_refresh_button: true,
                     server_mode: false,
-                    card_mode: false,
-                    selected_rows_info: true
+                    card_mode: true,
+                    selected_rows_info: true,
+                    preservePageOnDataChange: true
                 },
                 classes: {
                     tableWrapper: "",
@@ -386,17 +361,20 @@
                     "website": "ksdfuhlman.com",
                     "mobile": "220.872.2938 x35208"
                 }];
-
-                this.rows = dummy;
+                this.fetchData();
+                // this.$nextTick(() => {
+                //     this.config.page= 4;
+		        // });
+                // this.rows = dummy;
             }
         },
         components: {
             VueBootstrap4Table,
-            DateRangePicker
         },
         mounted() {
             let self = this;
             this.fetchData();
+            this.columns[1].filter.options = this.list;
             // let test = [1,2,3,4,5,6,7]
 
             // test.some((val,index) => {

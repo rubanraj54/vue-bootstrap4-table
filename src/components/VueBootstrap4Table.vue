@@ -1,8 +1,12 @@
 <template>
     <!-- TODO configurable header title position -->
     <div :class="{card:card_mode}">
-        <div class="card-header text-center" v-if="card_mode">
-            {{card_title}}
+        <div class="card-header" v-if="card_mode">
+            <slot name="card-header">
+                <template>
+                    {{card_title}}
+                </template>
+            </slot>
         </div>
         <div :class="{'card-body':card_mode}">
             <div :class='tableWrapperClasses' class="vbt-table-wrapper">
@@ -15,13 +19,13 @@
                                         <div class=row>
                                             <!-- global search text starts here -->
                                             <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
-                                                <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)" value="">
-                                                <div class="input-group-append vbt-global-search-clear" @click="clearGlobalSearch">
-                                                    <span class="input-group-text">
-                                                        <slot name="clear-global-search-icon">
+                                                  <div class="form-group has-clear-right">
+                                                    <span v-if="global_search.showClearButton" class="form-control-feedback vbt-global-search-clear" @click="clearGlobalSearch">
+                                                        <slot name="global-search-clear-icon">
                                                             &#x24E7;
                                                         </slot>
                                                     </span>
+                                                    <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
                                                 </div>
                                             </div>
                                             <!-- global search text ends here -->
@@ -101,7 +105,13 @@
                             <td v-show="checkbox_rows"></td>
                             <td v-for="(column, key, index) in vbt_columns" :key="index" align="center">
                                 <template v-if="hasFilter(column)">
-                                    <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter"></Simple>
+                                    <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter">
+                                        <template slot="vbt-simple-filter-clear-icon">
+                                            <slot name="simple-filter-clear-icon">
+                                                &#x24E7;
+                                            </slot>
+                                        </template>
+                                    </Simple>
                                     <MultiSelect v-if="column.filter.type == 'select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
                                     <template v-if="column.filter.type == 'custom'">
                                         <slot :name="column.filter.slot_name" :column="column">
@@ -207,56 +217,58 @@
             </div>
         </div>
         <div class="card-footer" v-if="card_mode">
-            <div class="row">
-                <!-- pagination starts here -->
-                <div class="col-md-6">
-                    <div v-if="pagination">
-                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
-                            <template slot="vbt-paginataion-previous-button">
-                                <slot name="paginataion-previous-button">
-                                    &laquo;
-                                </slot>
-                            </template>
-                            <template slot="vbt-paginataion-next-button">
-                                <slot name="paginataion-next-button">
-                                    &raquo;
-                                </slot>
-                            </template>
-                        </Pagination>
+            <slot name="card-footer">
+                <div class="row">
+                    <!-- pagination starts here -->
+                    <div class="col-md-6">
+                        <div v-if="pagination">
+                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                                <template slot="vbt-paginataion-previous-button">
+                                    <slot name="paginataion-previous-button">
+                                        &laquo;
+                                    </slot>
+                                </template>
+                                <template slot="vbt-paginataion-next-button">
+                                    <slot name="paginataion-next-button">
+                                        &raquo;
+                                    </slot>
+                                </template>
+                            </Pagination>
+                        </div>
                     </div>
-                </div>
-                <!-- pagination ends here -->
+                    <!-- pagination ends here -->
 
-                <!-- pagination info start here -->
-                <div class="col-md-6">
-                    <div class="text-right justify-content-center">
-                        <template v-if="pagination_info">
-                            <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
-                                <template v-if="currentPageRowsLength != 0">
-                                    From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
-                                </template>
-                                <template v-else>
-                                    No results found
-                                </template>
-                                <template>
-                                    ({{originalRowsLength}} total records)
-                                </template>
-                            </slot>
-                        </template>
-                        <template v-if="pagination_info && selected_rows_info">
-                            <slot name="pagination-selected-rows-separator">
-                                |
-                            </slot>
-                        </template>
-                        <template v-if="selected_rows_info">
-                            <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
-                                {{selectedItemsCount}} rows selected
-                            </slot>
-                        </template>
+                    <!-- pagination info start here -->
+                    <div class="col-md-6">
+                        <div class="text-right justify-content-center">
+                            <template v-if="pagination_info">
+                                <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                    <template v-if="currentPageRowsLength != 0">
+                                        From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                    </template>
+                                    <template v-else>
+                                        No results found
+                                    </template>
+                                    <template>
+                                        ({{originalRowsLength}} total records)
+                                    </template>
+                                </slot>
+                            </template>
+                            <template v-if="pagination_info && selected_rows_info">
+                                <slot name="pagination-selected-rows-separator">
+                                    |
+                                </slot>
+                            </template>
+                            <template v-if="selected_rows_info">
+                                <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
+                                    {{selectedItemsCount}} rows selected
+                                </slot>
+                            </template>
+                        </div>
                     </div>
+                    <!-- pagination info ends here -->
                 </div>
-                <!-- pagination info ends here -->
-            </div>
+            </slot>
         </div>
     </div>
 </template>
@@ -362,7 +374,8 @@ export default {
             global_search: {
                 placeholder: "Enter search text",
                 visibility: true,
-                case_sensitive: false
+                case_sensitive: false,
+                showClearButton: true
             },
             per_page_options : [5,10,15],
             show_refresh_button: true,
@@ -373,7 +386,8 @@ export default {
             selected_rows_info: false,
             lastSelectedItemIndex: null,
             isFirstTime: true,
-            isResponsive: true
+            isResponsive: true,
+            preservePageOnDataChange: false
         };
     },
     mounted() {
@@ -398,7 +412,7 @@ export default {
         this.initConfig();
         this.initialSort();
         if (!this.server_mode) {
-            this.filter(false);
+            this.filter(false,true);
         }
         this.handleShiftKey();
 
@@ -447,6 +461,7 @@ export default {
                 this.global_search.placeholder = (has(this.config.global_search, 'placeholder')) ? this.config.global_search.placeholder : "Enter search text";
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
+                this.global_search.showClearButton = (has(this.config.global_search, 'showClearButton')) ? this.config.global_search.showClearButton : true;
             }
 
             this.show_refresh_button = (has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
@@ -458,6 +473,8 @@ export default {
             this.card_mode = (has(this.config, 'card_mode')) ? (this.config.card_mode) : true;
 
             this.selected_rows_info = (has(this.config, 'card_mode')) ? (this.config.selected_rows_info) : false;
+
+            this.preservePageOnDataChange = (has(this.config, 'preservePageOnDataChange')) ? (this.config.preservePageOnDataChange) : false;
 
         },
 
@@ -711,7 +728,7 @@ export default {
             this.paginateFilter();
         },
 
-        filter(resetPage = true) {
+        filter(resetPage = true, isInit = false) {
             let res = filter(this.original_rows, (row) => {
                 let flag = true;
                 this.query.filters.some((filter, key) => {
@@ -763,8 +780,11 @@ export default {
             }
 
             this.sort();
-            if (resetPage) {
+            if (resetPage || this.rowCount == 0) {
                 this.page = 1;
+            } else if (!isInit) {
+                let newTotalPage = Math.ceil(this.rowCount/this.per_page);
+                this.page = (this.page <= newTotalPage) ? this.page : newTotalPage;
             }
         },
 
@@ -888,7 +908,7 @@ export default {
         // row method ends here
         resetSort() {
             this.query.sort = [];
-            this.filter();
+            this.filter(!this.preservePageOnDataChange);
         },
 
         updateGlobalSearch: debounce(function(event) {
@@ -913,14 +933,22 @@ export default {
 
         },
 
-        emitQueryParams() {
+        emitQueryParams(page = null) {
             if (this.server_mode) {
                 let queryParams = cloneDeep(this.query);
                 let sort = map(queryParams.sort, o => omit(o, 'vbt_col_id'));
                 let filters = map(queryParams.filters, o => omit(o, 'config'));
                 let global_search = queryParams.global_search;
                 let per_page = clone(this.per_page);
-                let page = clone(this.page);
+
+                if (page == null) {
+                    if (this.preservePageOnDataChange) {
+                        page = this.page;
+                    } else {
+                        this.page = 1;
+                        page = 1;
+                    }
+                }
 
                 let payload = {
                     sort : sort,
@@ -1105,14 +1133,13 @@ export default {
             }
 
             return (typeof this.classes.tableWrapper == "string") ? this.classes.tableWrapper : defaultClasses;
-        },
-
+        }
     },
     watch: {
         "query.filters": {
             handler: function (after, before) {
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }
             },
             deep: true
@@ -1128,7 +1155,7 @@ export default {
         "query.global_search": {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }
             }
         },
@@ -1144,7 +1171,7 @@ export default {
             handler: function (newVal, oldVal) {
                 if (!this.server_mode) {
                     let doPaginateFilter = (this.page == 1);
-                    this.page = 1;
+                    if (!this.preservePageOnDataChange) this.page = 1;
                     if (doPaginateFilter) {
                         this.paginateFilter();
                     }
@@ -1177,10 +1204,19 @@ export default {
                         }
                         return extend({}, element, extra);
                     });
-                    this.filter(!this.isFirstTime);
-                    this.isFirstTime = false;
+                    this.filter(!this.preservePageOnDataChange,!this.isFirstTime);
+                } else {
+                    if (this.preservePageOnDataChange) {
+                        let predictedTotalPage = Math.ceil(this.rowCount/this.per_page);
+                        if (predictedTotalPage != 0) {
+                            this.page = (this.page <= predictedTotalPage) ? this.page : predictedTotalPage;
+                        } else {
+                            this.page = 1;
+                        }
+                    }
                 }
 
+                this.isFirstTime = false;
             },
             deep: true
         },
@@ -1215,7 +1251,7 @@ export default {
                 });
 
                 if (!this.server_mode) {
-                    this.filter();
+                    this.filter(!this.preservePageOnDataChange);
                 }  else {
                     this.emitQueryParams();
                 }
@@ -1264,7 +1300,7 @@ export default {
             if (!this.server_mode) {
                 this.paginateFilter();
             } else {
-                this.emitQueryParams();
+                this.emitQueryParams(newVal);
             }
         },
         'config.multi_column_sort': {
@@ -1292,9 +1328,163 @@ export default {
         -ms-user-select: none;      /* IE 10+ */
         user-select: none;          /* Likely future */
     }
-    .input-group-append.vbt-global-search-clear {
+    .vbt-global-search-clear {
         cursor: pointer;
     }
+    input[type="search"] {
+    -webkit-appearance: searchfield;
+    }
+
+    input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: searchfield-cancel-button;
+    }
+
+    /* Bootstrap 4 text input with clear icon on the right */
+
+    .has-clear-right {
+        position: relative;
+    }
+
+    .has-clear-right .form-control {
+        padding-right: 2.375rem;
+    }
+
+    .has-clear-right .form-control-feedback {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        display: block;
+        width: 2.375rem;
+        height: 2.375rem;
+        line-height: 2.375rem;
+        text-align: center;
+        font-weight: normal;
+    }
+
+    .has-clear-right .form-control-feedback:hover {
+        color: red;
+    }
+
+  /* Absolute Center Spinner */
+.loading {
+  position: fixed;
+  z-index: 999;
+  height: 2em;
+  width: 2em;
+  overflow: visible;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+/* Transparent Overlay */
+.loading:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.3);
+}
+
+/* :not(:required) hides these rules from IE9 and below */
+.loading:not(:required) {
+  /* hide "loading..." text */
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+.loading:not(:required):after {
+  content: '';
+  display: block;
+  font-size: 10px;
+  width: 1em;
+  height: 1em;
+  margin-top: -0.5em;
+  -webkit-animation: spinner 1500ms infinite linear;
+  -moz-animation: spinner 1500ms infinite linear;
+  -ms-animation: spinner 1500ms infinite linear;
+  -o-animation: spinner 1500ms infinite linear;
+  animation: spinner 1500ms infinite linear;
+  border-radius: 0.5em;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.5) -1.5em 0 0 0, rgba(0, 0, 0, 0.5) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+  box-shadow: rgba(0, 0, 0, 0.75) 1.5em 0 0 0, rgba(0, 0, 0, 0.75) 1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) 0 1.5em 0 0, rgba(0, 0, 0, 0.75) -1.1em 1.1em 0 0, rgba(0, 0, 0, 0.75) -1.5em 0 0 0, rgba(0, 0, 0, 0.75) -1.1em -1.1em 0 0, rgba(0, 0, 0, 0.75) 0 -1.5em 0 0, rgba(0, 0, 0, 0.75) 1.1em -1.1em 0 0;
+}
+
+/* Animation */
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
 </style>
 
 
