@@ -11,6 +11,7 @@
 
 <script>
     import debounce from "lodash/debounce";
+    import has from "lodash/has";
 
 
     import {
@@ -31,6 +32,9 @@
             return {};
         },
         mounted() {
+            if (has(this.column,'filter.init.value')) {
+                this.$refs.simple_filter_input.value = this.column.filter.init.value;
+            }
             EventBus.$on('reset-query', () => {
                 this.$refs.simple_filter_input.value = "";
             });
@@ -43,7 +47,7 @@
             // TODO - configurable debouncing
             updateFilter: debounce(function(event) {
                 this.$emit('update-filter', {
-                    "event": event,
+                    "value": event.target.value,
                     "column": this.column
                 });
             }, 60),

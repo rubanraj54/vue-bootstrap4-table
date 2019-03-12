@@ -49,16 +49,35 @@ export default {
     },
     data: function () {
         return {
-            selected_option_indexes: []
+            selected_option_indexes: [],
+            canEmit: false
         };
     },
     mounted() {
         this.$refs.vbt_dropdown_menu.addEventListener("click",function(e){
             e.stopPropagation();
         },false);
+
         EventBus.$on('reset-query', () => {
             this.selected_option_indexes = [];
         });
+
+        let lastIndex = this.optionsCount - 1;
+
+        if (!has(this.column,'filter.init.value'))  return;
+
+        if (this.isSingleMode) {
+            let index = this.column.filter.init.value;
+            if (index > lastIndex) return;
+            this.addOption(index)
+        } else {
+            this.column.filter.init.value.forEach(index => {
+                if (index > lastIndex) return;
+                this.addOption(index)
+            });
+        }
+
+        this.$nextTick(() => { this.canEmit = true });
     },
     methods: {
         addOption(index) {
@@ -100,6 +119,9 @@ export default {
         MultiSelectAllItem
     },
     computed: {
+        optionsCount() {
+            return this.options.length;
+        },
         title() {
             let title = (this.column.filter.placeholder) ? (this.column.filter.placeholder) : "Select options";
 
@@ -156,9 +178,13 @@ export default {
     },
     watch: {
         selected_option_indexes(newVal, oldVal) {
+
+            if (!this.canEmit) return;
+
             let filtered_options = filter(this.options, (option, index) => {
                 return includes(newVal, index)
             });
+
             let payload = {};
             payload.column = cloneDeep(this.column);
             payload.selected_options = [];

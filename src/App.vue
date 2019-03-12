@@ -91,10 +91,13 @@
                         filter: {
                             type: "simple",
                             placeholder: "id",
-                            showClearButton: true
+                            showClearButton: true,
+                            init: {
+                                value : "78"
+                            }
                         },
                         sort: true,
-                        // row_classes: "myrowclassone myrowclasstwo",
+                        row_classes: "myrowclassone myrowclasstwo",
                         // column_classes: "column-class-one column-class-two"
                         // uniqueId: true
                     },
@@ -105,10 +108,13 @@
                             type: "select",
                             placeholder: "Select first name",
                             options: [],
-                            mode:"multi",
+                            mode:"single",
                             select_all_checkbox : {
                                 visibility: true,
                                 text: "Select all"
+                            },
+                            init: {
+                                value : 2
                             }
                         },
                         sort: true,
@@ -188,7 +194,10 @@
                         placeholder: "Enter custom Search text",
                         visibility: true,
                         case_sensitive: false, // default false
-                        showClearButton: true
+                        showClearButton: true,
+                        init: {
+                            value: "ojo"
+                        }
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,

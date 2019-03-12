@@ -25,7 +25,7 @@
                                                             &#x24E7;
                                                         </slot>
                                                     </span>
-                                                    <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event)">
+                                                    <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event.target.value)">
                                                 </div>
                                             </div>
                                             <!-- global search text ends here -->
@@ -375,7 +375,10 @@ export default {
                 placeholder: "Enter search text",
                 visibility: true,
                 case_sensitive: false,
-                showClearButton: true
+                showClearButton: true,
+                init: {
+                    val: ""
+                }
             },
             per_page_options : [5,10,15],
             show_refresh_button: true,
@@ -387,7 +390,8 @@ export default {
             lastSelectedItemIndex: null,
             isFirstTime: true,
             isResponsive: true,
-            preservePageOnDataChange: false
+            preservePageOnDataChange: false,
+            canEmitQueries : false,
         };
     },
     mounted() {
@@ -411,9 +415,19 @@ export default {
 
         this.initConfig();
         this.initialSort();
-        if (!this.server_mode) {
-            this.filter(false,true);
-        }
+        this.initFilterQueries();
+
+        if (this.global_search.visibility) this.initGlobalSearch();
+
+        this.$nextTick(() => {
+            if (!this.server_mode) {
+                this.filter(false,true);
+            } else {
+                this.canEmitQueries = true;
+                this.emitQueryParams();
+            }
+        });
+
         this.handleShiftKey();
 
     },
@@ -462,6 +476,7 @@ export default {
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
                 this.global_search.showClearButton = (has(this.config.global_search, 'showClearButton')) ? this.config.global_search.showClearButton : true;
+                this.global_search.init.value = (has(this.config.global_search, 'init.value')) ? this.config.global_search.init.value: "";
             }
 
             this.show_refresh_button = (has(this.config, 'show_refresh_button')) ? (this.config.show_refresh_button) : true;
@@ -480,9 +495,10 @@ export default {
 
         initialSort() {
             // TODO optimze this with removing this filter
-            let initial_sort_columns =  filter(this.vbt_columns, function(column) { return has(column,'initial_sort') && column.initial_sort == true });
+            let initial_sort_columns =  filter(this.vbt_columns, column => (has(column,'initial_sort') && column.initial_sort == true));
 
             initial_sort_columns.some(initial_sort_column => {
+
                 let result = findIndex(this.query.sort, { 'vbt_col_id': initial_sort_column.vbt_col_id });
 
                 if(result == -1) {
@@ -513,6 +529,11 @@ export default {
             });
         },
 
+        initGlobalSearch() {
+            this.$refs.global_search.value = this.global_search.init.value;
+            this.query.global_search = this.global_search.init.value;
+        },
+
         hasFilter(column) {
             return has(column, "filter.type");
         },
@@ -527,6 +548,34 @@ export default {
         getFilterIndex(column) {
             return findIndex(this.query.filters, {
                 name: column.name
+            });
+        },
+
+        initFilterQueries() {
+            this.vbt_columns.forEach(vbt_column => {
+
+
+                if (!has(vbt_column,'filter')) return;
+
+                if (vbt_column.filter.type == "simple") {
+                    if (!has(vbt_column,'filter.init.value')) return;
+
+                    this.updateFilter({
+                        "value" : vbt_column.filter.init.value,
+                        "column" : vbt_column
+                    });
+                } else if (vbt_column.filter.type == "select") {
+
+                    if (!has(vbt_column,'filter.init.value')) return;
+
+                    let initialValues = (vbt_column.filter.mode == "multi") ? vbt_column.filter.init.value : [vbt_column.filter.init.value];
+                    let selected_options = vbt_column.filter.options.filter((_,index) => includes(initialValues, index)).map(filtered_option => filtered_option.value);
+
+                    this.updateMultiSelectFilter({
+                        "selected_options" : selected_options,
+                        "column" : vbt_column
+                    });
+                }
             });
         },
 
@@ -661,29 +710,30 @@ export default {
             return this.vbt_rows.slice(start,end);
         },
         updateFilter(payload) {
-            let event = payload.event;
+            let value = (typeof payload.value == "number") ? payload.value.toString() : payload.value;
             let column = payload.column;
             let filter_index = findIndex(this.query.filters, {
                 name: column.name
             });
             if (filter_index == -1) {
-                if (event.target.value !== "") {
+                if (value !== "") {
                     this.query.filters.push({
                         type: column.filter.type,
                         name: column.name,
-                        text: event.target.value.trim(),
+                        text: value.trim(),
                         config: column.filter
                     });
                 }
             } else {
-                if (event.target.value === "") {
+                if (value === "") {
                     this.query.filters.splice(filter_index, 1);
                 } else {
-                    this.query.filters[filter_index].text = event.target.value.trim();
+                    this.query.filters[filter_index].text = value.trim();
                 }
             }
         },
         updateMultiSelectFilter(payload) {
+
             let selected_options = payload.selected_options;
             let column = payload.column;
 
@@ -698,6 +748,7 @@ export default {
                 }
                 this.query.filters.push({
                     type: column.filter.type,
+                    mode: column.filter.mode,
                     name: column.name,
                     selected_options: selected_options,
                     config: column.filter
@@ -911,8 +962,8 @@ export default {
             this.filter(!this.preservePageOnDataChange);
         },
 
-        updateGlobalSearch: debounce(function(event) {
-            this.query.global_search = event.target.value;
+        updateGlobalSearch: debounce(function(value) {
+            this.query.global_search = value;
         }, 60),
 
         clearGlobalSearch() {
@@ -934,7 +985,7 @@ export default {
         },
 
         emitQueryParams(page = null) {
-            if (this.server_mode) {
+            if (this.server_mode && this.canEmitQueries) {
                 let queryParams = cloneDeep(this.query);
                 let sort = map(queryParams.sort, o => omit(o, 'vbt_col_id'));
                 let filters = map(queryParams.filters, o => omit(o, 'config'));
@@ -1250,11 +1301,9 @@ export default {
                     return extend({}, element, extra);
                 });
 
-                if (!this.server_mode) {
-                    this.filter(!this.preservePageOnDataChange);
-                }  else {
-                    this.emitQueryParams();
-                }
+                this.initialSort();
+                this.initFilterQueries();
+
             },
             deep: true
         },

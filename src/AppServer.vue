@@ -23,7 +23,10 @@
                         name: "id",
                         filter: {
                             type: "simple",
-                            placeholder: "id"
+                            placeholder: "id",
+                            // init: {
+                            //     value : "2"
+                            // }
                         },
                         sort: true,
                         uniqueId: true
@@ -32,10 +35,20 @@
                         label: "Address",
                         name: "city",
                         filter: {
-                            type: "simple",
-                            placeholder: "Enter Address"
+                            type: "select",
+                            placeholder: "Select Address",
+                            options: [],
+                            mode:"multi",
+                            select_all_checkbox : {
+                                visibility: true,
+                                text: "Select all"
+                            },
+                            init: {
+                                value : [0]
+                            }
                         },
-                        sort: true
+                        sort: true,
+                        initial_sort: true
                     },
                     {
                         label: "Firstname",
@@ -44,7 +57,8 @@
                             type: "simple",
                             placeholder: "Enter firstname"
                         },
-                        sort: true
+                        sort: true,
+                        initial_sort: true
                     },
                 ],
                 config: {
@@ -55,14 +69,17 @@
                     checkbox_rows: true,
                     highlight_row_hover: true,
                     rows_selectable: true,
-                    multi_column_sort: false,
-                    page:1,
+                    multi_column_sort: true,
+                    page:2,
                     // highlight_row_hover_color:"grey",
                     card_title: "Vue Bootsrap 4 advanced table",
                     global_search: {
                         placeholder: "Enter custom Search text",
                         visibility: true,
-                        case_sensitive: false // default false
+                        case_sensitive: false, // default false
+                        init: {
+                            value: "ojo"
+                        }
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
@@ -151,7 +168,11 @@
             VueBootstrap4Table
         },
         mounted() {
-            this.fetchData();
+            // this.fetchData();
+            this.columns[1].filter.options = [{
+                                    "name" : "Pinneberg",
+                                    "value" : "Pinneberg"
+                                }];
             // this.fetchFakeData(10,20,1);
         },
     }
