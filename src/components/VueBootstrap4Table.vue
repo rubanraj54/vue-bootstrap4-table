@@ -377,7 +377,7 @@ export default {
                 case_sensitive: false,
                 showClearButton: true,
                 init: {
-                    val: ""
+                    value: ""
                 }
             },
             per_page_options : [5,10,15],
