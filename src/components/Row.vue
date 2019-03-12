@@ -139,11 +139,11 @@
                 }
                 //decide text alignment class - ends here
 
-                // adding user defined classes to rows - starts here
-                // if (has(column, "row_classes")) {
-                //     classes = classes + " " + column.row_classes;
-                // }
-                // adding user defined classes to rows - ends here
+                // adding user defined classes from column config to rows - starts here
+                if (has(column, "row_classes")) {
+                    classes = classes + " " + column.row_classes;
+                }
+                // adding user defined classes from column config to rows - ends here
 
 
                 if (typeof this.propCellClasses == "string") {
