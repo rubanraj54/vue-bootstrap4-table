@@ -516,11 +516,13 @@ export default {
                         vbt_col_id: initial_sort_column.vbt_col_id,
                         name: initial_sort_column.name,
                         order: initial_sort_order,
+                        caseSensitive: this.isSortCaseSensitive(initial_sort_column)
                     });
 
-                } else {
-                    this.query.sort[result].order = initial_sort_column.initial_sort_order;
                 }
+                // else {
+                //     this.query.sort[result].order = initial_sort_column.initial_sort_order;
+                // }
 
                 // if multicolum sort sort is false, then consider only first initial sort column
                 if (!this.multi_column_sort) {
@@ -579,6 +581,10 @@ export default {
             });
         },
 
+        isSortCaseSensitive(column) {
+            return (column.sortCaseSensitive != undefined) ? column.sortCaseSensitive : true;
+        },
+
         updateSortQuery(column) {
 
             let result = findIndex(this.query.sort, { 'vbt_col_id': column.vbt_col_id });
@@ -592,6 +598,7 @@ export default {
                     vbt_col_id: column.vbt_col_id,
                     name: column.name,
                     order: "asc",
+                    caseSensitive: this.isSortCaseSensitive(column)
                 });
 
             } else {
@@ -764,16 +771,19 @@ export default {
 
         sort() {
 
-            let names = [];
-            let orders = [];
+            if(this.query.sort.length == 0) return;
 
-            this.query.sort.forEach((value,key) => {
-                names.push(value.name);
-                orders.push(value.order);
-            });
+            let orders = this.query.sort.map(sortConfig => sortConfig.order);
 
-            this.temp_filtered_results = orderBy(
-                this.temp_filtered_results, names, orders
+            this.temp_filtered_results = orderBy(this.temp_filtered_results,
+                this.query.sort.map(sortConfig => {
+                    return row => {
+                        let value = get(row,sortConfig.name);
+                        if (sortConfig.caseSensitive == undefined || sortConfig.caseSensitive) return value;
+                        return value != null ? value.toString().toLowerCase() : '';
+                    }
+                }),
+                orders
             );
 
             this.paginateFilter();
@@ -1301,9 +1311,7 @@ export default {
                     return extend({}, element, extra);
                 });
 
-                this.initialSort();
                 this.initFilterQueries();
-
             },
             deep: true
         },
