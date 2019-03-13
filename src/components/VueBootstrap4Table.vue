@@ -779,7 +779,7 @@ export default {
                 this.query.sort.map(sortConfig => {
                     return row => {
                         let value = get(row,sortConfig.name);
-                        if (sortConfig.caseSensitive == undefined || sortConfig.caseSensitive) return value;
+                        if (sortConfig.caseSensitive) return value != null ? value : '';
                         return value != null ? value.toString().toLowerCase() : '';
                     }
                 }),
