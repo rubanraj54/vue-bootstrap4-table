@@ -64,17 +64,17 @@ export default {
 
         let lastIndex = this.optionsCount - 1;
 
-        if (!has(this.column,'filter.init.value'))  return;
-
-        if (this.isSingleMode) {
-            let index = this.column.filter.init.value;
-            if (index > lastIndex) return;
-            this.addOption(index)
-        } else {
-            this.column.filter.init.value.forEach(index => {
+        if (has(this.column,'filter.init.value')) {
+            if (this.isSingleMode) {
+                let index = this.column.filter.init.value;
                 if (index > lastIndex) return;
                 this.addOption(index)
-            });
+            } else {
+                this.column.filter.init.value.forEach(index => {
+                    if (index > lastIndex) return;
+                    this.addOption(index)
+                });
+            }
         }
 
         this.$nextTick(() => { this.canEmit = true });
