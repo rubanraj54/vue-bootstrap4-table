@@ -52,8 +52,11 @@
                                     <!-- action buttons starts here -->
                                     <div class="col-md-8">
                                         <div class="btn-group float-right" role="group" aria-label="Basic example">
-                                            <button v-for="(action, key, index) in actions" :key="index" type="button" class="btn btn-secondary" @click="$emit(action.event_name,action.event_payload)">
-                                                {{action.btn_text}}
+                                            <button v-for="(action, key, index) in actions"
+                                                    :key="index" type="button" class="btn"
+                                                    :class="getActionButtonClass(action)"
+                                                    @click="$emit(action.event_name,action.event_payload)"
+                                                    v-html="action.btn_text">
                                             </button>
                                         </div>
                                     </div>
@@ -637,6 +640,11 @@ export default {
 
             this.lastSelectedItemIndex = payload.rowIndex;
         },
+
+        getActionButtonClass(action){
+            return has(action,'class') ? action.class : " btn-secondary";
+        },
+
         handleRemoveRow(payload) {
             let row = this.vbt_rows[payload.rowIndex];
             if (this.isShiftSelection(payload.shiftKey,payload.rowIndex)) {
@@ -771,7 +779,10 @@ export default {
 
         sort() {
 
-            if(this.query.sort.length == 0) return;
+            if(this.query.sort.length == 0) {
+                this.paginateFilter();
+                return;
+            };
 
             let orders = this.query.sort.map(sortConfig => sortConfig.order);
 
