@@ -779,23 +779,20 @@ export default {
 
         sort() {
 
-            if(this.query.sort.length == 0) {
-                this.paginateFilter();
-                return;
+            if(this.query.sort.length != 0) {
+                let orders = this.query.sort.map(sortConfig => sortConfig.order);
+
+                this.temp_filtered_results = orderBy(this.temp_filtered_results,
+                    this.query.sort.map(sortConfig => {
+                        return row => {
+                            let value = get(row,sortConfig.name);
+                            if (sortConfig.caseSensitive) return value != null ? value : '';
+                            return value != null ? value.toString().toLowerCase() : '';
+                        }
+                    }),
+                    orders
+                );
             };
-
-            let orders = this.query.sort.map(sortConfig => sortConfig.order);
-
-            this.temp_filtered_results = orderBy(this.temp_filtered_results,
-                this.query.sort.map(sortConfig => {
-                    return row => {
-                        let value = get(row,sortConfig.name);
-                        if (sortConfig.caseSensitive) return value != null ? value : '';
-                        return value != null ? value.toString().toLowerCase() : '';
-                    }
-                }),
-                orders
-            );
 
             this.paginateFilter();
         },
