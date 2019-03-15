@@ -67,13 +67,17 @@ export default {
         if (has(this.column,'filter.init.value')) {
             if (this.isSingleMode) {
                 let index = this.column.filter.init.value;
-                if (index > lastIndex) return;
+                if (index > lastIndex || index < 0) return;
                 this.addOption(index)
             } else {
-                this.column.filter.init.value.forEach(index => {
-                    if (index > lastIndex) return;
-                    this.addOption(index)
-                });
+                if (Array.isArray(this.column.filter.init.value)) {
+                    this.column.filter.init.value.forEach(index => {
+                        if (index > lastIndex || index < 0) return;
+                        this.addOption(index)
+                    });
+                } else {
+                    console.log("Initial value for 'multi' mode should be an array");
+                }
             }
         }
 
