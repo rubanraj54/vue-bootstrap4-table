@@ -483,7 +483,8 @@ columns: [
         name: "name.first_name", // access nested objects properties with "."
         sort: true, // "false" by default
         initial_sort: true, // "false" by default
-        initial_sort_order: "desc" // "asc" by default
+        initial_sort_order: "desc", // "asc" by default
+        sortCaseSensitive: false // "true" by default
     }
 ]
 ...
@@ -491,9 +492,10 @@ columns: [
 ## 7.2. Attributes details
 | Attributes | Description |
 |--|--|
-| sort | Enable or disable sorting in column. Default value is **`false`** |
-| initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`** |
-| initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`** |
+| sort | Enable or disable sorting in column. Default value is **`false`**.|
+| initial_sort | Sort the column at the first time loading. Default value is **`false`**. This only works if **`sort`** is **`true`**. |
+| initial_sort_order | Sort the column at the first time loading based on given order. Default value is **`asc`**. This only works if **`initial_sort`** is **`true`**. |
+| sortCaseSensitive | Enable or disable case sensitive sorting. Default value is **`true`**. |
 
 ## 7.3. Single column sorting
 By default single column sort mode is enabled.
@@ -582,6 +584,9 @@ columns: [
             type: "simple",
             placeholder: "Enter first name",
             case_sensitive: true, // "false" by default
+            init: {
+                value : "Christin"
+            }
         }
     }
 ]
@@ -589,17 +594,51 @@ columns: [
 ```
 ### 8.1.2. Attributes details
 
-|Attributes  |  Description | Default |
-|--|--|--|
-| filter.type | Defines the type of filter. Currently basic filter is supported. |Empty string  |
-| filter.placeholder | Placeholder is **`hint`** text for filter text box | Empty string |
-| filter.case_sensitive | Enable/Disable case sensitive filtering. | false |
+|Attributes  |  Description | Type |Default |
+|--|--|--|--|
+| filter.type | Defines the type of filter. Currently basic filter is supported. | String | Empty string  |
+| filter.placeholder | Placeholder is **`hint`** text for filter text box | String | Empty string |
+| filter.case_sensitive | Enable/Disable case sensitive filtering. | Boolean | false |
+| filter.init.value | Assign initial value to the the filter before rendering the table. | String | Empty string |
 
 ## 8.2. Multi-Select Filter
 
 You can have multi select dropdown filter for each columns. The options in the dropdown will be rendered with bootstrap 4 custom checkboxes.
 
-### 8.2.1. Example
+### 8.2.1. Example (Single select)
+
+```vue
+...
+columns: [
+    {
+        label: "First Name",
+        name: "name.first_name", // access nested objects properties with "."
+        filter: {
+            type: "select",
+            mode: "single",
+            placeholder: "Select options",
+            options: [{
+                    "name": "option one",
+                    "value": "option one"
+                },
+                {
+                    "name": "option two",
+                    "value": "option two"
+                },
+                {
+                    "name": "option three",
+                    "value": "option three"
+                }
+            ],
+            init: {
+                value : 2
+            }
+        }
+    }
+]
+...
+```
+### 8.2.2. Example (Multi select)
 
 ```vue
 ...
@@ -623,13 +662,21 @@ columns: [
                     "name": "option three",
                     "value": "option three"
                 }
+            ],
+            select_all_checkbox : {
+                visibility: true,
+                text: "Select all items"
+            },
+            init: {
+                value : [0,1]
+            }
         }
     }
 ]
 ...
 ```
 
-### 8.2.2. Attribute details
+### 8.2.3. Attribute details
 
 | Attributes |Description  | Type |Default  |
 |--|--|--|--|
@@ -637,7 +684,9 @@ columns: [
 | filter.mode | Defines the mode of selection in the dropdown. Allowed options are **`single`** and **`multi`**. If the mode is **`single`**, then dropdown will be rendered with **`radio`** buttons, else if the mode is multi, then dropdown will be rendered with **`checkboxes`**. | String | "single" |
 | filter.placeholder | Default text for the dropdown. | String | Empty string |
 | filter.options | You can provide your list of name and value objects to be populated in the multi-select filter dropdown. | Array | Empty array |
-
+| filter.init.value | Select initial value in the dropdown list before rendering the table.<br> In **single** select mode, value should be a single number (index of the item). <br> In **multi** select mode, value should be array of numbers (indexes of the items). | Number(single mode) or Array(multi mode) | - |
+| select_all_checkbox.visibility | Enable or disable select all items checkbox in the dropdown list. This option is valid only in **multi** select mode. | Boolean | true |
+| select_all_checkbox.text | You can override the default text of **Select All** item text. This option is valid only in **multi** select mode. | String | "Select All" |
 
 # 9. Global search
 Global search searches the complete list of rows for the given search keyword.
@@ -942,6 +991,7 @@ You can add your custom buttons in the table by **`actions`** props and listen f
                     {
                         btn_text: "Download",
                         event_name: "on-download",
+                        class: "btn btn-primary my-custom-class",
                         event_payload: {
                             msg: "my custom msg"
                         }
@@ -972,6 +1022,7 @@ Each action object should contain the below attributes.
 |--|--|--|--|
 | btn_name | Display name for the button |String  |  " "|
 | event_name |  Name of the event that you want to listen back (Mandatory)| String | undefined |
+| class | Class which you want to override default button classes | String | " " |
 | event_payload | Payload you want to send with the event | Any | undefined |
 
 # 13. Custom classes
