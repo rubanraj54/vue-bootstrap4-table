@@ -19,7 +19,7 @@
                                         <div class=row>
                                             <!-- global search text starts here -->
                                             <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
-                                                  <div class="form-group has-clear-right">
+                                                  <div class="form-group has-clear-right" :class="global_search.class">
                                                     <span v-if="global_search.showClearButton" class="form-control-feedback vbt-global-search-clear" @click="clearGlobalSearch">
                                                         <slot name="global-search-clear-icon">
                                                             &#x24E7;
@@ -376,6 +376,7 @@ export default {
             card_title: "",
             global_search: {
                 placeholder: "Enter search text",
+                class: "",
                 visibility: true,
                 case_sensitive: false,
                 showClearButton: true,
@@ -479,6 +480,7 @@ export default {
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
                 this.global_search.showClearButton = (has(this.config.global_search, 'showClearButton')) ? this.config.global_search.showClearButton : true;
+                this.global_search.class = (has(this.config.global_search, 'class')) ? this.config.global_search.class : "";
                 this.global_search.init.value = (has(this.config.global_search, 'init.value')) ? this.config.global_search.init.value: "";
             }
 
