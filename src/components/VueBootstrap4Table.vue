@@ -55,8 +55,10 @@
                                             <button v-for="(action, key, index) in actions"
                                                     :key="index" type="button" class="btn"
                                                     :class="getActionButtonClass(action)"
-                                                    @click="$emit(action.event_name,action.event_payload)"
-                                                    v-html="action.btn_text">
+                                                    @click="$emit(action.event_name,action.event_payload)">
+                                                    <slot :name="action.btn_text_slot_name">
+                                                        <span v-html="action.btn_text"></span>
+                                                    </slot>
                                             </button>
                                         </div>
                                     </div>
