@@ -60,6 +60,8 @@ Table of Contents
     + [6.2.1. Example](#621-example)
     + [6.2.2. Note](#622-note)
     + [6.2.3. props](#623-props)
+  * [6.3. Empty result message slot](#63-empty-result-message-slot)
+    + [6.3.1. Example](#631-example)
 - [7. Sorting](#7-sorting)
   * [7.1. Example](#71-example)
   * [7.2. Attributes details](#72-attributes-details)
@@ -73,6 +75,7 @@ Table of Contents
   * [8.1. Simple Filter](#81-simple-filter)
     + [8.1.1. Example](#811-example)
     + [8.1.2. Attributes details](#812-attributes-details)
+    + [8.1.3. Clear button icon slot](#813-clear-button-icon-slot)
   * [8.2. Multi-Select Filter](#82-multi-select-filter)
     + [8.2.1. Example (Single select)](#821-example--single-select-)
     + [8.2.2. Example (Multi select)](#822-example--multi-select-)
@@ -80,6 +83,7 @@ Table of Contents
 - [9. Global search](#9-global-search)
   * [9.1. Example](#91-example)
   * [9.2. Attributes details](#92-attributes-details)
+  * [9.3. Clear button icon slot](#93-clear-button-icon-slot)
 - [10. Pagination & Info](#10-pagination---info)
   * [10.1. Example](#101-example)
   * [10.2. Attributes details](#102-attributes-details)
@@ -472,6 +476,20 @@ From **`slot-scope="props"`** you can access the following attributes.
 | props.row |  Current row object|
 | props.column |  Current column config object|
 
+## 6.3. Empty result message slot
+If the given **`rows`** data is empty or result set is empty after applying filters, vue-bootstrap4-table shows this default message "No results found". You can override the message as like your wish with the help of **`empty-results`** slot.
+
+### 6.3.1. Example
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns">
+    <template slot="empty-results">
+        Users not found
+    </template>
+</vue-bootstrap4-table>
+...
+```
+
 # 7. Sorting
 Sorting configuration is added along with the each column config.
 ## 7.1. Example
@@ -584,6 +602,7 @@ columns: [
             type: "simple",
             placeholder: "Enter first name",
             case_sensitive: true, // "false" by default
+            showClearButton: false,
             init: {
                 value : "Christin"
             }
@@ -599,7 +618,22 @@ columns: [
 | filter.type | Defines the type of filter. Currently basic filter is supported. | String | Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | String | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | Boolean | false |
+| filter.showClearButton | Show/Hide clear button in the simple filter. | Boolean | true |
 | filter.init.value | Assign initial value to the the filter before rendering the table. | String | Empty string |
+
+### 8.1.3. Clear button icon slot
+
+You can override the default clear button icon in the simple filter text input.
+
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns">
+    <template slot="simple-filter-clear-icon">
+        <i class="fas fa-times-circle"></i>
+    </template>
+</vue-bootstrap4-table>
+...
+```
 
 ## 8.2. Multi-Select Filter
 
@@ -721,7 +755,11 @@ You can enable or disable search text input with custom configuration as shown i
                    global_search: {
                         placeholder: "Enter custom Search text",
                         visibility: true,
-                        case_sensitive: false
+                        case_sensitive: false,
+                        showClearButton: false,
+                        init: {
+                            value : "Christin"
+                        }
                     },
                     ...
                 }
@@ -740,7 +778,23 @@ You can enable or disable search text input with custom configuration as shown i
 | global_search.placeholder | Placeholder is **`hint`** text for search text box | String | "Enter search text" |
 | global_search.visibility | Show/Hide global search text input | Boolean | true |
 | global_search.case_sensitive | Enable/Disable case sensitive searching. | Boolean | false |
+| global_search.showClearButton | Show/Hide clear button in the global search input text. | Boolean | true |
+| global_search.init.value | Assign initial value to the the global search filter before rendering the table. | String | Empty string |
 
+## 9.3. Clear button icon slot
+
+You can override the default clear button icon in the global search text input.
+
+
+```vue
+...
+<vue-bootstrap4-table :rows="rows" :columns="columns">
+    <template slot="global-search-clear-icon">
+        <i class="fas fa-times-circle"></i>
+    </template>
+</vue-bootstrap4-table>
+...
+```
 
 # 10. Pagination & Info
 Pagination component is built based on Bootstrap 4 pagination template. You can enable or disable pagination and pagination info details based on your choice.
@@ -1155,6 +1209,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 	                show_refresh_button:  true,
 	                show_reset_button:  true,
 	                server_mode:  true,
+                    preservePageOnDataChange: true
                 }
             }
         },
@@ -1190,6 +1245,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | show_refresh_button  |  Show/Hide Refresh button | Boolean  | true  |
 | show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
 | server_mode  |  Enable/Disable server side processing (Sorting, Filtering, Global search & pagination) |Boolean   | false  |
+| preservePageOnDataChange  |  Enable/Disable preserving current index of the page on data change. For example, if this option is set to true, consider that you are in page **4** and performed some actions like sorting or filtering, then now table gets a new data and still the pagination will be in page **4**. If this config is set to false (default), for any data change current page in the pagination will be shifted to page **1**. |Boolean   | false  |
 
 # 16. Server mode
 

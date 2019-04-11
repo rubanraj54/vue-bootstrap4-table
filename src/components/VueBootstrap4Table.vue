@@ -19,7 +19,7 @@
                                         <div class=row>
                                             <!-- global search text starts here -->
                                             <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
-                                                  <div class="form-group has-clear-right">
+                                                  <div class="form-group has-clear-right" :class="global_search.class">
                                                     <span v-if="global_search.showClearButton" class="form-control-feedback vbt-global-search-clear" @click="clearGlobalSearch">
                                                         <slot name="global-search-clear-icon">
                                                             &#x24E7;
@@ -55,8 +55,10 @@
                                             <button v-for="(action, key, index) in actions"
                                                     :key="index" type="button" class="btn"
                                                     :class="getActionButtonClass(action)"
-                                                    @click="$emit(action.event_name,action.event_payload)"
-                                                    v-html="action.btn_text">
+                                                    @click="emitActionEvent(action)">
+                                                    <slot :name="action.btn_text_slot_name">
+                                                        <span v-html="action.btn_text"></span>
+                                                    </slot>
                                             </button>
                                         </div>
                                     </div>
@@ -197,12 +199,12 @@
                                                     </template>
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info && pagination_info && (checkbox_rows || rows_selectable)">
+                                            <template v-if="selected_rows_info && pagination_info && isSelectable">
                                                 <slot name="pagination-selected-rows-separator">
                                                     |
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info && (checkbox_rows || rows_selectable)">
+                                            <template v-if="selected_rows_info && isSelectable">
                                                 <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                                     {{selectedItemsCount}} rows selected
                                                 </slot>
@@ -376,6 +378,7 @@ export default {
             card_title: "",
             global_search: {
                 placeholder: "Enter search text",
+                class: "",
                 visibility: true,
                 case_sensitive: false,
                 showClearButton: true,
@@ -479,6 +482,7 @@ export default {
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
                 this.global_search.showClearButton = (has(this.config.global_search, 'showClearButton')) ? this.config.global_search.showClearButton : true;
+                this.global_search.class = (has(this.config.global_search, 'class')) ? this.config.global_search.class : "";
                 this.global_search.init.value = (has(this.config.global_search, 'init.value')) ? this.config.global_search.init.value: "";
             }
 
@@ -1081,6 +1085,17 @@ export default {
                     }
                 });
             });
+        },
+        emitActionEvent(action) {
+            let payload = {
+                event_payload : cloneDeep(action.event_payload)
+            }
+
+            if (this.isSelectable) {
+                payload.selectedItems = cloneDeep(this.selected_items);
+            }
+
+            this.$emit(action.event_name,payload);
         }
     },
     computed: {
@@ -1216,6 +1231,10 @@ export default {
             }
 
             return (typeof this.classes.tableWrapper == "string") ? this.classes.tableWrapper : defaultClasses;
+        },
+
+        isSelectable() {
+            return (this.checkbox_rows || this.rows_selectable);
         }
     },
     watch: {

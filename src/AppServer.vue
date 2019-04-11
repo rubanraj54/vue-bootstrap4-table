@@ -43,9 +43,9 @@
                                 visibility: true,
                                 text: "Select all"
                             },
-                            init: {
-                                value : [0]
-                            }
+                            // init: {
+                            //     value : [0]
+                            // }
                         },
                         sort: true,
                         initial_sort: true
@@ -77,9 +77,9 @@
                         placeholder: "Enter custom Search text",
                         visibility: true,
                         case_sensitive: false, // default false
-                        init: {
-                            value: "ojo"
-                        }
+                        // init: {
+                        //     value: "ojo"
+                        // }
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
