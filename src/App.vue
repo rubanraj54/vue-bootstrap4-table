@@ -44,7 +44,11 @@
 </template>
 
 <template slot="refresh-button-text">
-     ⟳ my refresh
+     <font-awesome-icon icon="user-secret" /> my refresh
+</template>
+
+<template slot="action-btn-download-icon">
+     <font-awesome-icon icon="user-secret" /> test
 </template>
 
 <template slot="reset-button-text">
@@ -91,10 +95,10 @@
                         filter: {
                             type: "simple",
                             placeholder: "id",
-                            showClearButton: true,
-                            init: {
-                                value : "78"
-                            }
+                            // showClearButton: false,
+                            // init: {
+                            //     value : "78"
+                            // }
                         },
                         sort: true,
                         row_classes: "myrowclassone myrowclasstwo",
@@ -108,17 +112,18 @@
                             type: "select",
                             placeholder: "Select first name",
                             options: [],
-                            mode:"single",
+                            mode:"multi",
                             select_all_checkbox : {
                                 visibility: true,
                                 text: "Select all"
                             },
                             init: {
-                                value : 2
+                                value : [244]
                             }
                         },
                         sort: true,
-                        initial_sort: true, // "false" by default
+                        initial_sort: false, // "false" by default
+                        sortCaseSensitive: false,
                         // slot_name: "my_duplicate_id_column"
                     },
                     {
@@ -134,11 +139,13 @@
                             }
                         },
                         sort: true,
+                        sortCaseSensitive: false,
                         initial_sort: true, // "false" by default
+                        initial_sort_order: "desc", // "false" by default
                     },
                     {
                         label: "Email",
-                        name: "email",
+                        name: "email[0].value",
                         filter: {
                             type: "simple",
                             slot_name: "email-filter",
@@ -195,9 +202,10 @@
                         visibility: true,
                         case_sensitive: false, // default false
                         showClearButton: true,
-                        init: {
-                            value: "ojo"
-                        }
+                        class: "test"
+                        // init: {
+                        //     value: "ojo"
+                        // }
                     },
                     per_page_options: [5, 10, 20, 30],
                     show_reset_button: true,
@@ -232,14 +240,17 @@
                 // actions: []
                 actions: [
                     {
-                    btn_text: "Download",
+                    // btn_text: '<font-awesome-icon icon="user-secret" />',
+                    btn_text_slot_name : 'action-btn-download-icon',
+                    class: "btn btn-primary",
                     event_name: "on-download",
                     event_payload: {
                         msg: "my custom msg"
                     }
                 },
                     {
-                    btn_text: "Download",
+                    btn_text: '<span> <i class="fas fa-download"></i> Download</span>',
+                    class: "btn-info",
                     event_name: "on-download",
                     event_payload: {
                         msg: "my custom msg"
@@ -302,19 +313,58 @@
                             country: chance.country({ full: true })
                         },
                         salary: chance.integer({ min: 1500, max: 3000 }),
-                        email: chance.email(),
+                        email: [{value: chance.email()}],
                         website: chance.domain(),
                         mobile: chance.phone()
                     }
                     users.push(user);
                 }
+                user = {
+                    id : 103,
+                    name: {
+                        first_name: "voll",
+                        last_name: chance.last(),
+                    },
+                    age: chance.age(),
+                    address: {
+                        city: chance.city(),
+                        street: chance.address(),
+                        postcode: chance.postcode(),
+                        country: chance.country({ full: true })
+                    },
+                    salary: chance.integer({ min: 1500, max: 3000 }),
+                    email: [{value: chance.email()}],
+                    website: chance.domain(),
+                    mobile: chance.phone()
+                }
+                    users.push(user);
+
+                user = {
+                    id : 104,
+                    name: {
+                        first_name: "voll",
+                        last_name: chance.last(),
+                    },
+                    age: chance.age(),
+                    address: {
+                        city: chance.city(),
+                        street: chance.address(),
+                        postcode: chance.postcode(),
+                        country: chance.country({ full: true })
+                    },
+                    salary: chance.integer({ min: 1500, max: 3000 }),
+                    email: [{value: chance.email()}],
+                    website: chance.domain(),
+                    mobile: chance.phone()
+                }
+                    users.push(user);
+
                 this.rows = users;
             },
             onSelectRows(payload) {
                 console.log(payload);
             },
             onDownload(payload) {
-                alert(payload.msg)
                 console.log(payload);
             },
             onRefreshData() {
@@ -400,6 +450,10 @@
 <style>
 .vbt-row-selected {
     background-color: rgb(131, 102, 102) !important
+}
+
+.my-margin {
+    margin: 10px;
 }
 
 </style>

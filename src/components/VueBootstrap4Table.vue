@@ -55,7 +55,7 @@
                                             <button v-for="(action, key, index) in actions"
                                                     :key="index" type="button" class="btn"
                                                     :class="getActionButtonClass(action)"
-                                                    @click="$emit(action.event_name,action.event_payload)">
+                                                    @click="emitActionEvent(action)">
                                                     <slot :name="action.btn_text_slot_name">
                                                         <span v-html="action.btn_text"></span>
                                                     </slot>
@@ -199,12 +199,12 @@
                                                     </template>
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info && pagination_info && (checkbox_rows || rows_selectable)">
+                                            <template v-if="selected_rows_info && pagination_info && isSelectable">
                                                 <slot name="pagination-selected-rows-separator">
                                                     |
                                                 </slot>
                                             </template>
-                                            <template v-if="selected_rows_info && (checkbox_rows || rows_selectable)">
+                                            <template v-if="selected_rows_info && isSelectable">
                                                 <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
                                                     {{selectedItemsCount}} rows selected
                                                 </slot>
@@ -1085,6 +1085,17 @@ export default {
                     }
                 });
             });
+        },
+        emitActionEvent(action) {
+            let payload = {
+                event_payload : cloneDeep(action.event_payload)
+            }
+
+            if (this.isSelectable) {
+                payload.selectedItems = cloneDeep(this.selected_items);
+            }
+
+            this.$emit(action.event_name,payload);
         }
     },
     computed: {
@@ -1220,6 +1231,10 @@ export default {
             }
 
             return (typeof this.classes.tableWrapper == "string") ? this.classes.tableWrapper : defaultClasses;
+        },
+
+        isSelectable() {
+            return (this.checkbox_rows || this.rows_selectable);
         }
     },
     watch: {
