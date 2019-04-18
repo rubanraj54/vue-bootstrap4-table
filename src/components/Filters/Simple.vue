@@ -18,7 +18,6 @@
     import {
         EventBus
     } from '../../event-bus.js';
-import { log } from 'util';
 
     export default {
         name: "Simple",

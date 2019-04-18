@@ -159,7 +159,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.3/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.4/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -603,6 +603,8 @@ columns: [
             placeholder: "Enter first name",
             case_sensitive: true, // "false" by default
             showClearButton: false,
+            filterOnPressEnter: false,
+            debounceRate: 1000,
             init: {
                 value : "Christin"
             }
@@ -618,6 +620,8 @@ columns: [
 | filter.type | Defines the type of filter. Currently basic filter is supported. | String | Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | String | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | Boolean | false |
+| filter.filterOnPressEnter | Enable/Disable filtering on "enter" key press. | Boolean | false |
+| filter.debounceRate | Defines the wait time for filtering between the key strokes. Value should be in milliseconds. | Number | 60 |
 | filter.showClearButton | Show/Hide clear button in the simple filter. | Boolean | true |
 | filter.init.value | Assign initial value to the the filter before rendering the table. | String | Empty string |
 
@@ -757,6 +761,8 @@ You can enable or disable search text input with custom configuration as shown i
                         visibility: true,
                         case_sensitive: false,
                         showClearButton: false,
+                        searchOnPressEnter: false,
+                        searchDebounceRate: 1000,
                         init: {
                             value : "Christin"
                         }
@@ -779,6 +785,8 @@ You can enable or disable search text input with custom configuration as shown i
 | global_search.visibility | Show/Hide global search text input | Boolean | true |
 | global_search.case_sensitive | Enable/Disable case sensitive searching. | Boolean | false |
 | global_search.showClearButton | Show/Hide clear button in the global search input text. | Boolean | true |
+| global_search.searchOnPressEnter | Enable/Disable global search on "enter" key press. | Boolean | false |
+| global_search.searchDebounceRate | Defines the wait time for searching between the key strokes. Value should be in milliseconds. | Number | 60 |
 | global_search.init.value | Assign initial value to the the global search filter before rendering the table. | String | Empty string |
 
 ## 9.3. Clear button icon slot
