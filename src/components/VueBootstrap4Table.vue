@@ -25,7 +25,8 @@
                                                             &#x24E7;
                                                         </slot>
                                                     </span>
-                                                    <input ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event.target.value)">
+                                                    <input v-if="global_search.searchOnPressEnter" ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.enter="updateGlobalSearchHandler($event.target.value)">
+                                                    <input v-else ref="global_search" type="text" class="form-control" :placeholder="global_search.placeholder" @keyup.stop="updateGlobalSearch($event.target.value)">
                                                 </div>
                                             </div>
                                             <!-- global search text ends here -->
@@ -382,6 +383,8 @@ export default {
                 visibility: true,
                 case_sensitive: false,
                 showClearButton: true,
+                searchOnPressEnter: false,
+                searchDebounceRate: 60,
                 init: {
                     value: ""
                 }
@@ -482,6 +485,8 @@ export default {
                 this.global_search.visibility = (has(this.config.global_search, 'visibility')) ? this.config.global_search.visibility : true;
                 this.global_search.case_sensitive = (has(this.config.global_search, 'case_sensitive')) ? this.config.global_search.case_sensitive : false;
                 this.global_search.showClearButton = (has(this.config.global_search, 'showClearButton')) ? this.config.global_search.showClearButton : true;
+                this.global_search.searchOnPressEnter = (has(this.config.global_search, 'searchOnPressEnter')) ? this.config.global_search.searchOnPressEnter : false;
+                this.global_search.searchDebounceRate = (has(this.config.global_search, 'searchDebounceRate')) ? this.config.global_search.searchDebounceRate : 60;
                 this.global_search.class = (has(this.config.global_search, 'class')) ? this.config.global_search.class : "";
                 this.global_search.init.value = (has(this.config.global_search, 'init.value')) ? this.config.global_search.init.value: "";
             }
@@ -998,9 +1003,9 @@ export default {
             this.filter(!this.preservePageOnDataChange);
         },
 
-        updateGlobalSearch: debounce(function(value) {
+        updateGlobalSearchHandler: function(value) {
             this.query.global_search = value;
-        }, 60),
+        },
 
         clearGlobalSearch() {
             this.query.global_search = "";
@@ -1235,6 +1240,10 @@ export default {
 
         isSelectable() {
             return (this.checkbox_rows || this.rows_selectable);
+        },
+
+        updateGlobalSearch() {
+            return debounce(this.updateGlobalSearchHandler, this.global_search.searchDebounceRate);
         }
     },
     watch: {
