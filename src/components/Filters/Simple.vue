@@ -5,7 +5,8 @@
 
         </slot>
     </span>
-    <input type="text" ref="simple_filter_input" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)">
+    <input v-if="filterOnPressEnter" type="text" ref="simple_filter_input" class="form-control" :placeholder="column.filter.placeholder" @keyup.enter="updateFilterHandler($event)">
+    <input v-else type="text" ref="simple_filter_input" class="form-control" :placeholder="column.filter.placeholder" @keyup.stop="updateFilter($event)">
   </div>
 </template>
 
@@ -29,14 +30,28 @@
             },
         },
         data: function() {
-            return {};
+            return {
+                filterOnPressEnter: false,
+                debounceRate: 60
+            };
         },
         mounted() {
             if (has(this.column,'filter.init.value')) {
                 this.$refs.simple_filter_input.value = this.column.filter.init.value;
             }
+
+            if (has(this.column,'filter.filterOnPressEnter')) {
+                this.filterOnPressEnter = this.column.filter.filterOnPressEnter;
+            }
+
+            if (!this.filterOnPressEnter && has(this.column,'filter.debounceRate')) {
+                this.debounceRate = this.column.filter.debounceRate;
+            }
+
             EventBus.$on('reset-query', () => {
-                this.$refs.simple_filter_input.value = "";
+                if (this.$refs.simple_filter_input) {
+                    this.$refs.simple_filter_input.value = "";
+                }
             });
         },
         methods: {
@@ -45,19 +60,22 @@
                 this.$emit('clear-filter',this.column);
             },
             // TODO - configurable debouncing
-            updateFilter: debounce(function(event) {
+            updateFilterHandler: function (event) {
                 this.$emit('update-filter', {
                     "value": event.target.value,
                     "column": this.column
                 });
-            }, 60),
+            },
         },
         components: {
         },
         computed: {
             showClearButton() {
                 return (this.column.filter.showClearButton == undefined) ? true : this.column.filter.showClearButton;
-            }
+            },
+            updateFilter () {
+                return debounce(this.updateFilterHandler, this.debounceRate);
+            },
         }
     };
 </script>

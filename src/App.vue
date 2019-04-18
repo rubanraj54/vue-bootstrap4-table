@@ -133,10 +133,15 @@
                             type: "simple",
                             showClearButton: false,
                             slot_name: "lastname-filter",
+                            filterOnPressEnter: true,
+                            debounceRate: 5000,
                             placeholder: "Enter last name",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
-                            }
+                            },
+                            // init: {
+                            //     value : "Zhang"
+                            // }
                         },
                         sort: true,
                         sortCaseSensitive: false,
@@ -149,6 +154,7 @@
                         filter: {
                             type: "simple",
                             slot_name: "email-filter",
+                            debounceRate: 5000,
                             placeholder:"Enter email",
                             validator: function(rowValue,filterText) {
                                 return rowValue.indexOf(filterText) > -1;
@@ -202,7 +208,9 @@
                         visibility: true,
                         case_sensitive: false, // default false
                         showClearButton: true,
-                        class: "test"
+                        class: "test",
+                        // searchOnPressEnter: true,
+                        searchDebounceRate: 1000,
                         // init: {
                         //     value: "ojo"
                         // }
