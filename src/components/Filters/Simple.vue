@@ -50,7 +50,9 @@ import { log } from 'util';
             }
 
             EventBus.$on('reset-query', () => {
-                this.$refs.simple_filter_input.value = "";
+                if (this.$refs.simple_filter_input) {
+                    this.$refs.simple_filter_input.value = "";
+                }
             });
         },
         methods: {
