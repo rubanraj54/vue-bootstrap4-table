@@ -159,7 +159,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.4/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.5/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -308,6 +308,7 @@ columns: [{
             type: "simple",
             placeholder: "Enter country"
         },
+        visibility: false
     }]
 ```
 
@@ -318,6 +319,7 @@ columns: [{
 |name | Name of the attribute that you would like to show from **`"rows"`** object. You can access nested objects properties with "." | String| " " |
 |slot_name | Overrides default slot name assignment. For more details refer "Rows" section | String| " " |
 |uniqueId | You can teach table which column has unique values. It helps table to do faster operations and it is really useful in "server_mode". | Boolean| false |
+|visibility | Show/Hide specific column. | Boolean| true |
 |filter | Configuration for the column filter. If you don't want to have filtering for specific columns, then just don't mention it :-) | Object| Empty |
 |filter.type | Type of filter you want to use for your column. | String| " " |
 |filter.placeholder | Placeholder is **`hint`** text for filter text box |String |" " |

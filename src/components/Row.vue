@@ -1,16 +1,16 @@
 <template>
-    <tr ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='rowClasses' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
+    <tr :data-id="rowId" ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='rowClasses' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
         <CheckBox v-if="checkboxRows"
                   :rowsSelectable="rowsSelectable"
                   :row-selected="rowSelected"
                   @add-row="addRow"
                   @remove-row="removeRow"/>
-
-        <td v-for="(column, key, hindex) in columns" :key="hindex" :class="cellClasses(column)">
-            <slot :name="'vbt-'+getCellSlotName(column)">
-
-            </slot>
-        </td>
+        <template v-for="(column, key, hindex) in columns">
+            <td v-if="canShowColumn(column)" :key="hindex" :class="cellClasses(column)">
+                <slot :name="'vbt-'+getCellSlotName(column)">
+                </slot>
+            </td>
+        </template>
     </tr>
 </template>
 
@@ -47,6 +47,10 @@
                 default: function() {
                     return [];
                 }
+            },
+            uniqueId: {
+                type: Number | String,
+                required: true
             },
             selectedItems: {
                 type: Array,
@@ -169,6 +173,9 @@
                     return column.slot_name;
                 }
                 return column.name.replace(/\./g,'_');
+            },
+            canShowColumn(column) {
+                return (column.visibility == undefined || column.visibility) ? true : false;
             }
         },
         computed: {
@@ -202,6 +209,9 @@
                 }
 
                 return classes;
+            },
+            rowId() {
+                return this.getValueFromRow(this.row,this.uniqueId);
             }
         },
         watch: {
