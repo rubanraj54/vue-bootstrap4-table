@@ -77,31 +77,33 @@
                                                         @select-all-row-checkbox="selectAllCheckbox"/>
 
                             <slot name="columns" :columns="vbt_columns">
-                                <th v-for="(column, key, index) in vbt_columns" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="vbt-column-header" :class="columnClasses(column)">
-                                    <slot :name="'column_' + getCellSlotName(column)" :column="column">
-                                        {{column.label}}
-                                    </slot>
+                                <template v-for="(column, key, index) in vbt_columns">
+                                    <th v-if="canShowColumn(column)" :key="index" v-on="isSortableColumn(column) ? { click: () => updateSortQuery(column) } : {}" class="vbt-column-header" :class="columnClasses(column)">
+                                        <slot :name="'column_' + getCellSlotName(column)" :column="column">
+                                            {{column.label}}
+                                        </slot>
 
-                                    <template v-if='isSortableColumn(column)'>
-                                        <SortIcon :sort="query.sort" :column="column">
-                                                <template slot="vbt-sort-asc-icon">
-                                                    <slot name="sort-asc-icon">
-                                                            &#x1F825;
-                                                    </slot>
-                                                </template>
-                                                <template slot="vbt-sort-desc-icon">
-                                                    <slot name="sort-desc-icon">
-                                                            &#x1F827;
-                                                    </slot>
-                                                </template>
-                                                <template slot="vbt-no-sort-icon">
-                                                    <slot name="no-sort-icon">
-                                                            &#x1F825;&#x1F827;
-                                                    </slot>
-                                                </template>
-                                        </SortIcon>
-                                    </template>
-                                </th>
+                                        <template v-if='isSortableColumn(column)'>
+                                            <SortIcon :sort="query.sort" :column="column">
+                                                    <template slot="vbt-sort-asc-icon">
+                                                        <slot name="sort-asc-icon">
+                                                                &#x1F825;
+                                                        </slot>
+                                                    </template>
+                                                    <template slot="vbt-sort-desc-icon">
+                                                        <slot name="sort-desc-icon">
+                                                                &#x1F827;
+                                                        </slot>
+                                                    </template>
+                                                    <template slot="vbt-no-sort-icon">
+                                                        <slot name="no-sort-icon">
+                                                                &#x1F825;&#x1F827;
+                                                        </slot>
+                                                    </template>
+                                            </SortIcon>
+                                        </template>
+                                    </th>
+                                </template>
                             </slot>
                         </tr>
                     </thead>
@@ -109,23 +111,25 @@
                         <!-- filter row starts here -->
                         <tr class="table-active" v-if="showFilterRow">
                             <td v-show="checkbox_rows"></td>
-                            <td v-for="(column, key, index) in vbt_columns" :key="index" align="center">
-                                <template v-if="hasFilter(column)">
-                                    <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter">
-                                        <template slot="vbt-simple-filter-clear-icon">
-                                            <slot name="simple-filter-clear-icon">
-                                                &#x24E7;
+                            <template v-for="(column, key, index) in vbt_columns">
+                                <td v-if="canShowColumn(column)" :key="index" align="center">
+                                    <template v-if="hasFilter(column)">
+                                        <Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter">
+                                            <template slot="vbt-simple-filter-clear-icon">
+                                                <slot name="simple-filter-clear-icon">
+                                                    &#x24E7;
+                                                </slot>
+                                            </template>
+                                        </Simple>
+                                        <MultiSelect v-if="column.filter.type == 'select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
+                                        <template v-if="column.filter.type == 'custom'">
+                                            <slot :name="column.filter.slot_name" :column="column">
+
                                             </slot>
                                         </template>
-                                    </Simple>
-                                    <MultiSelect v-if="column.filter.type == 'select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
-                                    <template v-if="column.filter.type == 'custom'">
-                                        <slot :name="column.filter.slot_name" :column="column">
-
-                                        </slot>
                                     </template>
-                                </template>
-                            </td>
+                                </td>
+                            </template>
                         </tr>
                         <!-- filter row ends here -->
 
@@ -141,6 +145,7 @@
                                                                 :highlight-row-hover-color="rowHighlightColor"
                                                                 :prop-row-classes="classes.row"
                                                                 :prop-cell-classes="classes.cell"
+                                                                :unique-id="uniqueId"
                                                                 @add-row="handleAddRow"
                                                                 @remove-row="handleRemoveRow">
                             <template v-for="(column) in columns" :slot="'vbt-'+getCellSlotName(column)">
@@ -1101,6 +1106,9 @@ export default {
             }
 
             this.$emit(action.event_name,payload);
+        },
+        canShowColumn(column) {
+            return (column.visibility == undefined || column.visibility) ? true : false;
         }
     },
     computed: {
@@ -1168,7 +1176,7 @@ export default {
         headerColSpan() {
             let count = (this.checkbox_rows) ? 1 : 0;
 
-            count += this.vbt_columns.length;
+            count += this.vbt_columns.filter(column => this.canShowColumn(column)).length;
 
             return count;
         },
