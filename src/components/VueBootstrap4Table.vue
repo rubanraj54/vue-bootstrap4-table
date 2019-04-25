@@ -14,9 +14,9 @@
                     <thead>
                         <tr v-if="showToolsRow">
                             <th :colspan="headerColSpan">
-                                <div class="row">
+                                <div class="row vbt-header-row no-gutters">
                                     <div class="col-md-4">
-                                        <div class=row>
+                                        <div class="row no-gutters">
                                             <!-- global search text starts here -->
                                             <div class="col-md-6 input-group vbt-global-search" v-if="global_search.visibility">
                                                   <div class="form-group has-clear-right" :class="global_search.class">
@@ -169,7 +169,7 @@
                         <!-- Pagination row starts here -->
                         <tr v-if="showPaginationRow" class="footer-pagination-row">
                             <td :colspan="headerColSpan">
-                                <div class="row">
+                                <div class="row vbt-pagination-row no-gutters">
                                     <!-- pagination starts here -->
                                     <div class="col-md-8">
                                         <div v-if="pagination">
@@ -1431,6 +1431,7 @@ export default {
     .vbt-select-all-checkbox {
         margin-bottom: 20px;
     }
+
     .vbt-sort-cursor {
         cursor: pointer;
     }
