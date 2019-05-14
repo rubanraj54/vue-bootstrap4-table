@@ -52,16 +52,18 @@
 
                                     <!-- action buttons starts here -->
                                     <div class="col-md-8">
-                                        <div class="btn-group float-right" role="group" aria-label="Basic example">
-                                            <button v-for="(action, key, index) in actions"
-                                                    :key="index" type="button" class="btn"
-                                                    :class="getActionButtonClass(action)"
-                                                    @click="emitActionEvent(action)">
-                                                    <slot :name="action.btn_text_slot_name">
-                                                        <span v-html="action.btn_text"></span>
-                                                    </slot>
-                                            </button>
-                                        </div>
+                                        <slot name="vbt-action-buttons">
+                                            <div class="btn-group float-right" role="group" aria-label="Basic example">
+                                                <button v-for="(action, key, index) in actions"
+                                                        :key="index" type="button" class="btn"
+                                                        :class="getActionButtonClass(action)"
+                                                        @click="emitActionEvent(action)">
+                                                        <slot :name="action.btn_text_slot_name">
+                                                            <span v-html="action.btn_text"></span>
+                                                        </slot>
+                                                </button>
+                                            </div>
+                                        </slot>
                                     </div>
                                     <!-- action buttons button ends here -->
 
@@ -925,6 +927,10 @@ export default {
         },
 
         simpleFilter(value, filter_text,config) {
+
+            if (value == null || typeof value === "undefined") {
+                value =  "";
+            }
 
             if (typeof value !== "string") {
                 value = value.toString();
