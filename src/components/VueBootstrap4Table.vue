@@ -928,6 +928,10 @@ export default {
 
         simpleFilter(value, filter_text,config) {
 
+            if (value == null || typeof value === "undefined") {
+                value =  "";
+            }
+
             if (typeof value !== "string") {
                 value = value.toString();
             }
