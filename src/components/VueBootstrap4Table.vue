@@ -955,6 +955,10 @@ export default {
         },
         multiSelectFilter(value, selected_options,config) {
 
+            if (value == null || typeof value === "undefined") {
+                value =  "";
+            }
+
             if (typeof value !== "string") {
                 value = value.toString().toLowerCase();
             } else {
