@@ -433,7 +433,11 @@ export default {
         this.initialSort();
         this.initFilterQueries();
 
-        if (this.global_search.visibility) this.initGlobalSearch();
+        if (this.global_search.visibility) {
+            this.$nextTick(() => {
+                this.initGlobalSearch()
+            });
+        };
 
         this.$nextTick(() => {
             if (!this.server_mode) {
