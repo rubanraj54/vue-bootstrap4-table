@@ -54,9 +54,11 @@ export default {
         };
     },
     mounted() {
-        this.$refs.vbt_dropdown_menu.addEventListener("click",function(e){
-            e.stopPropagation();
-        },false);
+        if (!has(this.column,"filter.hideDropdownOnSelection") || !this.column.filter.hideDropdownOnSelection) {
+            this.$refs.vbt_dropdown_menu.addEventListener("click",function(e){
+                e.stopPropagation();
+            },false);
+        }
 
         EventBus.$on('reset-query', () => {
             this.selected_option_indexes = [];

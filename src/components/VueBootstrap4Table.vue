@@ -955,6 +955,10 @@ export default {
         },
         multiSelectFilter(value, selected_options,config) {
 
+            if (value == null || typeof value === "undefined") {
+                value =  "";
+            }
+
             if (typeof value !== "string") {
                 value = value.toString().toLowerCase();
             } else {
@@ -1035,7 +1039,8 @@ export default {
                 global_search: ""
             }
 
-            this.$refs.global_search.value = "";
+            this.global_search.visibility && (this.$refs.global_search.value = "");
+
             EventBus.$emit('reset-query');
 
         },
