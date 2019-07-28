@@ -1039,7 +1039,8 @@ export default {
                 global_search: ""
             }
 
-            this.$refs.global_search.value = "";
+            this.global_search.visibility && (this.$refs.global_search.value = "");
+
             EventBus.$emit('reset-query');
 
         },
