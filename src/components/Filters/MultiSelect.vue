@@ -54,7 +54,7 @@ export default {
         };
     },
     mounted() {
-        if (!has(this.column,"filter.hideDropdownOnSelection") || !this.column.filter.hideDropdownOnSelection) {
+        if (!has(this.column,"filter.closeDropdownOnSelection") || !this.column.filter.closeDropdownOnSelection) {
             this.$refs.vbt_dropdown_menu.addEventListener("click",function(e){
                 e.stopPropagation();
             },false);
