@@ -145,7 +145,7 @@ export default {
                 // });
                 // return join(names, ",  ");
             } else {
-                return this.selected_option_indexes.length + " selected";
+                return this.selected_option_indexes.length + " "+this.column.filter.selectedText;
             }
 
         },
