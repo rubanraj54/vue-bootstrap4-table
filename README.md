@@ -159,7 +159,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.9/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.10/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -619,7 +619,7 @@ columns: [
 
 |Attributes  |  Description | Type |Default |
 |--|--|--|--|
-| filter.type | Defines the type of filter. Currently basic filter is supported. | String | Empty string  |
+| filter.type | Defines the type of filter. | String | Empty string  |
 | filter.placeholder | Placeholder is **`hint`** text for filter text box | String | Empty string |
 | filter.case_sensitive | Enable/Disable case sensitive filtering. | Boolean | false |
 | filter.filterOnPressEnter | Enable/Disable filtering on "enter" key press. | Boolean | false |
@@ -656,6 +656,7 @@ columns: [
         filter: {
             type: "select",
             mode: "single",
+            closeDropdownOnSelection: true,
             placeholder: "Select options",
             options: [{
                     "name": "option one",
@@ -689,6 +690,7 @@ columns: [
         filter: {
             type: "select",
             mode: "multi",
+            closeDropdownOnSelection: true,
             placeholder: "Select options",
             options: [{
                     "name": "option one",
@@ -723,6 +725,7 @@ columns: [
 |  filter.type | Defines the type of filter. | String | Empty string |
 | filter.mode | Defines the mode of selection in the dropdown. Allowed options are **`single`** and **`multi`**. If the mode is **`single`**, then dropdown will be rendered with **`radio`** buttons, else if the mode is multi, then dropdown will be rendered with **`checkboxes`**. | String | "single" |
 | filter.placeholder | Default text for the dropdown. | String | Empty string |
+| filter.closeDropdownOnSelection | Immediately close dropdown on selection. | Boolean | false |
 | filter.options | You can provide your list of name and value objects to be populated in the multi-select filter dropdown. | Array | Empty array |
 | filter.init.value | Select initial value in the dropdown list before rendering the table.<br> In **single** select mode, value should be a single number (index of the item). <br> In **multi** select mode, value should be array of numbers (indexes of the items). | Number(single mode) or Array(multi mode) | - |
 | select_all_checkbox.visibility | Enable or disable select all items checkbox in the dropdown list. This option is valid only in **multi** select mode. | Boolean | true |
