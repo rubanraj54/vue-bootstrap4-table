@@ -12,7 +12,7 @@
             <div :class='tableWrapperClasses' class="vbt-table-wrapper">
                 <table class="table" :class="tableClasses">
                     <thead>
-                        <tr v-if="showToolsRow">
+                        <tr v-if="showToolsRow" class="vbt-table-tools">
                             <th :colspan="headerColSpan">
                                 <div class="row vbt-header-row no-gutters">
                                     <div class="col-md-4">
