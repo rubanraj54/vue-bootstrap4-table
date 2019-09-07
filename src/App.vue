@@ -8,6 +8,7 @@
                               :actions="actions"
                               @on-select-row="onSelectRows"
                               @refresh-data="onRefreshData"
+                              :show-loader="showLoader"
                               @on-download="onDownload">
             <template slot="pagination-info" slot-scope="props">
                         This page total is {{props.currentPageRowsLength}} |
@@ -83,6 +84,7 @@
                 rows: [],
                 customFilters: [],
                 total_rows: 0,
+                showLoader: true,
                 list: [
                                 {
                                     "name" : "Irwin",
@@ -231,7 +233,8 @@
                     server_mode: false,
                     card_mode: true,
                     selected_rows_info: true,
-                    preservePageOnDataChange: true
+                    preservePageOnDataChange: true,
+                    loaderText: 'Updating...',
                 },
                 classes: {
                     // tableWrapper: "",

@@ -1036,6 +1036,7 @@ You can add your custom buttons in the table by **`actions`** props and listen f
         <vue-bootstrap4-table :rows="rows"
                                 :columns="columns"
                                 :config="config"
+                                :actions="actions"
                                 @on-download="onDownload">
         </vue-bootstrap4-table>
     </div>
@@ -1273,7 +1274,7 @@ In server mode, client side filtering, sorting, global search and pagination wil
                               :columns="columns"
                               :config="config"
                               @on-change-query="onChangeQuery"
-                              :totalRows="total_rows">
+                              :total-rows="total_rows">
         </vue-bootstrap4-table>
     </div>
 </template>
