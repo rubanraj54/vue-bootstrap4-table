@@ -118,6 +118,7 @@ Table of Contents
     + [16.1.3. Step 3](#1613-step-3)
     + [16.1.4. Step 4](#1614-step-4)
     + [16.1.5. Note](#1615-note)
+  * [16.2. Loader overlay](#162-loader-overlay)
 - [17. Events](#17-events)
   * [17.1. on-select-row](#171-on-select-row)
     + [17.1.1. Payload (Object)](#1711-payload--object-)
@@ -159,7 +160,7 @@ We are using **`lodash`** internally, so you don't need to install separately fo
 
 ...
 
-<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.10/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
+<script  src="https://unpkg.com/vue-bootstrap4-table@1.1.11/dist/vue-bootstrap4-table.min.js"  crossorigin="anonymous"></script>
 ```
 **Note:** If you've included bootstrap & jQuery packages already in your project, then include only **vue-bootstrap4-table.min.js** script.
 
@@ -1223,7 +1224,8 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 	                show_refresh_button:  true,
 	                show_reset_button:  true,
 	                server_mode:  true,
-                    preservePageOnDataChange: true
+                    preservePageOnDataChange: true,
+                    loaderText: 'Updating...',
                 }
             }
         },
@@ -1260,6 +1262,7 @@ You can optionally pass config as a prop to **`vue-bootstrap4-table`** component
 | show_reset_button  |  Show/Hide Refresh button. Resets all query (sort, filter, global search) currently applied in the table. |Boolean   | true  |
 | server_mode  |  Enable/Disable server side processing (Sorting, Filtering, Global search & pagination) |Boolean   | false  |
 | preservePageOnDataChange  |  Enable/Disable preserving current index of the page on data change. For example, if this option is set to true, consider that you are in page **4** and performed some actions like sorting or filtering, then now table gets a new data and still the pagination will be in page **4**. If this config is set to false (default), for any data change current page in the pagination will be shifted to page **1**. |Boolean   | false  |
+| loaderText  |  Overrides default loading text in the loader overlay | String   | Loading...  |
 
 # 16. Server mode
 
@@ -1274,6 +1277,7 @@ In server mode, client side filtering, sorting, global search and pagination wil
                               :columns="columns"
                               :config="config"
                               @on-change-query="onChangeQuery"
+                              :show-loader="showLoader"
                               :total-rows="total_rows">
         </vue-bootstrap4-table>
     </div>
@@ -1291,7 +1295,8 @@ In server mode, client side filtering, sorting, global search and pagination wil
                 ],
                 config: {
                     ...
-                    server_mode: true // by default false
+                    server_mode: true, // by default false
+                    loaderText: 'Updating...', // by default 'Loading...'
                     ...
                 },
                 queryParams: {
@@ -1302,11 +1307,13 @@ In server mode, client side filtering, sorting, global search and pagination wil
                     page: 1,
                 },
                 total_rows: 0,
+                showLoader: true,
             }
         },
         methods: {
             onChangeQuery(queryParams) {
                 this.queryParams = queryParams;
+                this.showLoader = true;
                 this.fetchData();
             },
             fetchData() {
@@ -1320,8 +1327,10 @@ In server mode, client side filtering, sorting, global search and pagination wil
                     .then(function(response) {
                         self.rows = response.data.data;
                         self.total_rows = response.data.total;
+                        self.showLoader = false;
                     })
                     .catch(function(error) {
+                        self.showLoader = false;
                         console.log(error);
                     });
             }
@@ -1367,6 +1376,7 @@ Then listen for the event **`on-change-query`**.
         :columns="columns"
         :config="config"
         @on-change-query="onChangeQuery"
+        :show-loader="showLoader"
         :totalRows="total_rows">
 </vue-bootstrap4-table>
 ```
@@ -1378,6 +1388,7 @@ Wherever there is a change in table query params, you will get your new query pa
 ```javascript
 onChangeQuery(queryParams) {
     this.queryParams = queryParams;
+    this.showLoader = true;
     this.fetchData();
 },
 ```
@@ -1400,9 +1411,11 @@ fetchData() {
         .then(function(response) {
             self.rows = response.data.data;
             self.total_rows = response.data.total;
+            self.showLoader = false;
         })
         .catch(function(error) {
             console.log(error);
+            self.showLoader = false;
         });
 }
 ```
@@ -1424,6 +1437,15 @@ columns: [
     ...
 ]
 ```
+
+### 16.2. Loader overlay
+
+You may need to show a loader animation over the table while your request is busy with processing data on the server. You can show/hide the loader overlay by passing the prop **`show-loader`** to **`vue-bootstrap4-table`**.
+
+If you would like to change the loader default text **`Loading...`**, you could pass your custom text in the **`config`** param **`loaderText`** https://github.com/rubanraj54/vue-bootstrap4-table#15-config.
+
+Didn't like the default loader animation ??? No problem, you can use **`loader-overlay`** slot to use your custom loader animation.
+
 # 17. Events
 
 ## 17.1. on-select-row
