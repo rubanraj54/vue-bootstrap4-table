@@ -58,7 +58,7 @@
                 <!-- Number of rows per page ends here -->
 
                 <div class="input-group col-sm-2">
-                    <input type="number" class="form-control" min="1" step="1" :max="totalPages" placeholder="Go to page" @keyup.enter="gotoPage" v-model.number="go_to_page">
+                    <input type="number" class="form-control" min="1" step="1" :max="totalPages" :placeholder="per_page_desc" @keyup.enter="gotoPage" v-model.number="go_to_page">
                 </div>
             </ul>
         </nav>
@@ -78,7 +78,12 @@
             },
             per_page: {
                 type: [String, Number],
-                required: true
+                required: true,
+
+            },
+            per_page_desc: {
+                type: [String],
+                default: 'Go to page',
             },
             total: {
                 type: [String, Number],
@@ -112,7 +117,7 @@
                 }
 
                 //Handle the new page
-                this.pageHandler(this.go_to_page)           
+                this.pageHandler(this.go_to_page)
             },
             pageHandler(index) {
                 if (index >= 1 && index <= this.totalPages) {
@@ -131,9 +136,9 @@
                 }
 
                 //Skip recalculating if the previous and next pages are already visible
-                if (!force && 
+                if (!force &&
                     (includes(this.range, this.page - 1) || this.page == 1) &&
-                    (includes(this.range, this.page + 1) || this.page == this.totalPages) 
+                    (includes(this.range, this.page + 1) || this.page == this.totalPages)
                 ) { return; }
 
                 //Current page is the start page minus one

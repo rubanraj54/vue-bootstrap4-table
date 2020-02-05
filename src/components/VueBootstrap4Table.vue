@@ -241,7 +241,7 @@
                     <!-- pagination starts here -->
                     <div class="col-md-6">
                         <div v-if="pagination">
-                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_desc="per_page_desc" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
                                 <template slot="vbt-paginataion-previous-button">
                                     <slot name="paginataion-previous-button">
                                         &laquo;
@@ -485,6 +485,8 @@ export default {
             this.per_page_options = (has(this.config, 'per_page_options')) ? this.config.per_page_options : [5,10,15];
 
             this.per_page = (has(this.config, 'per_page')) ? this.config.per_page : 10;
+
+            this.per_page_desc = (has(this.config, 'per_page_desc')) ? this.config.per_page_desc : 'Go to page';
 
             this.page = (has(this.config, 'page')) ? this.config.page : 1;
 
