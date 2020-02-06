@@ -91,7 +91,7 @@
         "vue-template-compiler": "^2.5.22",
         "vue2-daterange-picker": "^0.2.3",
         "webpack": "^3.6.0",
-        "webpack-bundle-analyzer": "^2.13.1",
+        "webpack-bundle-analyzer": "^3.3.2",
         "webpack-dev-server": "^2.9.1",
         "webpack-merge": "^4.1.0"
     },
