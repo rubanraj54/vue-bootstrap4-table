@@ -8,7 +8,10 @@
                               :actions="actions"
                               @on-select-row="onSelectRows"
                               @refresh-data="onRefreshData"
-                              @on-download="onDownload">
+                              :show-loader="showLoader"
+                              @on-download="onDownload"
+                              >
+
             <template slot="pagination-info" slot-scope="props">
                         This page total is {{props.currentPageRowsLength}} |
                         Filterd results total is {{props.filteredRowsLength}} |
@@ -36,6 +39,14 @@
 <!-- <template slot="paginataion-next-button">
     <i class="fas fa-step-forward"></i>
 </template> -->
+
+<template slot="vbt-action-buttons">
+    <div class="btn-group float-right" role="group" aria-label="Basic example">
+  <button type="button" class="btn btn-secondary" @click="test">Left</button>
+  <button type="button" class="btn btn-secondary">Middle</button>
+  <button type="button" class="btn btn-secondary">Right</button>
+</div>
+</template>
 <template slot="sort-desc-icon">
     <i class="fas fa-sort-down"></i>
 </template>
@@ -75,6 +86,7 @@
                 rows: [],
                 customFilters: [],
                 total_rows: 0,
+                showLoader: true,
                 list: [
                                 {
                                     "name" : "Irwin",
@@ -92,6 +104,7 @@
                 columns: [{
                         label: "id",
                         name: "id",
+                        // visibility: true,
                         filter: {
                             type: "simple",
                             placeholder: "id",
@@ -113,6 +126,7 @@
                             placeholder: "Select first name",
                             options: [],
                             mode:"multi",
+                            closeDropdownOnSelection: true,
                             select_all_checkbox : {
                                 visibility: true,
                                 text: "Select all"
@@ -133,12 +147,12 @@
                             type: "simple",
                             showClearButton: false,
                             slot_name: "lastname-filter",
-                            filterOnPressEnter: true,
-                            debounceRate: 5000,
+                            filterOnPressEnter: false,
+                            debounceRate: 60,
                             placeholder: "Enter last name",
-                            validator: function(rowValue,filterText) {
-                                return rowValue.indexOf(filterText) > -1;
-                            },
+                            // validator: function(rowValue,filterText) {
+                            //     return rowValue.indexOf(filterText) > -1;
+                            // },
                             // init: {
                             //     value : "Zhang"
                             // }
@@ -196,6 +210,7 @@
                     pagination_info: true,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
+                    per_page_desc:"Ir para pagina",
                     page:1,
                     checkbox_rows: true,
                     highlight_row_hover: true,
@@ -212,7 +227,7 @@
                         // searchOnPressEnter: true,
                         searchDebounceRate: 1000,
                         // init: {
-                        //     value: "ojo"
+                        //     value: "Christine"
                         // }
                     },
                     per_page_options: [5, 10, 20, 30],
@@ -221,10 +236,11 @@
                     server_mode: false,
                     card_mode: true,
                     selected_rows_info: true,
-                    preservePageOnDataChange: true
+                    preservePageOnDataChange: true,
+                    loaderText: 'Updating...',
                 },
                 classes: {
-                    tableWrapper: "",
+                    // tableWrapper: "",
                     table : {
                         "table-striped my-class" : true,
                         "table-bordered my-class-two" : function(rows) {
@@ -330,8 +346,8 @@
                 user = {
                     id : 103,
                     name: {
-                        first_name: "voll",
-                        last_name: chance.last(),
+                        first_name: null,
+                        last_name: null,
                     },
                     age: chance.age(),
                     address: {
@@ -374,6 +390,9 @@
             },
             onDownload(payload) {
                 console.log(payload);
+            },
+            test(){
+                alert(33);
             },
             onRefreshData() {
                 let dummy = [{
