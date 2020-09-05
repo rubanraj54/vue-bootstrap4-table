@@ -210,7 +210,7 @@
                     pagination_info: true,
                     num_of_visibile_pagination_buttons: 7,
                     per_page: 10,
-                    per_page_desc:"Ir para pagina",
+                    per_page_desc:"Go to page",
                     page:1,
                     checkbox_rows: true,
                     highlight_row_hover: true,
