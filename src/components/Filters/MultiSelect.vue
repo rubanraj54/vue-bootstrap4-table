@@ -5,8 +5,12 @@
                     {{title}}
                 </a>
             <div ref="vbt_dropdown_menu" class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuLink">
+                <div v-if="showSearchFilterInput" class="vtb-search-filter-input">
+                    <input type="text" :placeholder="showSearchFilterInputPlaceholder" class="form-control form-control-sm" v-model="search_filter_term">
+                </div>
+
                 <multi-select-all-item v-if="!isSingleMode && showSelectAllCheckbox" :text="selectAllCheckboxText" :is-all-options-selected="isAllOptionsSelected" @on-deselect-all-option="selected_option_indexes=[]" @on-select-all-option="selectAllOptions"></multi-select-all-item>
-                <multi-select-item v-for="(option, key) in options" :key="key" :index="key" :option="option" :is-single-mode="isSingleMode" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
+                <multi-select-item v-for="(option, key) in filteredOptions" :key="key" :index="key" :option="option" :is-single-mode="isSingleMode" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
             </div>
         </div>
     </div>
@@ -50,7 +54,8 @@ export default {
     data: function () {
         return {
             selected_option_indexes: [],
-            canEmit: false
+            canEmit: false,
+            search_filter_term: ''
         };
     },
     mounted() {
@@ -59,6 +64,10 @@ export default {
                 e.stopPropagation();
             },false);
         }
+
+    this.$root.$on('bv::dropdown::shown', bvEvent => {
+      console.log('Dropdown is about to be shown', bvEvent)
+    })
 
         EventBus.$on('reset-query', () => {
             this.selected_option_indexes = [];
@@ -128,6 +137,15 @@ export default {
         optionsCount() {
             return this.options.length;
         },
+        filteredOptions(){
+            if(!this.search_filter_term){
+                return this.options
+            }
+
+            return filter(this.options, option => {
+                return option.name.toLowerCase().indexOf(this.search_filter_term.toLowerCase()) > -1;
+            });
+        },
         title() {
             let title = (this.column.filter.placeholder) ? (this.column.filter.placeholder) : "Select options";
 
@@ -145,6 +163,9 @@ export default {
                 // });
                 // return join(names, ",  ");
             } else {
+                if(!this.column.filter.selectedText){
+                    return 'Selected: '+this.selected_option_indexes.length;    
+                }
                 return this.column.filter.selectedText.replace('{number}', this.selected_option_indexes.length);
             }
 
@@ -173,14 +194,27 @@ export default {
                 return this.column.filter.select_all_checkbox.visibility;
             }
         },
-
         selectAllCheckboxText() {
             if (!has(this.column.filter,"select_all_checkbox")) {
                 return "Select All";
             } else {
                 return (has(this.column.filter.select_all_checkbox,"text")) ? this.column.filter.select_all_checkbox.text : "Select All"
             }
-        }
+        },
+        showSearchFilterInput(){
+            if (!has(this.column.filter,"search_filter_input")) {
+                return false;
+            } else {
+                return this.column.filter.search_filter_input.visibility || true;
+            }
+        },
+        showSearchFilterInputPlaceholder() {
+            if (!has(this.column.filter,"search_filter_input")) {
+                return "Filter list";
+            } else {
+                return (has(this.column.filter.search_filter_input,"text")) ? this.column.filter.search_filter_input.text : "Filter list"
+            }
+        },
     },
     watch: {
         selected_option_indexes(newVal, oldVal) {
@@ -210,5 +244,8 @@ export default {
     height: auto;
     max-height: 200px;
     overflow-x: hidden;
+}
+.vtb-search-filter-input{
+    padding: 0px 10px 5px 10px;
 }
 </style>

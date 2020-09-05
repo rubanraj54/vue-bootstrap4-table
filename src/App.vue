@@ -86,7 +86,7 @@
                 rows: [],
                 customFilters: [],
                 total_rows: 0,
-                showLoader: true,
+                showLoader: false,
                 list: [
                                 {
                                     "name" : "Irwin",
@@ -126,14 +126,15 @@
                             placeholder: "Select first name",
                             options: [],
                             mode:"multi",
-                            closeDropdownOnSelection: true,
+                            closeDropdownOnSelection: false,
                             select_all_checkbox : {
                                 visibility: true,
                                 text: "Select all"
                             },
                             init: {
                                 value : [244]
-                            }
+                            },
+                            search_filter_input: true
                         },
                         sort: true,
                         initial_sort: false, // "false" by default
