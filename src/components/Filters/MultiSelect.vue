@@ -9,8 +9,24 @@
                     <input type="text" :placeholder="showSearchFilterInputPlaceholder" class="form-control form-control-sm" v-model="search_filter_term">
                 </div>
 
-                <multi-select-all-item v-if="!isSingleMode && showSelectAllCheckbox" :text="selectAllCheckboxText" :is-all-options-selected="isAllOptionsSelected" @on-deselect-all-option="selected_option_indexes=[]" @on-select-all-option="selectAllOptions"></multi-select-all-item>
-                <multi-select-item v-for="(option, key) in filteredOptions" :key="key" :index="key" :option="option" :is-single-mode="isSingleMode" :selectedOptionIndexes="selected_option_indexes" @on-select-option="addOption" @on-deselect-option="removeOption"></multi-select-item>
+                <multi-select-all-item 
+                    v-if="!isSingleMode && showSelectAllCheckbox" 
+                    :text="selectAllCheckboxText" 
+                    :is-all-options-selected="isAllOptionsSelected" 
+                    @on-deselect-all-option="selected_options=[]" 
+                    @on-select-all-option="selectAllOptions"
+                ></multi-select-all-item>
+
+                <multi-select-item 
+                    v-for="(option, key) in filteredOptions" 
+                    :key="option.value" 
+                    :index="key" 
+                    :option="option" 
+                    :is-single-mode="isSingleMode" 
+                    :selectedOptions="selected_options" 
+                    @on-select-option="addOption(option)" 
+                    @on-deselect-option="removeOption(option)"
+                ></multi-select-item>
             </div>
         </div>
     </div>
@@ -20,7 +36,9 @@
 import findIndex from "lodash/findIndex";
 import range from "lodash/range";
 import filter from "lodash/filter";
+import find from "lodash/find";
 import includes from "lodash/includes";
+import some from "lodash/some";
 import map from "lodash/map";
 import join from "lodash/join";
 import has from "lodash/has";
@@ -53,7 +71,7 @@ export default {
     },
     data: function () {
         return {
-            selected_option_indexes: [],
+            selected_options: [],
             canEmit: false,
             search_filter_term: ''
         };
@@ -65,26 +83,40 @@ export default {
             },false);
         }
 
-    this.$root.$on('bv::dropdown::shown', bvEvent => {
-      console.log('Dropdown is about to be shown', bvEvent)
-    })
+//    this.$root.$on('bv::dropdown::shown', bvEvent => {
+//      console.log('Dropdown is about to be shown', bvEvent)
+//    })
 
         EventBus.$on('reset-query', () => {
-            this.selected_option_indexes = [];
+            this.selected_options = [];
         });
 
         let lastIndex = this.optionsCount - 1;
 
         if (has(this.column,'filter.init.value')) {
+            // gets array of "value"s
             if (this.isSingleMode) {
-                let index = this.column.filter.init.value;
-                if (index > lastIndex || index < 0) return;
-                this.addOption(index)
+                if(typeof this.column.filter.init.value != 'string'){
+                    console.log('Got array instead of string in init value of '+this.column.label)
+                    return false
+                }
+                let selected_option = find(this.options, option => {
+                    return option.value == this.column.filter.init.value
+                })
+
+                if(selected_option){
+                    this.addOption(selected_option)
+                }
             } else {
                 if (Array.isArray(this.column.filter.init.value)) {
-                    this.column.filter.init.value.forEach(index => {
-                        if (index > lastIndex || index < 0) return;
-                        this.addOption(index)
+                    this.column.filter.init.value.forEach(value => {
+                        let selected_option = find(this.options, option => {
+                            return option.value == value
+                        })
+
+                        if(selected_option){
+                            this.addOption(selected_option)
+                        }
                     });
                 } else {
                     console.log("Initial value for 'multi' mode should be an array");
@@ -95,38 +127,39 @@ export default {
         this.$nextTick(() => { this.canEmit = true });
     },
     methods: {
-        addOption(index) {
+        addOption(option) {
             if (this.isSingleMode) {
                 this.resetSelectedOptions();
-                this.selected_option_indexes.push(index);
+                this.selected_options.push(option);
             } else {
-                let res = findIndex(this.selected_option_indexes, function (option_index) {
-                    return option_index == index;
+                let res = findIndex(this.selected_options, function (listed_option) {
+                    return listed_option.value == option.value;
                 });
+
                 if (res == -1) {
-                    this.selected_option_indexes.push(index);
+                    this.selected_options.push(option);
                 }
             }
         },
         selectAllOptions() {
             this.resetSelectedOptions();
-            this.selected_option_indexes = range(this.options.length);
+            this.selected_options = this.options;
         },
-        removeOption(index) {
+        removeOption(option) {
             if (this.isSingleMode) {
                 this.resetSelectedOptions();
             } else {
-                let res = findIndex(this.selected_option_indexes, function (option_index) {
-                    return option_index == index;
+                let res = findIndex(this.selected_options, function (listed_option) {
+                    return listed_option.value == option.value;
                 });
                 if (res > -1) {
-                    this.selected_option_indexes.splice(res, 1);
+                    this.selected_options.splice(res, 1);
                 }
             }
         },
 
         resetSelectedOptions() {
-            this.selected_option_indexes = [];
+            this.selected_options = [];
         }
     },
     components: {
@@ -144,17 +177,23 @@ export default {
 
             return filter(this.options, option => {
                 return option.name.toLowerCase().indexOf(this.search_filter_term.toLowerCase()) > -1;
+                
+/*                if(option.name.toLowerCase().indexOf(this.search_filter_term.toLowerCase()) > -1){
+                    option.visibility = true
+                } else {
+                    option.visibility = false
+                }*/
             });
         },
         title() {
             let title = (this.column.filter.placeholder) ? (this.column.filter.placeholder) : "Select options";
 
-            if (this.selected_option_indexes.length === 0) {
+            if (this.selected_options.length === 0) {
                 return title;
             }
 
-            if (this.selected_option_indexes.length > 0 && this.selected_option_indexes.length <= 1) {
-                return this.options[this.selected_option_indexes[0]].name;
+            if (this.selected_options.length > 0 && this.selected_options.length <= 1) {
+                return this.selected_options[0].name;
                 // let filtered_options = filter(this.options, (option, index) => {
                 //     return includes(this.selected_option_indexes, index)
                 // });
@@ -164,9 +203,9 @@ export default {
                 // return join(names, ",  ");
             } else {
                 if(!this.column.filter.selectedText){
-                    return 'Selected: '+this.selected_option_indexes.length;    
+                    return 'Selected: '+this.selected_options.length;    
                 }
-                return this.column.filter.selectedText.replace('{number}', this.selected_option_indexes.length);
+                return this.column.filter.selectedText.replace('{number}', this.selected_options.length);
             }
 
         },
@@ -184,7 +223,7 @@ export default {
         },
 
         isAllOptionsSelected() {
-            return this.options.length === this.selected_option_indexes.length;
+            return this.options.length === this.selected_options.length;
         },
 
         showSelectAllCheckbox() {
@@ -217,12 +256,12 @@ export default {
         },
     },
     watch: {
-        selected_option_indexes(newVal, oldVal) {
+        selected_options(newVal, oldVal) {
 
             if (!this.canEmit) return;
 
             let filtered_options = filter(this.options, (option, index) => {
-                return includes(newVal, index)
+                return some(newVal, option)
             });
 
             let payload = {};

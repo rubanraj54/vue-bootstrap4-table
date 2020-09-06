@@ -617,7 +617,8 @@ export default {
                             console.log("Initial value for 'multi' mode should be an array");
                         }
                     } else if (vbt_column.filter.mode == "single") {
-                        if (Number.isInteger(vbt_column.filter.init.value) && vbt_column.filter.init.value > -1) {
+                        if (typeof vbt_column.filter.init.value == 'string') {
+                            // Number.isInteger(vbt_column.filter.init.value) && vbt_column.filter.init.value > -1
                             initialValues = [vbt_column.filter.init.value];
                         } else {
                             console.log("Initial value for 'single' mode should be a single number and greater than -1");

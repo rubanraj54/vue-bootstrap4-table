@@ -132,7 +132,7 @@
                                 text: "Select all"
                             },
                             init: {
-                                value : [244]
+                                value : ['Bessie', 'Moro']
                             },
                             search_filter_input: true
                         },
