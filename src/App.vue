@@ -10,12 +10,17 @@
                               @refresh-data="onRefreshData"
                               :show-loader="showLoader"
                               @on-download="onDownload"
+                              ref="vbt"
                               >
 
             <template slot="pagination-info" slot-scope="props">
                         This page total is {{props.currentPageRowsLength}} |
                         Filterd results total is {{props.filteredRowsLength}} |
                         Original data total is {{props.originalRowsLength}}
+</template>
+
+<template slot="selected_rows_action" slot-scope="props">
+    <button type="button" class="btn btn-danger" :disabled="selected_items.length <= 0">Remove selected</button>
 </template>
 
 <template slot="sort-asc-icon">
@@ -239,6 +244,16 @@
                     selected_rows_info: true,
                     preservePageOnDataChange: true,
                     loaderText: 'Updating...',
+                    card_mode_slotting: {
+                        bottom: [
+                            { class: 'col-md-4', contents: ['pagination'] },
+                            { class: 'col-md-4', contents: ['pagination_info'] },
+                            { class: 'col-md-4 text-right', contents: ['selected_rows_info', 'selected_rows_action'] } // custom slot
+                        ],
+                        top: [
+                        ],
+
+                    }
                 },
                 classes: {
                     // tableWrapper: "",
@@ -457,6 +472,11 @@
         },
         components: {
             VueBootstrap4Table,
+        },
+        computed:{
+            selected_items(){
+                return this.$refs.vbt.selected_items
+            }
         },
         mounted() {
             let self = this;

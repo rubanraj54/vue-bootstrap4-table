@@ -5,7 +5,19 @@
 - Also filter.init.value now has to contain value strings instead of indexes as of in original repo. Values that are not found in options array are ignored
 filter.init.value has to array when it's multi mode, string if isSingleMode
 - Select all checkbox now has indeterminate state. Expected behavoir: if no option is selected "Select all" is unchecked; if all existing options are selected - it is checked; if some option(s) selected - checkbox is indeterminate. When user filters options and clicks "Select all" - only filtered options are selected leading to indeterminate checkbox state if there are unchecked filtered out option.
-
+- Redesigned logic of footer both modes (regular and card). Use following syntax to configure footer within config object
+```vue
+                    card_mode_slotting: {
+                        bottom: [
+                            { class: 'col-md-4', contents: ['pagination'] },
+                            { class: 'col-md-4', contents: ['pagination_info'] },
+                            { class: 'col-md-4 text-right', contents: ['selected_rows_info', 'selected_rows_action'] } // custom slot
+                        ],
+                        top: [
+                        ],
+                    }
+```
+Also see App.vue for example of disabling and enabling action buttons in footer
 
 
 

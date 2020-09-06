@@ -178,54 +178,56 @@
                         <tr v-if="showPaginationRow" class="footer-pagination-row">
                             <td :colspan="headerColSpan">
                                 <div class="row vbt-pagination-row no-gutters">
-                                    <!-- pagination starts here -->
-                                    <div class="col-md-8">
-                                        <div v-if="pagination">
-                                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_desc="per_page_desc" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
-                                                <template slot="vbt-paginataion-previous-button">
-                                                    <slot name="paginataion-previous-button">
-                                                        &laquo;
-                                                    </slot>
-                                                </template>
-                                                <template slot="vbt-paginataion-next-button">
-                                                    <slot name="paginataion-next-button">
-                                                        &raquo;
-                                                    </slot>
-                                                </template>
-                                            </Pagination>
-                                        </div>
-                                    </div>
-                                    <!-- pagination ends here -->
+                                    
+                                    <template v-for="column in card_mode_slotting.bottom">
+                                        <div :class="column.class">
+                                            <template v-for="slot in column.contents" :name="slot">
+                                                <slot :name="slot">
+                                                    <!-- pagination starts here -->
+                                                    <div v-if="pagination && slot == 'pagination'">
+                                                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_desc="per_page_desc" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                                                            <template slot="vbt-paginataion-previous-button">
+                                                                <slot name="paginataion-previous-button">
+                                                                    &laquo;
+                                                                </slot>
+                                                            </template>
+                                                            <template slot="vbt-paginataion-next-button">
+                                                                <slot name="paginataion-next-button">
+                                                                    &raquo;
+                                                                </slot>
+                                                            </template>
+                                                        </Pagination>
+                                                    </div>
+                                                    <!-- pagination ends here -->
 
-                                    <!-- pagination info start here -->
-                                    <div class="col-md-4">
-                                        <div class="text-right justify-content-center">
-                                            <template v-if="pagination_info">
-                                                <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
-                                                    <template v-if="currentPageRowsLength != 0">
-                                                        From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                                    <!-- pagination info start here -->
+                                                    <template v-if="pagination_info && slot == 'pagination_info'">
+                                                        <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                                            <template v-if="currentPageRowsLength != 0">
+                                                                From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                                            </template>
+                                                            <template v-else>
+                                                                No results found
+                                                            </template>
+                                                            <template>
+                                                                ({{originalRowsLength}} total records)
+                                                            </template>
+                                                        </slot>
                                                     </template>
-                                                    <template v-else>
-                                                        No results found
+                                                    <!-- pagination info ends here -->
+
+                                                    <!-- selected rows info starts here -->
+                                                    <template v-if="selected_rows_info && isSelectable && slot == 'selected_rows_info'">
+                                                        <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
+                                                            {{selectedItemsCount}} rows selected
+                                                        </slot>
                                                     </template>
-                                                    <template>
-                                                        ({{originalRowsLength}} total records)
-                                                    </template>
-                                                </slot>
-                                            </template>
-                                            <template v-if="selected_rows_info && pagination_info && isSelectable">
-                                                <slot name="pagination-selected-rows-separator">
-                                                    |
-                                                </slot>
-                                            </template>
-                                            <template v-if="selected_rows_info && isSelectable">
-                                                <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
-                                                    {{selectedItemsCount}} rows selected
+                                                    <!-- selected rows info ends here -->
                                                 </slot>
                                             </template>
                                         </div>
-                                    </div>
-                                    <!-- pagination info ends here -->
+                                    </template>
+                                    
                                 </div>
                             </td>
                         </tr>
@@ -237,55 +239,52 @@
         </div>
         <div class="card-footer" v-if="card_mode">
             <slot name="card-footer">
-                <div class="row">
-                    <!-- pagination starts here -->
-                    <div class="col-md-6">
-                        <div v-if="pagination">
-                            <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_desc="per_page_desc" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
-                                <template slot="vbt-paginataion-previous-button">
-                                    <slot name="paginataion-previous-button">
-                                        &laquo;
-                                    </slot>
-                                </template>
-                                <template slot="vbt-paginataion-next-button">
-                                    <slot name="paginataion-next-button">
-                                        &raquo;
-                                    </slot>
-                                </template>
-                            </Pagination>
-                        </div>
-                    </div>
-                    <!-- pagination ends here -->
+                <div class="row align-items-center">
+                    <template v-for="column in card_mode_slotting.bottom">
+                        <div :class="column.class">
+                            <template v-for="slot in column.contents" :name="slot">
+                                <slot :name="slot">
 
-                    <!-- pagination info start here -->
-                    <div class="col-md-6">
-                        <div class="text-right justify-content-center">
-                            <template v-if="pagination_info">
-                                <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
-                                    <template v-if="currentPageRowsLength != 0">
-                                        From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                    <div v-if="pagination && slot == 'pagination'">
+                                        <Pagination :page.sync="page" :per_page.sync="per_page" :per_page_desc="per_page_desc" :per_page_options="per_page_options" :total="rowCount" :num_of_visibile_pagination_buttons="num_of_visibile_pagination_buttons">
+                                            <template slot="vbt-paginataion-previous-button">
+                                                <slot name="paginataion-previous-button">
+                                                    &laquo;
+                                                </slot>
+                                            </template>
+                                            <template slot="vbt-paginataion-next-button">
+                                                <slot name="paginataion-next-button">
+                                                    &raquo;
+                                                </slot>
+                                            </template>
+                                        </Pagination>
+                                    </div>
+
+                                    <template v-if="pagination_info && slot == 'pagination_info'">
+                                        <slot name="pagination-info" :currentPageRowsLength="currentPageRowsLength" :filteredRowsLength="filteredRowsLength" :originalRowsLength="originalRowsLength">
+                                            <template v-if="currentPageRowsLength != 0">
+                                                From 1 to {{currentPageRowsLength}} of {{filteredRowsLength}} entries
+                                            </template>
+                                            <template v-else>
+                                                No results found
+                                            </template>
+                                            <template>
+                                                ({{originalRowsLength}} total records)
+                                            </template>
+                                        </slot>
                                     </template>
-                                    <template v-else>
-                                        No results found
-                                    </template>
-                                    <template>
-                                        ({{originalRowsLength}} total records)
+
+                                    <template v-if="selected_rows_info && isSelectable && slot == 'selected_rows_info'">
+                                        <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
+                                            {{selectedItemsCount}} rows selected
+                                        </slot>
                                     </template>
                                 </slot>
-                            </template>
-                            <template v-if="pagination_info && selected_rows_info">
-                                <slot name="pagination-selected-rows-separator">
-                                    |
-                                </slot>
-                            </template>
-                            <template v-if="selected_rows_info">
-                                <slot name="selected-rows-info" :selectedItemsCount="selectedItemsCount">
-                                    {{selectedItemsCount}} rows selected
-                                </slot>
+
                             </template>
                         </div>
-                    </div>
-                    <!-- pagination info ends here -->
+                    </template>
+
                 </div>
             </slot>
         </div>
@@ -420,6 +419,10 @@ export default {
             isResponsive: true,
             preservePageOnDataChange: false,
             canEmitQueries : false,
+            card_mode_slotting: {
+                bottom: [],
+                top: []
+            }
         };
     },
     mounted() {
@@ -530,6 +533,8 @@ export default {
 
             this.loaderText = (has(this.config, 'loaderText')) ? (this.config.loaderText) : this.loaderText;
 
+            this.card_mode_slotting = (has(this.config, 'card_mode_slotting')) ? (this.config.card_mode_slotting) : this.card_mode_slotting
+
         },
 
         initialSort() {
@@ -625,8 +630,10 @@ export default {
                         }
                     }
 
-                    let selected_options = vbt_column.filter.options.filter((_,index) => includes(initialValues, index)).map(filtered_option => filtered_option.value);
+                    //let selected_options = vbt_column.filter.options.filter((_,index) => includes(initialValues, index)).map(filtered_option => filtered_option.value);
 
+                    let selected_options = vbt_column.filter.options.filter(option => includes(initialValues, option.value)).map(filtered_option => filtered_option.value)
+                    
                     this.updateMultiSelectFilter({
                         "selected_options" : selected_options,
                         "column" : vbt_column
