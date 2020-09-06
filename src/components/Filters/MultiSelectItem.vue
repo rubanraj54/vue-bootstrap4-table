@@ -62,7 +62,6 @@ import some from "lodash/some";
         },
         mounted(){
             if(some(this.selectedOptions, this.option)){
-                console.log('this option is selected', this.option.value)
                 this.option_selected = true
             }
         },

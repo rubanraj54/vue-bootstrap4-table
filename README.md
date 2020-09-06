@@ -1,10 +1,10 @@
 # 0. How this repo differs from original as of September, 6th 2020
 - Fixed issue with per_page_pesc locale string. In original repo this functionality was added by separate PR and applied only to card_mode. Also data variable was not initialized
-- MultiSelect filter here has following features: if filter.search_filter_input is set to true - render special input to filter options (easily find needed option in long list), completely rewritten MultiSelect - originally it uses indexes of options in array for work. Now we have array of selected objects (options) and do all finds by value attribute.
-That means that value attribute is absolutely required.
-Also filter.init.value now has to contain value strings instead of indexes as of in original repo. Values that are not found in options array are ignored
+- MultiSelect filter here has following features: if filter.search_filter_input is set - render special input to filter options (easily find needed option in long list), completely rewritten MultiSelect - originally it uses indexes of options in array for work. Now we have array of selected objects (options) and do all finds by value attribute. filter.search_filter_input = { visibility: true, text: 'placeholder text' }
+- That means that value attribute in options list is absolutely required.
+- Also filter.init.value now has to contain value strings instead of indexes as of in original repo. Values that are not found in options array are ignored
 filter.init.value has to array when it's multi mode, string if isSingleMode
-
+- Select all checkbox now has indeterminate state. Expected behavoir: if no option is selected "Select all" is unchecked; if all existing options are selected - it is checked; if some option(s) selected - checkbox is indeterminate. When user filters options and clicks "Select all" - only filtered options are selected leading to indeterminate checkbox state if there are unchecked filtered out option.
 
 
 

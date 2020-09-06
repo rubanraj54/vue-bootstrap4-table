@@ -2,7 +2,7 @@
     <div>
         <a class="dropdown-item" href="" @click.prevent="handleSelect()">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="option_selected"/>
+                <input type="checkbox" class="custom-control-input vbt-checkbox" v-model="option_selected" :indeterminate.prop="notAllOptionsSelected"/>
                 <label class="custom-control-label">{{text}}</label>
             </div>
         </a>
@@ -14,6 +14,10 @@
         name: "MultiSelectAllItem",
         props: {
             isAllOptionsSelected: {
+                type: Boolean,
+                default: false
+            },
+            notAllOptionsSelected: {
                 type: Boolean,
                 default: false
             },

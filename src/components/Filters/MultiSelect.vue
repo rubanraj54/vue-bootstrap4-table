@@ -15,6 +15,7 @@
                     :is-all-options-selected="isAllOptionsSelected" 
                     @on-deselect-all-option="selected_options=[]" 
                     @on-select-all-option="selectAllOptions"
+                    :not-all-options-selected="notAllOptionsSelected"
                 ></multi-select-all-item>
 
                 <multi-select-item 
@@ -143,7 +144,7 @@ export default {
         },
         selectAllOptions() {
             this.resetSelectedOptions();
-            this.selected_options = this.options;
+            this.selected_options = this.filteredOptions;
         },
         removeOption(option) {
             if (this.isSingleMode) {
@@ -224,6 +225,12 @@ export default {
 
         isAllOptionsSelected() {
             return this.options.length === this.selected_options.length;
+        },
+        notAllOptionsSelected(){
+            if(this.options.length === this.selected_options.length){
+                return false
+            }
+            return this.selected_options.length > 0;
         },
 
         showSelectAllCheckbox() {
