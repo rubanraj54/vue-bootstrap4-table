@@ -48,6 +48,8 @@ import cloneDeep from "lodash/cloneDeep";
 import MultiSelectItem from "./MultiSelectItem.vue";
 import MultiSelectAllItem from "./MultiSelectAllItem.vue";
 
+import jQuery from 'jquery'
+
 import {
     EventBus
 } from '../../event-bus.js';
@@ -84,9 +86,9 @@ export default {
             },false);
         }
 
-//    this.$root.$on('bv::dropdown::shown', bvEvent => {
-//      console.log('Dropdown is about to be shown', bvEvent)
-//    })
+        jQuery('body').on('shown.bs.dropdown', (e) => {
+            jQuery('input[type="text"]', e.target).focus()
+        })
 
         EventBus.$on('reset-query', () => {
             this.selected_options = [];
