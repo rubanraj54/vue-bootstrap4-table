@@ -1,17 +1,17 @@
 <template>
-    <tr :data-id="rowId" ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='rowClasses' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
-        <CheckBox v-if="checkboxRows"
-                  :rowsSelectable="rowsSelectable"
-                  :row-selected="rowSelected"
-                  @add-row="addRow"
-                  @remove-row="removeRow"/>
-        <template v-for="(column, key, hindex) in columns">
-            <td v-if="canShowColumn(column)" :key="hindex" :class="cellClasses(column)">
-                <slot :name="'vbt-'+getCellSlotName(column)">
-                </slot>
-            </td>
-        </template>
-    </tr>
+        <tr :data-id="rowId" ref="vbt_row" v-bind:style='{"background": (rowHiglighted) ? highlightRowHoverColor : ""}' :class='rowClasses' v-on="rowsSelectable ? { click: ($event) => handleRowSelect($event) } : {}">
+            <CheckBox v-if="checkboxRows"
+                      :rowsSelectable="rowsSelectable"
+                      :row-selected="rowSelected"
+                      @add-row="addRow"
+                      @remove-row="removeRow"/>
+            <template v-for="(column, key, hindex) in columns">
+                <td v-if="canShowColumn(column)" :key="hindex" :class="cellClasses(column)">
+                    <slot :name="'vbt-'+getCellSlotName(column)">
+                    </slot>
+                </td>
+            </template>
+        </tr>
 </template>
 
 <script>
@@ -212,7 +212,7 @@
             },
             rowId() {
                 return this.getValueFromRow(this.row,this.uniqueId);
-            }
+            },
         },
         watch: {
             row: {
