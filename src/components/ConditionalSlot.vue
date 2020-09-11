@@ -91,7 +91,7 @@
 
                         <!-- refresh & reset button starts here -->
                         <div class="btn-group refresh-reset-buttons-wrapper" role="group" aria-label="Table Actions buttons" v-if="slot == 'refresh_reset_buttons'">
-                            <button v-if="$parent.show_refresh_button" type="button" class="btn btn-secondary vbt-refresh-button" @click="$emit('refresh-data')">
+                            <button v-if="$parent.show_refresh_button" type="button" class="btn btn-secondary vbt-refresh-button" @click="$parent.$emit('refresh-data')">
                                 <slot name="refresh-button-text">
                                     Refresh
                                 </slot>
