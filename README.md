@@ -18,12 +18,14 @@ filter.init.value has to be array when it's multi mode, string if isSingleMode
                     }
 ```
 We have some predefined content boxes: pagination, pagination_info, selected_rows_info, vbt-action-buttons, global_search, refresh_reset_buttons.
+BREAKING CHANGE: slot in footer and header no receive only prop - data_object, which contains all previously known props
 You can override them as you wish
 Also see App.vue for example of disabling and enabling action buttons in footer
 
 - New feature: if row object contains 'subrow_data' property, additional subrow (tr) will be rendered. subrow_data property can be subset of data or simply boolean just to indicate that we need subrow here. This subrow (tr) contains slot named "subrow" (receives row prop), which is rendering td with colspan columns.length+1, but can be easily overridden but specifing slot with another set of columns or the same <td :colspan="columns.length+1"> with any html markup inside (bootstrap columns wrapped in <td> for example)
 - Expand/collapse subrow trigger is specified in table config as class name for any element you put inside your columns. Default is toggle_subrow element
 - sticky_footer option in config. When sticky_footer: true & card_mode: true - footer becomes sticky
+
 
 
 

@@ -54,7 +54,7 @@
                         <!-- selected rows info starts here -->
                         <template v-if="$parent.selected_rows_info && $parent.isSelectable && slot == 'selected_rows_info'">
                             <slot name="selected-rows-info" :selectedItemsCount="$parent.selectedItemsCount">
-                                {{ $parent.selectedItemsCount }} rows selected1
+                                {{ $parent.selectedItemsCount }} rows selected
                             </slot>
                         </template>
                         <!-- selected rows info ends here -->

@@ -14,9 +14,9 @@
 							  >
 
 			<template slot="pagination_info" slot-scope="props">
-				This page total is {{props.currentPageRowsLength}} |
-				Filterd results total is {{props.filteredRowsLength}} |
-				Original data total is {{props.originalRowsLength}}
+				This page total is {{props.data_object.currentPageRowsLength}} |
+				Filterd results total is {{props.data_object.filteredRowsLength}} |
+				Original data total is {{props.data_object.originalRowsLength}}
 			</template>
 
 			<template slot="id" slot-scope="props">

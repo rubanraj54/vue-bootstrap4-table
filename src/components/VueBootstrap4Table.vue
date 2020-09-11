@@ -22,15 +22,15 @@
 
 							<th :colspan="headerColSpan">
 
-								<conditional-slot position="top" key="top">
+								<conditional-slot position="top" key="top" :currentPageRowsLength="currentPageRowsLength">
 									<template v-for="box in boxes_top_list" :slot="box" slot-scope="props">
-										<slot :name="box"></slot>
+										<slot :name="box" :data_object="slot_data_object"></slot>
 									</template>
 									<template v-for="named_slot in named_slots" :slot="named_slot" slot-scope="props">
-										<slot :name="named_slot"></slot>
+										<slot :name="named_slot" :data_object="slot_data_object"></slot>
 									</template>
 									<template v-for="action in actions" :slot="action.btn_text_slot_name" slot-scope="props">
-										<slot :name="action.btn_text_slot_name"></slot>
+										<slot :name="action.btn_text_slot_name" :data_object="slot_data_object"></slot>
 									</template>
 								</conditional-slot>
 
@@ -149,13 +149,13 @@
 							<td :colspan="headerColSpan">
 								<conditional-slot position="bottom" key="bottom">
 									<template v-for="box in boxes_bottom_list" :slot="box" slot-scope="props">
-										<slot :name="box"></slot>
+										<slot :name="box" :data_object="slot_data_object"></slot>
 									</template>
 									<template v-for="named_slot in named_slots" :slot="named_slot" slot-scope="props">
-										<slot :name="named_slot"></slot>
+										<slot :name="named_slot" :data_object="slot_data_object"></slot>
 									</template>
 									<template v-for="action in actions" :slot="action.btn_text_slot_name" slot-scope="props">
-										<slot :name="action.btn_text_slot_name"></slot>
+										<slot :name="action.btn_text_slot_name" :data_object="slot_data_object"></slot>
 									</template>
 								</conditional-slot>
 							</td>
@@ -170,13 +170,13 @@
 			<slot name="card-footer">
 				<conditional-slot position="bottom" key="bottom">
 					<template v-for="box in boxes_bottom_list" :slot="box" slot-scope="props">
-						<slot :name="box"></slot>
+						<slot :name="box" :data_object="slot_data_object"></slot>
 					</template>
 					<template v-for="named_slot in named_slots" :slot="named_slot" slot-scope="props">
-						<slot :name="named_slot"></slot>
+						<slot :name="named_slot" :data_object="slot_data_object"></slot>
 					</template>
 					<template v-for="action in actions" :slot="action.btn_text_slot_name" slot-scope="props">
-						<slot :name="action.btn_text_slot_name"></slot>
+						<slot :name="action.btn_text_slot_name" :data_object="slot_data_object"></slot>
 					</template>
 				</conditional-slot>
 			</slot>
@@ -1209,6 +1209,13 @@ export default {
 		boxes_bottom_list(){
 			return flatten(map(this.boxes.bottom, 'contents'))
 		},
+		slot_data_object(){
+			return {
+				currentPageRowsLength: this.currentPageRowsLength,
+				filteredRowsLength: this.filteredRowsLength,
+				originalRowsLength: this.originalRowsLength
+			}
+		}
 	},
 	watch: {
 		"query.filters": {
