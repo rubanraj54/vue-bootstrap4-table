@@ -181,6 +181,7 @@
 				</conditional-slot>
 			</slot>
 		</div>
+		<div id="eof_page" v-if="card_mode"></div>
 	</div>
 </template>
 
@@ -326,7 +327,8 @@ export default {
 				'pagination-next-button',
 				'pagination-previous-button',
 				'global-search-clear-icon'
-			]
+			],
+			sticky_footer: false,
 		};
 	},
 	mounted() {
@@ -351,6 +353,20 @@ export default {
 		this.initConfig();
 		this.initialSort();
 		this.initFilterQueries();
+
+		// when in card mode check for sticky footer
+		if(this.card_mode && this.sticky_footer){
+			// sticky footer observer
+			const stickyElm = document.querySelector('#eof_page') //
+
+			const observer = new IntersectionObserver( 
+				([e]) => document.querySelector('.card-footer').classList.toggle('isSticky', e.intersectionRatio < 1),
+				{threshold: [1]}
+			);
+
+			observer.observe(stickyElm)
+			// EOF sticky footer observer
+		}
 
 		this.$nextTick(() => {
 			if (!this.server_mode) {
@@ -432,6 +448,8 @@ export default {
 			this.loaderText = (has(this.config, 'loaderText')) ? (this.config.loaderText) : this.loaderText;
 
 			this.boxes = (has(this.config, 'boxes')) ? (this.config.boxes) : this.boxes
+
+			this.sticky_footer = (has(this.config, 'sticky_footer')) ? (this.config.sticky_footer) : false;
 
 		},
 
@@ -1456,6 +1474,17 @@ export default {
 
 	input[type="search"]::-webkit-search-cancel-button {
 	-webkit-appearance: searchfield-cancel-button;
+	}
+
+	.card-footer.isSticky{
+		box-shadow: 0 -7px 14px -9px #868686;
+	}
+	.card-footer{
+		position: sticky;
+		bottom: 0;
+		background: white;
+		padding: 10px 10px 10px 10px;
+		z-index: 10;
 	}
 </style>
 

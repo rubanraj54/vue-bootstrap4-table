@@ -247,7 +247,7 @@
 					show_reset_button: true,
 					show_refresh_button: true,
 					server_mode: false,
-					card_mode: false,
+					card_mode: true,
 					selected_rows_info: true,
 					preservePageOnDataChange: true,
 					loaderText: 'Updating...',
@@ -261,7 +261,9 @@
 							{ class: 'col-md-6', contents: ['refresh_reset_buttons', 'global_search'] },
 							{ class: 'col-md-6', contents: ['vbt-action-buttons'] },
 						],
-					}
+					},
+					sticky_footer: true,
+					sticky_header: true
 				},
 				classes: {
 					// tableWrapper: "",
