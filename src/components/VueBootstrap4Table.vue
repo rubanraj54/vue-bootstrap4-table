@@ -1213,7 +1213,8 @@ export default {
 			return {
 				currentPageRowsLength: this.currentPageRowsLength,
 				filteredRowsLength: this.filteredRowsLength,
-				originalRowsLength: this.originalRowsLength
+				originalRowsLength: this.originalRowsLength,
+				selectedItemsCount: this.selectedItemsCount
 			}
 		}
 	},
