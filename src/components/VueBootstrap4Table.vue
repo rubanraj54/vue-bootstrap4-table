@@ -1491,8 +1491,10 @@ export default {
 		position: sticky;
 		bottom: 0;
 		background: white;
-		padding: 10px 10px 10px 10px;
+		padding: 10px 1.25rem 10px 1.25rem;
 		z-index: 10;
+		margin-left: -1.25rem;
+		margin-right: -1.25rem;
 	}
 </style>
 
