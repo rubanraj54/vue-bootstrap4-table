@@ -83,14 +83,26 @@
 							<template v-for="(column, key, index) in vbt_columns">
 								<td v-if="canShowColumn(column)" :key="index" align="center">
 									<template v-if="hasFilter(column)">
-										<Simple v-if="column.filter.type == 'simple'" :column="column" @update-filter="updateFilter" @clear-filter="clearFilter">
+										<Simple 
+											v-if="column.filter.type == 'simple'" 
+											:column="column" 
+											@update-filter="updateFilter" 
+											@clear-filter="clearFilter"
+										>
 											<template slot="vbt-simple-filter-clear-icon">
 												<slot name="simple-filter-clear-icon">
 													&#x24E7;
 												</slot>
 											</template>
 										</Simple>
-										<MultiSelect v-if="column.filter.type == 'select'" :options="column.filter.options" :column="column" @update-multi-select-filter="updateMultiSelectFilter" @clear-filter="clearFilter"></MultiSelect>
+										<MultiSelect 
+											:key="'multiselect'+index"
+											v-if="column.filter.type == 'select'" 
+											:options="column.filter.options" 
+											:column="column" 
+											@update-multi-select-filter="updateMultiSelectFilter" 
+											@clear-filter="clearFilter"
+										></MultiSelect>
 										<template v-if="column.filter.type == 'custom'">
 											<slot :name="column.filter.slot_name" :column="column">
 
