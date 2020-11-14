@@ -96,7 +96,6 @@
 											</template>
 										</Simple>
 										<MultiSelect 
-											:key="'multiselect'+index"
 											v-if="column.filter.type == 'select'" 
 											:options="column.filter.options" 
 											:column="column" 

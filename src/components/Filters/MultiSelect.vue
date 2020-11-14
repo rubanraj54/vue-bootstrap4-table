@@ -20,7 +20,7 @@
 
                 <multi-select-item 
                     v-for="(option, key) in filteredOptions" 
-                    :key="option.value" 
+                    :key="column.name+'_'+option.value" 
                     :index="key" 
                     :option="option" 
                     :is-single-mode="isSingleMode" 
