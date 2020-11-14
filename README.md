@@ -1,5 +1,30 @@
+# 0. How this repo differs from original as of September, 8th 2020
+- Fixed issue with per_page_pesc locale string. In original repo this functionality was added by separate PR and applied only to card_mode. Also data() variable was not initialized
+- MultiSelect filter here has following features: if filter.search_filter_input is set - render special input to filter options (easily find needed option in long list), completely rewritten MultiSelect - originally it uses indexes of options in array for work. Now we have array of selected objects (options) and do all finds by value attribute. filter.search_filter_input = { visibility: true, text: 'placeholder text' }
+- That means that value attribute in options list is absolutely required.
+- Also filter.init.value now has to contain value strings (values) instead of indexes as of in original repo. Values that are not found in options array are ignored
+filter.init.value has to be array when it's multi mode, string if isSingleMode
+- "Select all" checkbox on MultiSelect filter now has indeterminate state. Expected behavoir: if no option is selected "Select all" is unchecked; if all existing options are selected - it is checked; if some option(s) selected - checkbox is indeterminate. When user filters options and clicks "Select all" - only filtered options are selected leading to indeterminate checkbox state if there are unchecked filtered out options.
+- Redesigned logic of footer and header in both modes (regular and card). Use following syntax to configure footer within config object
+```vue
+                    boxes: {
+                        bottom: [
+                            { class: 'col-md-4', contents: ['pagination'] },
+                            { class: 'col-md-4', contents: ['pagination_info'] },
+                            { class: 'col-md-4 text-right', contents: ['selected_rows_info', 'selected_rows_action'] } // custom slot
+                        ],
+                        top: [
+                        ],
+                    }
+```
+We have some predefined content boxes: pagination, pagination_info, selected_rows_info, vbt-action-buttons, global_search, refresh_reset_buttons.
+BREAKING CHANGE: slot in footer and header no receive only prop - data_object, which contains all previously known props
+You can override them as you wish
+Also see App.vue for example of disabling and enabling action buttons in footer
 
-
+- New feature: if row object contains 'subrow_data' property, additional subrow (tr) will be rendered. subrow_data property can be subset of data or simply boolean just to indicate that we need subrow here. This subrow (tr) contains slot named "subrow" (receives row prop), which is rendering td with colspan columns.length+1, but can be easily overridden but specifing slot with another set of columns or the same <td :colspan="columns.length+1"> with any html markup inside (bootstrap columns wrapped in <td> for example)
+- Expand/collapse subrow trigger is specified in table config as class name for any element you put inside your columns. Default is toggle_subrow element
+- sticky_footer option in config. When sticky_footer: true & card_mode: true - footer becomes sticky
 
 
 

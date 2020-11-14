@@ -15,7 +15,7 @@
 
 <script>
 import cloneDeep from "lodash/cloneDeep";
-import includes from "lodash/includes";
+import some from "lodash/some";
 
     export default {
         name: "MultiSelectItem",
@@ -47,7 +47,7 @@ import includes from "lodash/includes";
                 type: Boolean,
                 default: false
             },
-            selectedOptionIndexes: {
+            selectedOptions: {
                 type: Array,
                 default: function() {
                     return [];
@@ -60,20 +60,25 @@ import includes from "lodash/includes";
                 selected_value: ""
             };
         },
+        mounted(){
+            if(some(this.selectedOptions, this.option)){
+                this.option_selected = true
+            }
+        },
         methods: {
             handleSelect() {
                 if (this.option_selected) {
-                    this.$emit('on-deselect-option',this.index);
+                    this.$emit('on-deselect-option', this.option);
                 } else {
-                    this.$emit('on-select-option',this.index);
+                    this.$emit('on-select-option', this.option);
                 }
             }
         },
         watch: {
-            selectedOptionIndexes: {
+            selectedOptions: {
                 handler: function(newVal, oldVal) {
                     let new_selected_option_indices = cloneDeep(newVal);
-                    this.option_selected = includes(new_selected_option_indices,this.index);
+                    this.option_selected = some(new_selected_option_indices, this.option);
 
                 },
                 deep: true
